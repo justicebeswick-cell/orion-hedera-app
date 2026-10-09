@@ -64,12 +64,13 @@ export async function redelegate(accountId: string, nodeId: number, passphrase: 
   const { getWcSigner } = await import("./walletconnect");
   const signer = await getWcSigner(accountId);
   if (signer) {
+    const h = await import("@hiero-ledger/sdk");
     try {
-      const tx = await new sdk.AccountUpdateTransaction()
+      const tx = await new h.AccountUpdateTransaction()
         .setAccountId(accountId)
         .setStakedNodeId(nodeId)
         .setDeclineStakingReward(false)
-        .setMaxTransactionFee(new sdk.Hbar(MAX_FEE_HBAR))
+        .setMaxTransactionFee(new h.Hbar(MAX_FEE_HBAR))
         .freezeWithSigner(signer);
       const resp = await tx.executeWithSigner(signer);
       return resp.transactionId.toString();
