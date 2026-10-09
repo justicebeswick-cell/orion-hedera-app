@@ -105,7 +105,7 @@ function wrap(primitive: string, e: unknown): Error {
   if (/fetch|network|UNAVAILABLE/i.test(msg)) return new Error("Hedera unreachable");
   if (/INSUFFICIENT_PAYER_BALANCE|INSUFFICIENT_ACCOUNT_BALANCE/.test(msg)) return new Error(`${primitive} failed: not enough HBAR`);
   if (/INSUFFICIENT_TOKEN_BALANCE/.test(msg)) return new Error(`${primitive} failed: not enough tokens`);
-  if (/CONTRACT_REVERT/.test(msg)) return new Error(`${primitive} failed: the price changed sharply. Nothing was spent — tap Swap again.`);
+  if (/CONTRACT_REVERT/.test(msg)) return new Error(`${primitive} failed: SaucerSwap rejected the trade. Nothing was spent except the network fee.`);
   if (/INSUFFICIENT_GAS/.test(msg)) return new Error(`${primitive} failed: ran out of gas`);
   return new Error(`${primitive} on mainnet failed: ${msg || "rejected in wallet"}`);
 }
@@ -123,7 +123,13 @@ export async function executeSwap(
   const path = pathOf(tIn, tOut);
   const minOut = (q.out * BigInt(Math.round((1 - slippage) * 10000))) / 10000n;
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
-  const to = word(num(from));
+  // ECDSA accounts with an EVM alias must receive at that alias; the long-zero address fails with INVALID_ALIAS_KEY.
+  let recipient = num(from);
+  try {
+    const a = await (await fetch(`${MIRROR}/api/v1/accounts/${from}?limit=0`)).json();
+    if (a?.evm_address && !/^0x0{24}/.test(a.evm_address)) recipient = BigInt(a.evm_address);
+  } catch { /* fall back to long-zero */ }
+  const to = word(recipient);
   let fn: string, payable = 0n;
   if (isH(tIn)) { fn = "7ff36ab5" + word(minOut) + word(128n) + to + word(deadline) + pathWords(path); payable = q.amountIn; }
   else if (isH(tOut)) fn = "18cbafe5" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
