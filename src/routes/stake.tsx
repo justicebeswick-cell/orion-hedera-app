@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Shell, Panel, Label, BindAccount, SealRing } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
 import { readKeystoreMeta } from "@/lib/keystore";
+import { connectedWallet } from "@/lib/walletconnect";
 import { hbar, fmtTs, HASHSCAN } from "@/lib/hedera";
 import { getStakeInfo, getRewards, getNodes, apr, redelegate, waitForConsensus, MAX_FEE_HBAR, type Node } from "@/lib/staking";
 
@@ -26,7 +27,12 @@ const nodeName = (n?: Node) => n?.description?.trim() || (n ? `Node ${n.node_id}
 function Stake() {
   const { id, ready, bind } = useAccount();
   const [hasKey, setHasKey] = useState(false);
-  useEffect(() => setHasKey(readKeystoreMeta()?.accountId === id && !!id), [id]);
+  const [wallet, setWallet] = useState<string | null>(null);
+  useEffect(() => {
+    setHasKey(readKeystoreMeta()?.accountId === id && !!id);
+    const w = connectedWallet();
+    setWallet(w && w.id === id ? w.wallet : null);
+  }, [id]);
   const info = useQuery({ queryKey: ["stake", id], queryFn: () => getStakeInfo(id!), enabled: !!id });
   const rewards = useQuery({ queryKey: ["rewards", id], queryFn: () => getRewards(id!), enabled: !!id });
   const nodes = useQuery({ queryKey: ["nodes"], queryFn: getNodes, staleTime: 600_000 });
@@ -77,7 +83,7 @@ function Stake() {
       </Panel>
 
       {pick ? (
-        <Redelegate accountId={id} node={pick} hasKey={hasKey} onClose={() => setPick(null)} />
+        <Redelegate accountId={id} node={pick} hasKey={hasKey} wallet={wallet} onClose={() => setPick(null)} />
       ) : (
         <>
           <Label><span className="mt-8 block">Redelegate to a node</span></Label>
@@ -118,7 +124,7 @@ function Stake() {
   );
 }
 
-function Redelegate({ accountId, node, hasKey, onClose }: { accountId: string; node: Node; hasKey: boolean; onClose: () => void }) {
+function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: string; node: Node; hasKey: boolean; wallet: string | null; onClose: () => void }) {
   const qc = useQueryClient();
   const [pass, setPass] = useState("");
   const [state, setState] = useState<"idle" | "busy" | "done" | "err">("idle");
@@ -162,7 +168,11 @@ function Redelegate({ accountId, node, hasKey, onClose }: { accountId: string; n
         <p>Public: your account id and the node you stake to.</p>
         <p>Your HBAR does not move. Pending rewards are paid out with this change.</p>
       </div>
-      {hasKey ? (
+      {wallet ? (
+        <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={go}>
+          {state === "busy" ? `Approve in ${wallet}…` : `Update stake on mainnet with ${wallet}`}
+        </button>
+      ) : hasKey ? (
         <>
           <input type="password" className="field mt-4" placeholder="Device passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
           <button className="btn mt-3 w-full" disabled={!pass || state === "busy"} onClick={go}>

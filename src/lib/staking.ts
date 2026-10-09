@@ -61,6 +61,22 @@ export const MAX_FEE_HBAR = 2;
 /** Sign and submit an AccountUpdate setting the staked node. Returns transaction id. */
 export async function redelegate(accountId: string, nodeId: number, passphrase: string) {
   const sdk = await import("@hashgraph/sdk");
+  const { getWcSigner } = await import("./walletconnect");
+  const signer = await getWcSigner(accountId);
+  if (signer) {
+    try {
+      const tx = await new sdk.AccountUpdateTransaction()
+        .setAccountId(accountId)
+        .setStakedNodeId(nodeId)
+        .setDeclineStakingReward(false)
+        .setMaxTransactionFee(new sdk.Hbar(MAX_FEE_HBAR))
+        .freezeWithSigner(signer);
+      const resp = await tx.executeWithSigner(signer);
+      return resp.transactionId.toString();
+    } catch (e) {
+      throw new Error(`Account update on mainnet failed: ${(e as Error).message ?? "rejected in wallet"}`);
+    }
+  }
   const meta = readKeystoreMeta();
   if (!meta || meta.accountId !== accountId) throw new Error("No key for this account on this device");
   const raw = await unlockKeystore(passphrase);
