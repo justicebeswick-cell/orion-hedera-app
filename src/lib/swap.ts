@@ -105,7 +105,7 @@ function wrap(primitive: string, e: unknown): Error {
   if (/fetch|network|UNAVAILABLE/i.test(msg)) return new Error("Hedera unreachable");
   if (/INSUFFICIENT_PAYER_BALANCE|INSUFFICIENT_ACCOUNT_BALANCE/.test(msg)) return new Error(`${primitive} failed: not enough HBAR`);
   if (/INSUFFICIENT_TOKEN_BALANCE/.test(msg)) return new Error(`${primitive} failed: not enough tokens`);
-  if (/CONTRACT_REVERT/.test(msg)) return new Error(`${primitive} failed: price moved past your slippage. Try again.`);
+  if (/CONTRACT_REVERT/.test(msg)) return new Error(`${primitive} failed: the price changed sharply. Nothing was spent — tap Swap again.`);
   if (/INSUFFICIENT_GAS/.test(msg)) return new Error(`${primitive} failed: ran out of gas`);
   return new Error(`${primitive} on mainnet failed: ${msg || "rejected in wallet"}`);
 }
