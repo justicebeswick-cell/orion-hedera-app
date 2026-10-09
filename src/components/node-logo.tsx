@@ -16,7 +16,7 @@ const DOMAINS: [RegExp, string][] = [
 
 export const nodeCompany = (desc?: string) => desc?.match(/Hosted by ([^|]+)/)?.[1]?.trim() ?? "";
 
-export function NodeLogo({ description, size = 28 }: { description?: string; size?: number }) {
+export function NodeLogo({ description, size = 28 }: { description?: string | undefined; size?: number }) {
   const [broken, setBroken] = useState(false);
   const domain = DOMAINS.find(([re]) => re.test(description ?? ""))?.[1];
   const name = nodeCompany(description) || "?";
