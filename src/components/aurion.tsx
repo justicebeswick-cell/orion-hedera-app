@@ -26,17 +26,22 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
   const nav = useNavigate();
   return (
     <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
-      <header className="mb-8 flex items-center justify-between">
-        <button
-          onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}
-          onPointerUp={() => clearTimeout(timer.current)}
-          onPointerLeave={() => clearTimeout(timer.current)}
-          onContextMenu={(e) => e.preventDefault()}
-          className="select-none text-sm font-semibold tracking-[0.4em] text-signal"
-          aria-label="AURION — hold for commands"
-        >
-          AURION
-        </button>
+      <header className="mb-8 flex items-start justify-between">
+        <div>
+          <button
+            onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}
+            onPointerUp={() => clearTimeout(timer.current)}
+            onPointerLeave={() => clearTimeout(timer.current)}
+            onContextMenu={(e) => e.preventDefault()}
+            className="select-none text-sm font-semibold tracking-[0.4em] text-signal"
+            aria-label="AURION — hold for commands"
+          >
+            AURION
+          </button>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            Powered by Hedera
+          </p>
+        </div>
         <span className="text-xs text-muted-foreground">{title}</span>
       </header>
       {children}
