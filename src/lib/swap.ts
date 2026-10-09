@@ -14,7 +14,7 @@ export const TOKENS: SwapToken[] = [
 ];
 export const SLIPPAGE = 0.01;
 
-const num = (id: string) => BigInt(id.split(".")[2]);
+const num = (id: string) => BigInt(id.split(".")[2] ?? "0");
 const word = (n: bigint) => n.toString(16).padStart(64, "0");
 const tinybar = (hbar: number) => BigInt(Math.round(hbar * 1e8));
 

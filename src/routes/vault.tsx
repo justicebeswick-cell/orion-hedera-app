@@ -101,7 +101,7 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
 }
 
 function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
-  const [tok, setTok] = useState<SwapToken>(TOKENS[0]);
+  const [tok, setTok] = useState<SwapToken>(TOKENS[0]!);
   const [amt, setAmt] = useState("");
   const [debounced, setDebounced] = useState(0);
   const n = Number(amt);
