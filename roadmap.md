@@ -11,4 +11,4 @@
 - [ ] Real mainnet test of staking move — needs a funded account key from the user
 - [x] Biometric unlock for signing and sign-in; never auto sign out
 - [x] Company logos next to staking node names
-- [x] App icon/logo — use the approved uploaded purple A as the header, home logo, and favicon
+- [x] App icon/logo — use the approved uploaded purple A as the header, home logo, browser favicon, and home-screen (PWA) app icon
