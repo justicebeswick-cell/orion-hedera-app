@@ -6,7 +6,7 @@ import { useAccount } from "@/lib/account";
 import { WC_PROJECT_ID, walletOptions, connectWallet, type WalletOption } from "@/lib/walletconnect";
 import {
   generateWallet, importWallet, saveKeystore, readKeystoreMeta, setKeystoreAccount,
-  findAccountByKey, findAccountByEvm, type StoredKey,
+  findAccountByKey, findAccountByEvm, clearKeystore, type StoredKey,
 } from "@/lib/keystore";
 
 export const Route = createFileRoute("/wallet")({
@@ -36,14 +36,23 @@ function Wallet() {
   const nav = useNavigate();
   const done = (id: string) => { bind(id); nav({ to: "/" }); };
 
-  if (pending) return <Shell title="Wallet"><AwaitFunding k={pending} onFound={done} /></Shell>;
+  if (pending)
+    return (
+      <Shell title="Wallet">
+        <AwaitFunding k={pending} onFound={done} />
+        <button className="btn-ghost mt-4 w-full" onClick={() => {
+          if (!confirm("Use a wallet you already have instead? The new unfunded key will be removed from this device. If you wrote down its 24 words you can still restore it later.")) return;
+          clearKeystore(); setPending(null); setMode("import");
+        }}>I already have a wallet — enter my phrase</button>
+      </Shell>
+    );
 
   return (
     <Shell title="Wallet">
       <div className="mb-4 grid grid-cols-3 gap-2">
         {(["create", "import", "watch"] as const).map((m) => (
           <button key={m} onClick={() => setMode(m)} className={`btn-ghost py-2 text-xs ${mode === m ? "border-primary text-primary" : ""}`}>
-            {m === "create" ? "Create new" : m === "import" ? "Connect existing" : "Watch only"}
+            {m === "create" ? "Create new" : m === "import" ? "I have a wallet" : "Watch only"}
           </button>
         ))}
       </div>
