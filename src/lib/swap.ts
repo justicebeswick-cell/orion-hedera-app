@@ -124,11 +124,15 @@ export async function executeSwap(
   const minOut = (q.out * BigInt(Math.round((1 - slippage) * 10000))) / 10000n;
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
   // ECDSA accounts with an EVM alias must receive at that alias; the long-zero address fails with INVALID_ALIAS_KEY.
+  // Note: the mirror rejects `?limit=0` on this endpoint, so use `transactions=false` and fail loudly if the lookup breaks.
   let recipient = num(from);
+  let acct: { evm_address?: string } | null = null;
   try {
-    const a = await (await fetch(`${MIRROR}/api/v1/accounts/${from}?limit=0`)).json();
-    if (a?.evm_address && !/^0x0{24}/.test(a.evm_address)) recipient = BigInt(a.evm_address);
-  } catch { /* fall back to long-zero */ }
+    const r = await fetch(`${MIRROR}/api/v1/accounts/${from}?transactions=false`);
+    if (r.ok) acct = await r.json();
+  } catch { /* handled below */ }
+  if (!acct) throw new Error("Account lookup failed: Hedera unreachable. Nothing was spent.");
+  if (acct.evm_address && !/^0x0{24}/.test(acct.evm_address)) recipient = BigInt(acct.evm_address);
   const to = word(recipient);
   let fn: string, payable = 0n;
   if (isH(tIn)) { fn = "7ff36ab5" + word(minOut) + word(128n) + to + word(deadline) + pathWords(path); payable = q.amountIn; }
