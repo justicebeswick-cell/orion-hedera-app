@@ -99,28 +99,62 @@ export function SignButton({ accountId, verb, disabled, run, done }: {
   const [pass, setPass] = useState("");
   const [state, setState] = useState<"idle" | "busy" | "done" | "err">("idle");
   const [msg, setMsg] = useState("");
-  useEffect(() => { import("@/lib/signer").then((m) => setMode(m.signMode(accountId))); }, [accountId]);
-  if (state === "done") return <SealRing>{done(msg)}<button className="btn-ghost mt-4" onClick={() => setState("idle")}>Done</button></SealRing>;
+  const [bio, setBio] = useState(false);
+  const [offer, setOffer] = useState<string | null>(null);
+  useEffect(() => {
+    import("@/lib/signer").then((m) => setMode(m.signMode(accountId)));
+    import("@/lib/biometric").then((b) => setBio(b.bioEnrolled()));
+  }, [accountId, state]);
+  if (state === "done") return (
+    <SealRing>{done(msg)}
+      {offer && <BioOffer pass={offer} onDone={() => setOffer(null)} />}
+      <button className="btn-ghost mt-4" onClick={() => setState("idle")}>Done</button>
+    </SealRing>
+  );
   if (mode.kind === "none")
     return (
       <p className="text-sm text-muted-foreground">
         This account is watch-only on this device. <Link to="/wallet" className="text-signal">Create or connect a wallet</Link> to sign.
       </p>
     );
-  const go = async () => {
+  const go = async (bio = false) => {
     setState("busy"); setMsg("");
-    try { const id = await run(pass); setMsg(id); setState("done"); setPass(""); }
-    catch (e) { setMsg((e as Error).message); setState("err"); }
+    try {
+      const b = await import("@/lib/biometric");
+      const p = bio ? await b.bioPassphrase() : pass;
+      const id = await run(p);
+      if (!bio && mode.kind === "device" && !b.bioEnrolled() && (await b.bioAvailable())) setOffer(p);
+      setMsg(id); setState("done"); setPass("");
+    } catch (e) { setMsg((e as Error).message); setState("err"); }
   };
   return (
     <div>
+      {mode.kind === "device" && bio && (
+        <button className="btn mb-3 w-full" disabled={disabled || state === "busy"} onClick={() => go(true)}>
+          {state === "busy" ? "Waiting for Hedera…" : `${verb} with Face ID / fingerprint`}
+        </button>
+      )}
       {mode.kind === "device" && (
         <input type="password" className="field mb-3" placeholder="Device passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
       )}
-      <button className="btn w-full" disabled={disabled || state === "busy" || (mode.kind === "device" && !pass)} onClick={go}>
+      <button className="btn w-full" disabled={disabled || state === "busy" || (mode.kind === "device" && !pass)} onClick={() => go(false)}>
         {state === "busy" ? (mode.kind === "wallet" ? `Approve in ${mode.name}…` : "Waiting for Hedera…") : verb}
       </button>
       {state === "err" && <p className="mt-3 text-sm text-destructive">{msg}</p>}
+    </div>
+  );
+}
+
+/** Offer to turn on biometric unlock using a passphrase that just worked. */
+export function BioOffer({ pass, onDone }: { pass: string; onDone: () => void }) {
+  const [err, setErr] = useState("");
+  return (
+    <div className="mt-4 rounded-md bg-graphite p-3 text-sm">
+      <p>Skip the passphrase next time?</p>
+      <button className="btn-ghost mt-2 w-full py-2 text-xs" onClick={async () => {
+        try { await (await import("@/lib/biometric")).bioEnroll(pass); onDone(); } catch (e) { setErr((e as Error).message); }
+      }}>Turn on Face ID / fingerprint</button>
+      {err && <p className="mt-2 text-xs text-destructive">{err}</p>}
     </div>
   );
 }
