@@ -62,12 +62,70 @@ function Vault() {
         <Label>Send HBAR on mainnet</Label>
         <SendForm id={id} onSent={() => acct.refetch()} />
       </Panel>
+      <Holdings id={id} />
       <SwapPanel id={id} onSwapped={() => acct.refetch()} />
       <LimitsPanel />
       <AuditPanel />
     </Shell>
   );
 }
+
+type Held = { token_id: string; balance: number; decimals?: number };
+async function getHoldings(id: string): Promise<Held[]> {
+  const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${id}/tokens?limit=100`);
+  if (!r.ok) throw new Error(`Mirror node returned ${r.status}`);
+  const j = await r.json();
+  return (j.tokens ?? []) as Held[];
+}
+const metaCache = new Map<string, { symbol: string; name: string; decimals: number }>();
+async function tokenMeta(tid: string) {
+  if (metaCache.has(tid)) return metaCache.get(tid)!;
+  const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/tokens/${tid}`);
+  const j = r.ok ? await r.json() : {};
+  const m = { symbol: j.symbol ?? tid, name: j.name ?? "", decimals: Number(j.decimals ?? 0) };
+  metaCache.set(tid, m);
+  return m;
+}
+
+function Holdings({ id }: { id: string }) {
+  const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
+  const held = useQuery({
+    queryKey: ["holdings", id],
+    refetchInterval: 15_000,
+    queryFn: async () => {
+      const rows = await getHoldings(id);
+      return Promise.all(rows.map(async (h) => ({ ...h, meta: await tokenMeta(h.token_id) })));
+    },
+  });
+  const rows = (held.data ?? []).filter((h) => h.balance > 0);
+  return (
+    <Panel className="mt-4">
+      <Label>Your tokens</Label>
+      {held.isLoading ? <p className="text-sm text-muted-foreground">Loading…</p>
+        : held.isError ? <p className="text-sm text-destructive">Mirror node: could not load tokens.</p>
+        : rows.length === 0 ? <p className="text-sm text-muted-foreground">No tokens yet. Anything you swap into shows up here.</p>
+        : (
+          <ul className="divide-y divide-border">
+            {rows.map((h) => {
+              const t = list.data?.find((x) => x.id === h.token_id);
+              const tok: SwapToken = t ?? { id: h.token_id, symbol: h.meta.symbol, name: h.meta.name, decimals: h.meta.decimals };
+              return (
+                <li key={h.token_id} className="flex items-center gap-3 py-3">
+                  <TokIcon t={tok} size={28} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{tok.symbol}</p>
+                    <a href={`${HASHSCAN}/token/${h.token_id}`} target="_blank" rel="noreferrer" className="font-mono text-xs text-muted-foreground">{h.token_id}</a>
+                  </div>
+                  <p className="text-lg font-semibold tnum">{fmtUnits(BigInt(h.balance), h.meta.decimals)}</p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+    </Panel>
+  );
+}
+
 
 function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const [to, setTo] = useState("");
