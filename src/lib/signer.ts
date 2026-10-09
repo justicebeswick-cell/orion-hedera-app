@@ -137,3 +137,40 @@ export async function deleteSchedule(from: string, scheduleId: string, passphras
     await r.getReceipt(client);
   } catch (e) { throw wrap("Schedule delete", e); } finally { client.close(); }
 }
+
+/** HTS token transfer (units = smallest unit). Recipient must hold the token or have auto-association slots. */
+export async function sendToken(from: string, to: string, tokenId: string, units: bigint, memo: string, passphrase: string) {
+  const mode = signMode(from);
+  if (mode.kind === "wallet") {
+    const { getWcSigner } = await import("./walletconnect");
+    const signer = await getWcSigner(from);
+    if (!signer) throw new Error("Wallet session ended. Reconnect your wallet.");
+    const h = await import("@hiero-ledger/sdk");
+    try {
+      const tx = await new h.TransferTransaction()
+        .addTokenTransfer(tokenId, from, h.Long.fromString((-units).toString()))
+        .addTokenTransfer(tokenId, to, h.Long.fromString(units.toString()))
+        .setTransactionMemo(memo).setMaxTransactionFee(new h.Hbar(2)).freezeWithSigner(signer);
+      const r = await tx.executeWithSigner(signer);
+      return r.transactionId.toString();
+    } catch (e) { throw tokenWrap(e); }
+  }
+  const sdk = await import("@hashgraph/sdk");
+  const key = await deviceKey(from, passphrase);
+  const client = sdk.Client.forMainnet().setOperator(from, key);
+  try {
+    const r = await new sdk.TransferTransaction()
+      .addTokenTransfer(tokenId, from, sdk.Long.fromString((-units).toString()))
+      .addTokenTransfer(tokenId, to, sdk.Long.fromString(units.toString()))
+      .setTransactionMemo(memo).setMaxTransactionFee(new sdk.Hbar(2)).execute(client);
+    const rc = await r.getReceipt(client);
+    if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
+    return r.transactionId.toString();
+  } catch (e) { throw tokenWrap(e); } finally { client.close(); }
+}
+function tokenWrap(e: unknown) {
+  const m = (e as Error)?.message ?? "";
+  if (/TOKEN_NOT_ASSOCIATED_TO_ACCOUNT|NO_REMAINING_AUTOMATIC_ASSOCIATIONS/.test(m)) return new Error("Token transfer failed: the recipient hasn't added this token to their account yet");
+  if (/INSUFFICIENT_TOKEN_BALANCE/.test(m)) return new Error("Token transfer failed: not enough of this token");
+  return wrap("Token transfer", e);
+}
