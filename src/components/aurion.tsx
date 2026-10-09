@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
+import { HbarLogo } from "@/components/hbar";
 
 const dock = [
   { to: "/", label: "Home" },
@@ -38,8 +39,8 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
           >
             AURION
           </button>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            Powered by Hedera
+          <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            <HbarLogo size={12} /> Powered by Hedera
           </p>
         </div>
         <span className="text-xs text-muted-foreground">{title}</span>

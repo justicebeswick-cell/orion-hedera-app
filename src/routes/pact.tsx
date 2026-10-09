@@ -5,6 +5,7 @@ import { sha256Hex, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { useAccount } from "@/lib/account";
 import { sendHbar } from "@/lib/signer";
 import { audit, checkSend } from "@/lib/guard";
+import { HbarLogo } from "@/components/hbar";
 
 export const Route = createFileRoute("/pact")({
   head: () => ({
@@ -78,7 +79,7 @@ function Pact() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="mb-1 text-sm">Price</p>
-              <input className="field tnum" inputMode="decimal" placeholder="HBAR ℏ" value={f.amount} onChange={set("amount")} />
+              <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="HBAR ℏ" value={f.amount} onChange={set("amount")} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
             </div>
             <div>
               <p className="mb-1 text-sm">Free rounds of changes</p>
