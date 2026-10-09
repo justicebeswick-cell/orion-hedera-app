@@ -6,7 +6,7 @@ import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurio
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
 import { getAccount, hbar, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
-import { sendHbar } from "@/lib/signer";
+import { sendHbar, sendToken } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
@@ -34,8 +34,9 @@ function Vault() {
 
   return (
     <Shell title="Vault">
-      <Panel>
-        <Label>Balance</Label>
+      <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} />
+      <Panel className="mt-4">
+        <Label>HBAR balance</Label>
         <p className="flex items-center gap-2 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={22} /></p>
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
           Held in your Hedera account. AURION cannot move it unless you sign. Every send is checked against your limits first.
@@ -62,7 +63,7 @@ function Vault() {
         <Label>Send HBAR on mainnet</Label>
         <SendForm id={id} onSent={() => acct.refetch()} />
       </Panel>
-      <Holdings id={id} />
+      <ClprCard />
       <SwapPanel id={id} onSwapped={() => acct.refetch()} />
       <LimitsPanel />
       <AuditPanel />
@@ -87,45 +88,166 @@ async function tokenMeta(tid: string) {
   return m;
 }
 
-function Holdings({ id }: { id: string }) {
+async function hbarUsd(): Promise<number> {
+  const r = await fetch("https://mainnet-public.mirrornode.hedera.com/api/v1/network/exchangerate");
+  if (!r.ok) throw new Error("Mirror node: exchange rate unavailable");
+  const j = await r.json();
+  return j.current_rate.cent_equivalent / j.current_rate.hbar_equivalent / 100;
+}
+
+const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 1 ? 4 : 2 });
+
+function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
+  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsd, refetchInterval: 60_000 });
   const held = useQuery({
     queryKey: ["holdings", id],
     refetchInterval: 15_000,
     queryFn: async () => {
-      const rows = await getHoldings(id);
-      return Promise.all(rows.map(async (h) => ({ ...h, meta: await tokenMeta(h.token_id) })));
+      const rows = (await getHoldings(id)).filter((h) => h.balance > 0);
+      return Promise.all(rows.map(async (h) => {
+        const meta = await tokenMeta(h.token_id);
+        const tok: SwapToken = { id: h.token_id, symbol: meta.symbol, name: meta.name, decimals: meta.decimals };
+        let inHbar: number | null = null;
+        try { inHbar = Number((await quote(tok, HBAR, BigInt(h.balance))).out) / 1e8; } catch { /* no pool */ }
+        return { ...h, meta, inHbar };
+      }));
     },
   });
-  const rows = (held.data ?? []).filter((h) => h.balance > 0);
+  const [sending, setSending] = useState<string | null>(null);
+  const [audits, setAudits] = useState<AuditEntry[]>([]);
+  const [legacy, setLegacy] = useState<{ amount: number; expiry: string; heir: string } | null>(null);
+  useEffect(() => {
+    const load = () => { setAudits(readAudit()); try { setLegacy(JSON.parse(localStorage.getItem("aurion.legacy") ?? "null")); } catch { /* none */ } };
+    load(); const t = setInterval(load, 3000); return () => clearInterval(t);
+  }, []);
+
+  const rows = held.data ?? [];
+  const hb = tinybar != null ? tinybar / 1e8 : null;
+  const tokHbar = rows.reduce((s, r) => s + (r.inHbar ?? 0), 0);
+  const totalHbar = hb != null ? hb + tokHbar : null;
+  const px = rate.data;
+  const swaps = audits.filter((a) => a.action === "swap");
+  const fees = audits.filter((a) => a.action === "swap fee" && a.ok);
+  const feesPaid = fees.reduce((s, a) => s + (parseFloat(a.detail) || 0), 0);
+  const days = legacy ? Math.max(0, Math.ceil((new Date(legacy.expiry).getTime() - Date.now()) / 86_400_000)) : 0;
+
   return (
-    <Panel className="mt-4">
-      <Label>Your tokens</Label>
-      {held.isLoading ? <p className="text-sm text-muted-foreground">Loading…</p>
-        : held.isError ? <p className="text-sm text-destructive">Mirror node: could not load tokens.</p>
-        : rows.length === 0 ? <p className="text-sm text-muted-foreground">No tokens yet. Anything you swap into shows up here.</p>
-        : (
-          <ul className="divide-y divide-border">
-            {rows.map((h) => {
-              const t = list.data?.find((x) => x.id === h.token_id);
-              const tok: SwapToken = t ?? { id: h.token_id, symbol: h.meta.symbol, name: h.meta.name, decimals: h.meta.decimals };
-              return (
-                <li key={h.token_id} className="flex items-center gap-3 py-3">
+    <>
+      <Panel>
+        <Label>Total wallet value</Label>
+        <p className="text-4xl font-semibold tnum">{totalHbar != null && px ? usd(totalHbar * px) : "—"}</p>
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground tnum">≈ {totalHbar != null ? totalHbar.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—"} <HbarLogo size={14} /> · HBAR plus every token you hold</p>
+
+        <ul className="mt-4 divide-y divide-border">
+          <li className="flex items-center gap-3 py-3">
+            <HbarLogo size={28} />
+            <div className="min-w-0 flex-1"><p className="font-semibold">HBAR</p><p className="text-xs text-muted-foreground">Hedera</p></div>
+            <div className="text-right"><p className="font-semibold tnum">{tinybar != null ? hbar(tinybar) : "—"}</p><p className="text-xs text-muted-foreground tnum">{hb != null && px ? usd(hb * px) : ""}</p></div>
+          </li>
+          {rows.map((h) => {
+            const t = list.data?.find((x) => x.id === h.token_id);
+            const tok: SwapToken = t ?? { id: h.token_id, symbol: h.meta.symbol, name: h.meta.name, decimals: h.meta.decimals };
+            const open = sending === h.token_id;
+            return (
+              <li key={h.token_id} className="py-3">
+                <div className="flex items-center gap-3">
                   <TokIcon t={tok} size={28} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{tok.symbol}</p>
                     <a href={`${HASHSCAN}/token/${h.token_id}`} target="_blank" rel="noreferrer" className="font-mono text-xs text-muted-foreground">{h.token_id}</a>
                   </div>
-                  <p className="text-lg font-semibold tnum">{fmtUnits(BigInt(h.balance), h.meta.decimals)}</p>
+                  <div className="text-right">
+                    <p className="font-semibold tnum">{fmtUnits(BigInt(h.balance), h.meta.decimals)}</p>
+                    <p className="text-xs text-muted-foreground tnum">{h.inHbar != null && px ? usd(h.inHbar * px) : "no price"}</p>
+                  </div>
+                  <button className="btn-ghost px-3 py-1.5 text-xs" onClick={() => setSending(open ? null : h.token_id)}>{open ? "Close" : "Send"}</button>
+                </div>
+                {open && <TokenSend id={id} tok={tok} balance={BigInt(h.balance)} onSent={() => held.refetch()} />}
+              </li>
+            );
+          })}
+        </ul>
+        {held.isError && <p className="text-xs text-destructive">Mirror node: could not load tokens.</p>}
+        {!held.isLoading && rows.length === 0 && <p className="text-xs text-muted-foreground">No tokens yet. Anything you swap into shows up here.</p>}
+      </Panel>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <Panel>
+          <Label>Swap history</Label>
+          {swaps.length === 0 ? <p className="text-sm text-muted-foreground">No swaps yet.</p> : (
+            <ul className="divide-y divide-border text-xs">
+              {swaps.slice(0, 8).map((s, i) => (
+                <li key={i} className="py-2">
+                  <p className="flex justify-between gap-2"><span className={s.ok ? "text-success" : "text-destructive"}>{s.ok ? "Swapped" : "Failed"}</span><span className="text-muted-foreground tnum">{new Date(s.at).toLocaleDateString()}</span></p>
+                  <p className="break-all text-muted-foreground">{s.detail}</p>
+                  {s.txId && <a className="text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${s.txId}`}>View on HashScan</a>}
                 </li>
-              );
-            })}
-          </ul>
-        )}
-    </Panel>
+              ))}
+            </ul>
+          )}
+          <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {feesPaid.toFixed(4)} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>
+        </Panel>
+        <Panel>
+          <Label>Upcoming fees</Label>
+          <dl className="space-y-2 text-xs tnum">
+            <Row k="Next swap service fee" v={`${SERVICE_FEE * 100}% of the swap, in ℏ`} />
+            <Row k="Network fee per action" v="≈ 0.001–0.5 ℏ" />
+            <Row k="Token send network fee" v="≈ 0.001 ℏ" />
+            {legacy ? <Row k={`Legacy transfer in ${days} day${days === 1 ? "" : "s"}`} v={`${legacy.amount} ℏ → ${legacy.heir}`} warn={days <= 3} /> : <Row k="Legacy transfer" v="Not set" />}
+          </dl>
+          <p className="mt-3 text-xs text-muted-foreground">Nothing is charged until you sign. The Legacy transfer only happens if you don't check in.</p>
+        </Panel>
+      </div>
+    </>
   );
 }
 
+function TokenSend({ id, tok, balance, onSent }: { id: string; tok: SwapToken; balance: bigint; onSent: () => void }) {
+  const [to, setTo] = useState("");
+  const [amt, setAmt] = useState("");
+  const units = toUnits(amt, tok.decimals);
+  const over = units > balance;
+  const ok = ACCOUNT_RE.test(to.trim()) && to.trim() !== id && units > 0n && !over;
+  return (
+    <div className="mt-3 space-y-3 rounded-xl border border-border bg-secondary/40 p-3">
+      <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
+      <div className="relative">
+        <input className="field tnum pr-20" inputMode="decimal" placeholder={`Amount ${tok.symbol}`} value={amt} onChange={(e) => setAmt(e.target.value.replace(",", "."))} />
+        <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-signal" onClick={() => setAmt(String(Number(balance) / 10 ** tok.decimals))}>Max</button>
+      </div>
+      {over && <p className="text-xs text-destructive">Not enough {tok.symbol}.</p>}
+      <p className="text-xs text-muted-foreground">The other wallet must already hold {tok.symbol} (or allow new tokens), or Hedera returns it.</p>
+      <SignButton accountId={id} disabled={!ok} verb={ok ? `Send ${amt} ${tok.symbol}` : "Send"} run={async (pass) => {
+        const dest = to.trim();
+        const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${dest}?limit=1`);
+        if (!r.ok) throw new Error("Recipient does not exist on mainnet");
+        const detail = `${id} → ${dest} ${amt} ${tok.symbol}`;
+        try {
+          const txId = await sendToken(id, dest, tok.id, units, "", pass);
+          audit({ action: "token send", detail, ok: true, txId });
+          setAmt(""); setTimeout(onSent, 4000);
+          return txId;
+        } catch (e) { audit({ action: "token send", detail: `${detail} · ${(e as Error).message}`, ok: false }); throw e; }
+      }} done={(txId) => (
+        <>
+          <p className="font-semibold text-success">Sent on Hedera</p>
+          <a className="mt-1 block break-all text-xs text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${txId}`}>{txId}</a>
+        </>
+      )} />
+    </div>
+  );
+}
+
+function ClprCard() {
+  return (
+    <Panel className="mt-4">
+      <div className="flex items-center justify-between"><Label>Cross-chain sends · CLPR</Label><span className="rounded-full border border-primary/40 px-2 py-0.5 text-[10px] uppercase tracking-widest text-signal">Coming soon</span></div>
+      <p className="text-sm leading-relaxed">Send to other blockchains straight from your Vault. No bridges, no middlemen.</p>
+      <p className="mt-2 text-xs text-muted-foreground">Powered by CLPR, Hedera's cross-ledger protocol. We'll switch this on as soon as it reaches mainnet.</p>
+    </Panel>
+  );
+}
 
 function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const [to, setTo] = useState("");
