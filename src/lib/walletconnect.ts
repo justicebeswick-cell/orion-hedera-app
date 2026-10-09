@@ -1,7 +1,7 @@
 // Browser-only. HashPack and Blade via WalletConnect on Hedera mainnet.
 import type { DAppConnector, DAppSigner } from "@hashgraph/hedera-wallet-connect";
 
-export const WC_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
+export const WC_PROJECT_ID = import.meta.env['VITE_WALLETCONNECT_PROJECT_ID'] as string | undefined;
 const WC_KEY = "aurion.wc";
 
 let connector: DAppConnector | null = null;
@@ -45,7 +45,7 @@ export async function walletOptions(): Promise<WalletOption[]> {
 export async function connectWallet(opt: WalletOption): Promise<string> {
   const c = await getConnector();
   const session = opt.installed ? await c.connectExtension(opt.id) : await c.openModal();
-  const acct = session.namespaces.hedera?.accounts?.[0]; // "hedera:mainnet:0.0.x"
+  const acct = session.namespaces['hedera']?.accounts?.[0]; // "hedera:mainnet:0.0.x"
   if (!acct || !acct.startsWith("hedera:mainnet:")) throw new Error("Wallet is not on Hedera mainnet");
   const id = acct.split(":")[2]!;
   localStorage.setItem(WC_KEY, JSON.stringify({ id, wallet: opt.name }));
