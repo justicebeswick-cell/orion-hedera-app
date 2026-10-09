@@ -9,6 +9,7 @@ import { getAccount, hbar, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { sendHbar } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
+import { TOKENS, SLIPPAGE, quote, tokenBalance, swapHbar, fmtUnits, type SwapToken } from "@/lib/swap";
 
 export const Route = createFileRoute("/vault")({
   head: () => ({
@@ -61,6 +62,7 @@ function Vault() {
         <Label>Send HBAR on mainnet</Label>
         <SendForm id={id} onSent={() => acct.refetch()} />
       </Panel>
+      <SwapPanel id={id} onSwapped={() => acct.refetch()} />
       <LimitsPanel />
       <AuditPanel />
     </Shell>
@@ -95,6 +97,59 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
         </>
       )} />
     </div>
+  );
+}
+
+function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
+  const [tok, setTok] = useState<SwapToken>(TOKENS[0]!);
+  const [amt, setAmt] = useState("");
+  const [debounced, setDebounced] = useState(0);
+  const n = Number(amt);
+  useEffect(() => { const t = setTimeout(() => setDebounced(n > 0 ? n : 0), 350); return () => clearTimeout(t); }, [n]);
+  const q = useQuery({ queryKey: ["quote", tok.id, debounced], queryFn: () => quote(tok, debounced), enabled: debounced > 0, refetchInterval: 15_000, retry: false });
+  const rate = useQuery({ queryKey: ["quote", tok.id, 1], queryFn: () => quote(tok, 1), refetchInterval: 30_000, retry: false });
+  const bal = useQuery({ queryKey: ["tokbal", id, tok.id], queryFn: () => tokenBalance(id, tok.id), refetchInterval: 15_000 });
+  const out = debounced === n && q.data ? q.data : null;
+  const minOut = out ? (out * BigInt(Math.round((1 - SLIPPAGE) * 10000))) / 10000n : 0n;
+  const ok = n > 0 && !!out;
+  return (
+    <Panel className="mt-4">
+      <Label>Swap HBAR for tokens</Label>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {TOKENS.map((t) => (
+          <button key={t.id} onClick={() => setTok(t)}
+            className={`rounded-full border px-4 py-1.5 text-xs transition-colors ${t.id === tok.id ? "border-primary bg-primary/15 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}>
+            {t.symbol}
+          </button>
+        ))}
+      </div>
+      <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="You pay (HBAR)" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
+      <div className="my-2 text-center text-muted-foreground">↓</div>
+      <div className="field flex items-center justify-between tnum">
+        <span className={out ? "" : "text-muted-foreground"}>{n > 0 ? (out ? fmtUnits(out, tok.decimals) : q.isError ? "No price" : "…") : "You get"}</span>
+        <span className="text-xs font-semibold">{tok.symbol}</span>
+      </div>
+      <div className="mt-2 space-y-0.5 text-xs text-muted-foreground tnum">
+        {rate.data && <p>1 ℏ ≈ {fmtUnits(rate.data, tok.decimals)} {tok.symbol} · live from SaucerSwap</p>}
+        {out && <p>At least {fmtUnits(minOut, tok.decimals)} {tok.symbol} or it cancels (1% price protection)</p>}
+        <p>You hold {bal.data == null ? `0 ${tok.symbol}${bal.data === null ? " — first swap adds it to your account (small fee)" : ""}` : `${fmtUnits(bal.data, tok.decimals)} ${tok.symbol}`}</p>
+      </div>
+      <div className="mt-3">
+        <SignButton accountId={id} disabled={!ok} verb={ok ? `Swap ${n} ℏ for ${tok.symbol}` : "Swap"} run={async (pass) => {
+          try {
+            const txId = await swapHbar(id, tok, n, minOut, pass);
+            audit({ action: "swap", detail: `${n} ℏ → ${tok.symbol}`, ok: true, txId });
+            setTimeout(() => { onSwapped(); bal.refetch(); }, 4000);
+            return txId;
+          } catch (e) { audit({ action: "swap", detail: `${n} ℏ → ${tok.symbol} · ${(e as Error).message}`, ok: false }); throw e; }
+        }} done={(txId) => (
+          <>
+            <p className="font-semibold text-success">Swapped on Hedera</p>
+            <a className="mt-1 block break-all text-xs text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${txId}`}>{txId}</a>
+          </>
+        )} />
+      </div>
+    </Panel>
   );
 }
 
