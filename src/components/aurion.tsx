@@ -3,6 +3,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HbarLogo } from "@/components/hbar";
+import aurionLogo from "@/assets/aurion-logo.png.asset.json";
+import { Button } from "@/components/ui/button";
+
+export function AurionLogo({ className = "" }: { className?: string }) {
+  return <img src={aurionLogo.url} alt="AURION logo" width={960} height={960} className={`shrink-0 object-contain ${className}`} />;
+}
 
 const dock = [
   { to: "/", label: "Home" },
@@ -28,20 +34,23 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
   return (
     <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
       <header className="mb-8 flex items-start justify-between">
-        <div>
-          <button
+        <div className="flex items-center gap-3">
+          <AurionLogo className="h-12 w-12" />
+          <div>
+          <Button variant="ghost"
             onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}
             onPointerUp={() => clearTimeout(timer.current)}
             onPointerLeave={() => clearTimeout(timer.current)}
             onContextMenu={(e) => e.preventDefault()}
-            className="select-none text-sm font-semibold tracking-[0.4em] text-signal"
+            className="h-auto select-none p-0 text-sm font-semibold tracking-[0.4em] text-signal hover:bg-transparent"
             aria-label="AURION — hold for commands"
           >
             AURION
-          </button>
+          </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             <HbarLogo size={12} /> Powered by Hedera
           </p>
+          </div>
         </div>
         <span className="text-xs text-muted-foreground">{title}</span>
       </header>

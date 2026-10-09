@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Shell, Panel, Label } from "@/components/aurion";
+import { Shell, Panel, Label, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
@@ -32,8 +32,8 @@ function Home() {
     return (
       <Shell title="Home">
         <div className="relative mb-10 flex h-56 items-center justify-center">
-          <div className="bloom absolute inset-0" />
           <div className="relative text-center">
+            <AurionLogo className="mx-auto mb-4 h-28 w-28" />
             <h1 className="text-4xl font-semibold tracking-[0.3em]">AURION</h1>
             <p className="mt-4 text-sm text-muted-foreground">Prove it. Agree it. Hold it. On Hedera.</p>
           </div>
