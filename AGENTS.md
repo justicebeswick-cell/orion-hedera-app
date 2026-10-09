@@ -14,3 +14,4 @@
 - Device keys live only in localStorage, AES-GCM encrypted with an Argon2id-derived key; never sent to the server.
 - WalletConnect signing uses @hiero-ledger/sdk classes (the version hedera-wallet-connect depends on); local-key signing uses @hashgraph/sdk. Mixing them fails type checks.
 - AI activity answers: server route /api/ask fetches mirror-node data itself (never trusts client-supplied history) and streams via the Responses API.
+- Biometric unlock uses WebAuthn PRF to encrypt the device passphrase locally (aurion.bio); the private key is still only decrypted by the passphrase, so biometrics never weaken the keystore.

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { NodeLogo } from "@/components/node-logo";
 import { Shell, Panel, Label, BindAccount, SealRing } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
 import { readKeystoreMeta } from "@/lib/keystore";
@@ -70,7 +71,7 @@ function Stake() {
           <p className="text-sm text-destructive">{(info.error as Error).message}</p>
         ) : info.data?.stakedNodeId != null ? (
           <>
-            <p className="text-2xl font-semibold">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
+            <p className="flex items-center gap-3 text-2xl font-semibold"><NodeLogo description={current?.description} size={36} />{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
             <p className="text-xs text-muted-foreground tnum">
               Node {info.data.stakedNodeId}{current && ` · ~${apr(current)} yearly`}
             </p>
@@ -113,6 +114,7 @@ function Stake() {
               return (
                 <button key={n.node_id} disabled={mine} onClick={() => setPick(n)}
                   className="flex w-full items-center justify-between px-4 py-3 text-left text-sm disabled:opacity-100">
+                  <span className="mr-3 self-start"><NodeLogo description={n.description} /></span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{nodeName(n)}</p>
                     <p className="text-xs text-muted-foreground tnum">Node {n.node_id}</p>
@@ -150,10 +152,13 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
   const [err, setErr] = useState("");
   const [result, setResult] = useState<{ txId: string; ts: string | null } | null>(null);
 
-  const go = async () => {
+  const [bio, setBio] = useState(false);
+  useEffect(() => { import("@/lib/biometric").then((b) => setBio(b.bioEnrolled())); }, []);
+  const go = async (useBio = false) => {
     setState("busy"); setErr("");
     try {
-      const txId = await redelegate(accountId, node.node_id, pass);
+      const p = useBio ? await (await import("@/lib/biometric")).bioPassphrase() : pass;
+      const txId = await redelegate(accountId, node.node_id, p);
       const c = await waitForConsensus(txId);
       setResult({ txId, ts: c?.consensus_timestamp ?? null });
       setState("done");
@@ -182,7 +187,7 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
   return (
     <Panel className="mt-6">
       <Label>Redelegate</Label>
-      <p className="text-lg font-semibold">{nodeName(node)}</p>
+      <p className="flex items-center gap-3 text-lg font-semibold"><NodeLogo description={node.description} size={32} />{nodeName(node)}</p>
       <p className="text-xs text-muted-foreground tnum">Node {node.node_id} · ~{apr(node)} yearly</p>
       <StakeFill n={node} />
       {fill(node) >= 99.5 && <p className="mt-2 text-xs text-destructive">This node is at its max stake. Stake above the max earns no extra rewards.</p>}
@@ -192,13 +197,14 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
         <p>Your HBAR does not move. Pending rewards are paid out with this change.</p>
       </div>
       {wallet ? (
-        <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={go}>
+        <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={() => go(false)}>
           {state === "busy" ? `Approve in ${wallet}…` : `Update stake on mainnet with ${wallet}`}
         </button>
       ) : hasKey ? (
         <>
+          {bio && <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={() => go(true)}>Update stake with Face ID / fingerprint</button>}
           <input type="password" className="field mt-4" placeholder="Device passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
-          <button className="btn mt-3 w-full" disabled={!pass || state === "busy"} onClick={go}>
+          <button className="btn mt-3 w-full" disabled={!pass || state === "busy"} onClick={() => go(false)}>
             {state === "busy" ? "Waiting for consensus…" : "Update stake on mainnet"}
           </button>
         </>
