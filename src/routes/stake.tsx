@@ -22,6 +22,24 @@ export const Route = createFileRoute("/stake")({
   component: Stake,
 });
 
+const fill = (n: Node) => (n.max_stake > 0 ? Math.min(100, (n.stake / n.max_stake) * 100) : 0);
+const M = (t: number) => (t / 1e8 / 1e6).toFixed(0) + "M";
+
+function StakeFill({ n }: { n: Node }) {
+  const pct = fill(n);
+  const full = pct >= 99.5;
+  return (
+    <div className="mt-1.5">
+      <div className="h-1 w-full overflow-hidden rounded-full bg-graphite">
+        <div className={`h-full rounded-full ${full ? "bg-destructive" : "bg-primary"}`} style={{ width: `${pct}%` }} />
+      </div>
+      <p className={`mt-1 text-[11px] tnum ${full ? "text-destructive" : "text-muted-foreground"}`}>
+        {full ? "At max stake" : `${pct.toFixed(0)}% of max`} · {M(n.stake)} / {M(n.max_stake)} ℏ
+      </p>
+    </div>
+  );
+}
+
 const nodeName = (n?: Node) => n?.description?.trim() || (n ? `Node ${n.node_id}` : "");
 
 function Stake() {
@@ -95,9 +113,10 @@ function Stake() {
               return (
                 <button key={n.node_id} disabled={mine} onClick={() => setPick(n)}
                   className="flex w-full items-center justify-between px-4 py-3 text-left text-sm disabled:opacity-100">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate">{nodeName(n)}</p>
-                    <p className="text-xs text-muted-foreground tnum">Node {n.node_id} · {(n.stake / 1e8 / 1e6).toFixed(0)}M ℏ staked</p>
+                    <p className="text-xs text-muted-foreground tnum">Node {n.node_id}</p>
+                    <StakeFill n={n} />
                   </div>
                   <span className={`ml-3 shrink-0 text-xs tnum ${mine ? "text-primary" : "text-muted-foreground"}`}>
                     {mine ? "Current" : `~${apr(n)}`}
@@ -163,6 +182,8 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
       <Label>Redelegate</Label>
       <p className="text-lg font-semibold">{nodeName(node)}</p>
       <p className="text-xs text-muted-foreground tnum">Node {node.node_id} · ~{apr(node)} yearly</p>
+      <StakeFill n={node} />
+      {fill(node) >= 99.5 && <p className="mt-2 text-xs text-destructive">This node is at its max stake. Stake above the max earns no extra rewards.</p>}
       <div className="mt-4 space-y-1 rounded-md bg-graphite p-3 text-xs text-muted-foreground">
         <p>Max fee: {MAX_FEE_HBAR} ℏ (typical cost is under 0.001 ℏ)</p>
         <p>Public: your account id and the node you stake to.</p>
