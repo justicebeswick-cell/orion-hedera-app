@@ -11,3 +11,4 @@
 - [ ] Real mainnet test of staking move — needs a funded account key from the user
 - [x] Biometric unlock for signing and sign-in; never auto sign out
 - [x] Company logos next to staking node names
+- [ ] App icon/logo — new round including the Hedera mark; user picks a direction, then wire it as favicon + header mark
