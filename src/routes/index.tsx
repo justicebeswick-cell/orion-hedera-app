@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Shell, Panel, Label } from "@/components/aurion";
 import { AskActivity } from "@/components/ask";
+import { SignBackIn } from "@/components/signin";
 import { useAccount } from "@/lib/account";
 import { getAccount, getTransactions, getLag, hbar, fmtTs, netAmount, HASHSCAN } from "@/lib/hedera";
 
@@ -37,7 +38,8 @@ function Home() {
           </div>
         </div>
         <div className="space-y-3">
-          <Link to="/wallet" className="btn w-full">Create or connect a wallet</Link>
+          <SignBackIn onIn={bind} />
+          <Link to="/wallet" className="btn-ghost w-full">Create or connect a wallet</Link>
         </div>
       </Shell>
     );
@@ -87,7 +89,7 @@ function Home() {
           );
         })}
       </div>
-      <button onClick={() => bind(null)} className="mt-6 text-xs text-muted-foreground">Unbind account</button>
+      <button onClick={() => { if (confirm("Sign out of this account on this device? Your saved key stays, so you can sign back in.")) bind(null); }} className="mt-6 text-xs text-muted-foreground">Sign out</button>
     </Shell>
   );
 }

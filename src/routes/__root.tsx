@@ -112,6 +112,8 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
+  // Ask the browser never to clear this device's saved account and key on its own.
+  useEffect(() => { navigator.storage?.persist?.().catch(() => {}); }, []);
   const { queryClient } = Route.useRouteContext();
 
   return (

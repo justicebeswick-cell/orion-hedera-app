@@ -150,10 +150,13 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
   const [err, setErr] = useState("");
   const [result, setResult] = useState<{ txId: string; ts: string | null } | null>(null);
 
-  const go = async () => {
+  const [bio, setBio] = useState(false);
+  useEffect(() => { import("@/lib/biometric").then((b) => setBio(b.bioEnrolled())); }, []);
+  const go = async (useBio = false) => {
     setState("busy"); setErr("");
     try {
-      const txId = await redelegate(accountId, node.node_id, pass);
+      const p = useBio ? await (await import("@/lib/biometric")).bioPassphrase() : pass;
+      const txId = await redelegate(accountId, node.node_id, p);
       const c = await waitForConsensus(txId);
       setResult({ txId, ts: c?.consensus_timestamp ?? null });
       setState("done");
@@ -192,13 +195,14 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
         <p>Your HBAR does not move. Pending rewards are paid out with this change.</p>
       </div>
       {wallet ? (
-        <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={go}>
+        <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={() => go(false)}>
           {state === "busy" ? `Approve in ${wallet}…` : `Update stake on mainnet with ${wallet}`}
         </button>
       ) : hasKey ? (
         <>
+          {bio && <button className="btn mt-4 w-full" disabled={state === "busy"} onClick={() => go(true)}>Update stake with Face ID / fingerprint</button>}
           <input type="password" className="field mt-4" placeholder="Device passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
-          <button className="btn mt-3 w-full" disabled={!pass || state === "busy"} onClick={go}>
+          <button className="btn mt-3 w-full" disabled={!pass || state === "busy"} onClick={() => go(false)}>
             {state === "busy" ? "Waiting for consensus…" : "Update stake on mainnet"}
           </button>
         </>
