@@ -16,6 +16,7 @@ import { Route as PactRouteImport } from './routes/pact'
 import { Route as SealRouteImport } from './routes/seal'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as WalletRouteImport } from './routes/wallet'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const VerifyRoute = VerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/seal': typeof SealRoute
   '/vault': typeof VaultRoute
   '/verify': typeof VerifyRoute
+  '/wallet': typeof WalletRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/seal': typeof SealRoute
   '/vault': typeof VaultRoute
   '/verify': typeof VerifyRoute
+  '/wallet': typeof WalletRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,13 +88,29 @@ export interface FileRoutesById {
   '/seal': typeof SealRoute
   '/vault': typeof VaultRoute
   '/verify': typeof VerifyRoute
+  '/wallet': typeof WalletRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/about' | '/legacy' | '/pact' | '/seal' | '/vault' | '/verify'
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/pact'
+    | '/seal'
+    | '/vault'
+    | '/verify'
+    | '/wallet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/legacy' | '/pact' | '/seal' | '/vault' | '/verify'
+  to:
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/pact'
+    | '/seal'
+    | '/vault'
+    | '/verify'
+    | '/wallet'
   id:
     | '__root__'
     | '/'
@@ -96,6 +120,7 @@ export interface FileRouteTypes {
     | '/seal'
     | '/vault'
     | '/verify'
+    | '/wallet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +131,7 @@ export interface RootRouteChildren {
   SealRoute: typeof SealRoute
   VaultRoute: typeof VaultRoute
   VerifyRoute: typeof VerifyRoute
+  WalletRoute: typeof WalletRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -159,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -170,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   SealRoute: SealRoute,
   VaultRoute: VaultRoute,
   VerifyRoute: VerifyRoute,
+  WalletRoute: WalletRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

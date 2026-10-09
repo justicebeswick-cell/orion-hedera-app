@@ -1,16 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Shell, Panel, Label, BindAccount } from "@/components/aurion";
+import { Shell, Panel, Label } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
 import { getAccount, getTransactions, getLag, hbar, fmtTs, netAmount, HASHSCAN } from "@/lib/hedera";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AURION — Prove it. Agree it. Leave it. Hold it." },
+      { title: "AURION — Prove it. Agree it. Hold it." },
       { name: "description", content: "A mainnet HBAR vault with seals, pacts and one heir transfer. On Hedera." },
       { property: "og:title", content: "AURION — On Hedera" },
-      { property: "og:description", content: "Prove it. Agree it. Leave it. Hold it. On Hedera." },
+      { property: "og:description", content: "Prove it. Agree it. Hold it. On Hedera." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -32,10 +32,12 @@ function Home() {
           <div className="bloom absolute inset-0" />
           <div className="relative text-center">
             <h1 className="text-4xl font-semibold tracking-[0.3em]">AURION</h1>
-            <p className="mt-4 text-sm text-muted-foreground">Prove it. Agree it. Leave it. Hold it. On Hedera.</p>
+            <p className="mt-4 text-sm text-muted-foreground">Prove it. Agree it. Hold it. On Hedera.</p>
           </div>
         </div>
-        <BindAccount onBind={bind} />
+        <div className="space-y-3">
+          <Link to="/wallet" className="btn w-full">Create or connect a wallet</Link>
+        </div>
       </Shell>
     );
 
