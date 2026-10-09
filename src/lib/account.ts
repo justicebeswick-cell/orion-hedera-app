@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export type KycStatus = "none" | "pending" | "approved" | "rejected" | "retry";
 const KEY = "aurion.account";
 
-/** Read-only watch binding. Writes stay locked until the identity vendor returns `approved`. */
+/** Account binding for this device. */
 export function useAccount() {
   const [id, setId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
