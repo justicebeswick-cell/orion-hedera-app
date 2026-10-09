@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
+import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
 import { getAccount, hbar, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { sendHbar } from "@/lib/signer";
@@ -28,13 +29,13 @@ function Vault() {
   const [copied, setCopied] = useState(false);
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => getAccount(id!), enabled: !!id, retry: false });
   if (!ready) return <Shell title="Vault"><div /></Shell>;
-  if (!id) return <Shell title="Vault"><BindAccount onBind={bind} /><Link to="/wallet" className="btn-ghost mt-3 w-full">Create or connect a wallet</Link></Shell>;
+  if (!id) return <Shell title="Vault"><BindAccount onBind={bind} /><Link to="/wallet" className="btn mt-3 w-full">Create or connect a wallet</Link></Shell>;
 
   return (
     <Shell title="Vault">
       <Panel>
         <Label>Balance</Label>
-        <p className="text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"} <span className="text-base text-muted-foreground">ℏ</span></p>
+        <p className="flex items-center gap-2 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={22} /></p>
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
           Held in your Hedera account. AURION cannot move it unless you sign. Every send is checked against your limits first.
         </p>
