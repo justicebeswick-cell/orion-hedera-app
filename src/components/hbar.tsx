@@ -3,29 +3,17 @@ export function HbarLogo({ size = 20, className = "" }: { size?: number; classNa
     <svg
       width={size}
       height={size}
-      viewBox="0 0 32 32"
+      viewBox="0 0 1280 1280"
       className={`inline-block shrink-0 ${className}`}
       aria-label="HBAR"
       role="img"
     >
-      <defs>
-        <linearGradient id="hbar-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#A855F7" />
-          <stop offset="100%" stopColor="#E879F9" />
-        </linearGradient>
-      </defs>
-      <circle cx="16" cy="16" r="15" fill="url(#hbar-grad)" />
-      <text
-        x="16"
-        y="22"
-        textAnchor="middle"
-        fontSize="17"
-        fontWeight="700"
-        fill="#0C0A12"
-        fontFamily="JetBrains Mono, monospace"
-      >
-        ℏ
-      </text>
+      <circle cx="640" cy="640" r="640" fill="#000000" />
+      <path
+        fill="#FFFFFF"
+        d="M380 356h81v168h358V356h81v560h-81V744H461v172h-81z M465 590v89h357v-89z"
+        fillRule="evenodd"
+      />
     </svg>
   );
 }
