@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Shell, Panel, Label } from "@/components/aurion";
+import { AskActivity } from "@/components/ask";
 import { useAccount } from "@/lib/account";
 import { getAccount, getTransactions, getLag, hbar, fmtTs, netAmount, HASHSCAN } from "@/lib/hedera";
 
@@ -64,6 +65,8 @@ function Home() {
           <Link to="/pact" className="block">No pact waiting on you.</Link>
         </div>
       </Panel>
+
+      <AskActivity accountId={id} />
 
       <Label><span className="mt-8 block">Receipts</span></Label>
       <div className="panel divide-y">

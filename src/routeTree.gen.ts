@@ -16,6 +16,7 @@ import { Route as PactRouteImport } from './routes/pact'
 import { Route as StakeRouteImport } from './routes/stake'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as ApiAskRouteImport } from './routes/api/ask'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const WalletRoute = WalletRouteImport.update({
   path: '/wallet',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAskRoute = ApiAskRouteImport.update({
+  id: '/api/ask',
+  path: '/api/ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/stake': typeof StakeRoute
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
+  '/api/ask': typeof ApiAskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/stake': typeof StakeRoute
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
+  '/api/ask': typeof ApiAskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,13 +88,29 @@ export interface FileRoutesById {
   '/stake': typeof StakeRoute
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
+  '/api/ask': typeof ApiAskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/about' | '/legacy' | '/pact' | '/stake' | '/vault' | '/wallet'
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/pact'
+    | '/stake'
+    | '/vault'
+    | '/wallet'
+    | '/api/ask'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/legacy' | '/pact' | '/stake' | '/vault' | '/wallet'
+  to:
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/pact'
+    | '/stake'
+    | '/vault'
+    | '/wallet'
+    | '/api/ask'
   id:
     | '__root__'
     | '/'
@@ -96,6 +120,7 @@ export interface FileRouteTypes {
     | '/stake'
     | '/vault'
     | '/wallet'
+    | '/api/ask'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +131,7 @@ export interface RootRouteChildren {
   StakeRoute: typeof StakeRoute
   VaultRoute: typeof VaultRoute
   WalletRoute: typeof WalletRoute
+  ApiAskRoute: typeof ApiAskRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -159,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WalletRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ask': {
+      id: '/api/ask'
+      path: '/api/ask'
+      fullPath: '/api/ask'
+      preLoaderRoute: typeof ApiAskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -170,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   StakeRoute: StakeRoute,
   VaultRoute: VaultRoute,
   WalletRoute: WalletRoute,
+  ApiAskRoute: ApiAskRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
