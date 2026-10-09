@@ -76,7 +76,7 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   return (
     <div className="space-y-3">
       <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
-      <input className="field tnum" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} />
+      <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
       <input className="field" maxLength={100} placeholder="Note (public, optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
       <SignButton accountId={id} disabled={!ok} verb={ok ? `Send ${n} ℏ` : "Send"} run={async (pass) => {
         const dest = to.trim();
