@@ -12,3 +12,5 @@
 - [x] Biometric unlock for signing and sign-in; never auto sign out
 - [x] Company logos next to staking node names
 - [x] App icon/logo — use the approved uploaded purple A as the header, home logo, browser favicon, and home-screen (PWA) app icon
+- [x] Swaps on SaucerSwap (all HBAR-paired HTS tokens, all directions) with slippage, fee display and HBAR service fee to treasury
+- [ ] Real mainnet test of a swap — needs the user to sign one
