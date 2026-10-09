@@ -9,7 +9,7 @@ export const TREASURY = "0.0.10898196";
 export const SERVICE_FEE = 0.005; // 0.5%, paid in HBAR
 export const LP_FEE = 0.003; // per pool hop
 
-export type SwapToken = { id: string; symbol: string; name: string; decimals: number; icon?: string; verified?: boolean; liquidity?: number };
+export type SwapToken = { id: string; symbol: string; name: string; decimals: number; icon?: string | undefined; verified?: boolean; liquidity?: number };
 export const HBAR: SwapToken = { id: "HBAR", symbol: "HBAR", name: "Hedera", decimals: 8, verified: true };
 const isH = (t: SwapToken) => t.id === "HBAR";
 
