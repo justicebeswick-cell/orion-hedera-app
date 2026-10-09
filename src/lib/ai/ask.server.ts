@@ -50,7 +50,7 @@ Answer in short, plain sentences. Cite dates (UTC) and amounts. If the data does
 Do not give financial or legal advice. Keep answers under 180 words.`;
 
 export async function handleAsk(request: Request) {
-  const apiKey = process.env.LOVABLE_API_KEY;
+  const apiKey = process.env['LOVABLE_API_KEY'];
   if (!apiKey) return Response.json({ error: "AI is not configured" }, { status: 500 });
 
   let body: { accountId?: unknown; question?: unknown };
