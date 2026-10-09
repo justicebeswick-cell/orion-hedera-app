@@ -3,14 +3,14 @@ import { MIRROR } from "./hedera";
 
 const KS = "aurion.keystore";
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
-const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)) as Uint8Array<ArrayBuffer>;
 
 async function deriveKey(pass: string, salt: Uint8Array) {
   const { argon2id } = await import("hash-wasm");
   const raw = await argon2id({
     password: pass, salt, parallelism: 1, iterations: 3, memorySize: 65536, hashLength: 32, outputType: "binary",
   });
-  return crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
+  return crypto.subtle.importKey("raw", raw as Uint8Array<ArrayBuffer>, "AES-GCM", false, ["encrypt", "decrypt"]);
 }
 
 export type StoredKey = { publicKey: string; evm: string; accountId: string | null };
