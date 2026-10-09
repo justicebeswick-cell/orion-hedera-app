@@ -5,6 +5,7 @@ import { sha256Hex, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { useAccount } from "@/lib/account";
 import { sendHbar } from "@/lib/signer";
 import { audit, checkSend } from "@/lib/guard";
+import { HbarLogo } from "@/components/hbar";
 
 export const Route = createFileRoute("/pact")({
   head: () => ({
