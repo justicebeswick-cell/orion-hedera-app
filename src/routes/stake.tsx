@@ -51,8 +51,8 @@ function Stake() {
     const w = connectedWallet();
     setWallet(w && w.id === id ? w.wallet : null);
   }, [id]);
-  const info = useQuery({ queryKey: ["stake", id], queryFn: () => getStakeInfo(id!), enabled: !!id });
-  const rewards = useQuery({ queryKey: ["rewards", id], queryFn: () => getRewards(id!), enabled: !!id });
+  const info = useQuery({ queryKey: ["stake", id], queryFn: () => getStakeInfo(id!), enabled: !!id, refetchInterval: 15_000 });
+  const rewards = useQuery({ queryKey: ["rewards", id], queryFn: () => getRewards(id!), enabled: !!id, refetchInterval: 30_000 });
   const nodes = useQuery({ queryKey: ["nodes"], queryFn: getNodes, staleTime: 600_000 });
   const [pick, setPick] = useState<Node | null>(null);
 
@@ -158,6 +158,8 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
       setResult({ txId, ts: c?.consensus_timestamp ?? null });
       setState("done");
       qc.invalidateQueries({ queryKey: ["stake", accountId] });
+      qc.invalidateQueries({ queryKey: ["rewards", accountId] });
+      import("@/lib/guard").then((g) => g.audit({ action: "stake", detail: `Moved stake to node ${node.node_id}`, ok: true, txId }));
     } catch (e) {
       setErr((e as Error).message); setState("err");
     }

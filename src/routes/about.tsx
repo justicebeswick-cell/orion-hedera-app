@@ -7,7 +7,7 @@ export const Route = createFileRoute("/about")({
       { title: "About — AURION" },
       { name: "description", content: "AURION is a mainnet HBAR vault. The network is the notary. You hold the keys." },
       { property: "og:title", content: "About — AURION" },
-      { property: "og:description", content: "A mainnet HBAR vault. Identity is checked before value moves." },
+      { property: "og:description", content: "A mainnet HBAR vault. Limits and screening run before value moves." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -20,7 +20,7 @@ function About() {
     <Shell title="About">
       <Panel>
         <p className="text-lg leading-relaxed">
-          AURION is a mainnet HBAR vault. Identity is checked before value moves. Staking, pacts, and one heir transfer
+          AURION is a mainnet HBAR vault. Limits and screening run before value moves. Staking, pacts, and one heir transfer
           sit on the same account. The network is the notary. You hold the keys.
         </p>
       </Panel>
