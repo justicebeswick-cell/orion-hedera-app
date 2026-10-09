@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
@@ -25,7 +25,7 @@ function Vault() {
   const [copied, setCopied] = useState(false);
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => getAccount(id!), enabled: !!id, retry: false });
   if (!ready) return <Shell title="Vault"><div /></Shell>;
-  if (!id) return <Shell title="Vault"><BindAccount onBind={bind} /></Shell>;
+  if (!id) return <Shell title="Vault"><BindAccount onBind={bind} /><Link to="/wallet" className="btn-ghost mt-3 w-full">Create or connect a wallet</Link></Shell>;
 
   return (
     <Shell title="Vault">

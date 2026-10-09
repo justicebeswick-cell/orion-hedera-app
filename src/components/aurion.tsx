@@ -16,6 +16,7 @@ const palette = [
   { to: "/seal", label: "Seal" },
   { to: "/pact", label: "Pact" },
   { to: "/legacy", label: "Legacy" },
+  { to: "/wallet", label: "Wallet" },
   { to: "/verify", label: "Verify a seal" },
   { to: "/about", label: "About" },
 ] as const;
