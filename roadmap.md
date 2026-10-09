@@ -9,3 +9,5 @@
 - [x] Signing for sends, pact pays, 30-day switch (device key or wallet)
 - [ ] Real sanctions data source — screening list is empty until a provider is chosen
 - [ ] Real mainnet test of staking move — needs a funded account key from the user
+- [ ] Biometric unlock for signing and sign-in; never auto sign out
+- [ ] Company logos next to staking node names
