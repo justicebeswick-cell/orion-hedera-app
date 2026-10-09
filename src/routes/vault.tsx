@@ -126,15 +126,6 @@ function Holdings({ id }: { id: string }) {
   );
 }
 
-function _unused() {
-  return (
-    <Shell title="">
-
-      <LimitsPanel />
-      <AuditPanel />
-    </Shell>
-  );
-}
 
 function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const [to, setTo] = useState("");
