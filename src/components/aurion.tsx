@@ -87,17 +87,40 @@ export function Label({ children }: { children: ReactNode }) {
   return <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">{children}</p>;
 }
 
-export function IdentityGate({ action }: { action: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-graphite p-4 text-sm">
-      <p className="font-medium">{action} is off.</p>
-      <p className="mt-1 text-muted-foreground">
-        Identity is not approved. Sends, pacts and the switch stay locked until review passes.
+/**
+ * Signs with the connected wallet or the device key. `run` receives the passphrase
+ * (empty for wallets) and returns a transaction id.
+ */
+export function SignButton({ accountId, verb, disabled, run, done }: {
+  accountId: string | null; verb: string; disabled?: boolean;
+  run: (pass: string) => Promise<string>; done: (txId: string) => ReactNode;
+}) {
+  const [mode, setMode] = useState<import("@/lib/signer").SignMode>({ kind: "none" });
+  const [pass, setPass] = useState("");
+  const [state, setState] = useState<"idle" | "busy" | "done" | "err">("idle");
+  const [msg, setMsg] = useState("");
+  useEffect(() => { import("@/lib/signer").then((m) => setMode(m.signMode(accountId))); }, [accountId]);
+  if (state === "done") return <SealRing>{done(msg)}<button className="btn-ghost mt-4" onClick={() => setState("idle")}>Done</button></SealRing>;
+  if (mode.kind === "none")
+    return (
+      <p className="text-sm text-muted-foreground">
+        This account is watch-only on this device. <Link to="/wallet" className="text-signal">Create or connect a wallet</Link> to sign.
       </p>
-      <button className="btn mt-4 w-full" disabled>
-        Start identity review
+    );
+  const go = async () => {
+    setState("busy"); setMsg("");
+    try { const id = await run(pass); setMsg(id); setState("done"); setPass(""); }
+    catch (e) { setMsg((e as Error).message); setState("err"); }
+  };
+  return (
+    <div>
+      {mode.kind === "device" && (
+        <input type="password" className="field mb-3" placeholder="Device passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
+      )}
+      <button className="btn w-full" disabled={disabled || state === "busy" || (mode.kind === "device" && !pass)} onClick={go}>
+        {state === "busy" ? (mode.kind === "wallet" ? `Approve in ${mode.name}…` : "Waiting for Hedera…") : verb}
       </button>
-      <p className="mt-2 text-xs text-muted-foreground">Identity vendor not connected yet.</p>
+      {state === "err" && <p className="mt-3 text-sm text-destructive">{msg}</p>}
     </div>
   );
 }
