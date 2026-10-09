@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { NodeLogo } from "@/components/node-logo";
+import { HbarLogo } from "@/components/hbar";
 import { Shell, Panel, Label, BindAccount, SealRing } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
 import { readKeystoreMeta } from "@/lib/keystore";
@@ -86,11 +87,11 @@ function Stake() {
         <div className="mt-5 grid grid-cols-2 gap-4 border-t pt-4">
           <div>
             <p className="text-xs text-muted-foreground">Pending reward</p>
-            <p className="text-lg font-semibold text-flare tnum">{info.data ? hbar(info.data.pendingReward) : "—"} ℏ</p>
+            <p className="flex items-center gap-1.5 text-lg font-semibold text-flare tnum">{info.data ? hbar(info.data.pendingReward) : "—"} <HbarLogo size={16} /></p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Paid (last 25)</p>
-            <p className="text-lg font-semibold tnum">{hbar(paid)} ℏ</p>
+            <p className="flex items-center gap-1.5 text-lg font-semibold tnum">{hbar(paid)} <HbarLogo size={16} /></p>
           </div>
         </div>
         {info.data?.stakePeriodStart && (

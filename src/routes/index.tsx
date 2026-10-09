@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Shell, Panel, Label } from "@/components/aurion";
+import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
 import { useAccount } from "@/lib/account";
@@ -39,7 +40,7 @@ function Home() {
         </div>
         <div className="space-y-3">
           <SignBackIn onIn={bind} />
-          <Link to="/wallet" className="btn-ghost w-full">Create or connect a wallet</Link>
+          <Link to="/wallet" className="btn w-full">Create or connect a wallet</Link>
         </div>
       </Shell>
     );
@@ -57,8 +58,8 @@ function Home() {
         {acct.isError ? (
           <p className="mt-3 text-sm text-destructive">{(acct.error as Error).message}</p>
         ) : (
-          <p className="mt-3 text-4xl font-semibold tnum">
-            {acct.data ? hbar(acct.data.tinybar) : "—"} <span className="text-base text-muted-foreground">ℏ</span>
+          <p className="mt-3 flex items-center gap-2 text-4xl font-semibold tnum">
+            {acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={22} />
           </p>
         )}
         <div className="mt-5 space-y-2 border-t pt-4 text-sm text-muted-foreground">
