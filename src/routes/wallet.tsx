@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Shell, Panel, Label, BindAccount } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
+import { WC_PROJECT_ID, walletOptions, connectWallet, type WalletOption } from "@/lib/walletconnect";
 import {
   generateWallet, importWallet, saveKeystore, readKeystoreMeta, setKeystoreAccount,
   findAccountByKey, findAccountByEvm, type StoredKey,
@@ -47,7 +48,7 @@ function Wallet() {
         ))}
       </div>
       {mode === "create" && <Create onPending={setPending} />}
-      {mode === "import" && <Import onDone={done} />}
+      {mode === "import" && <><ExternalWallets onDone={done} /><Import onDone={done} /></>}
       {mode === "watch" && <BindAccount onBind={done} />}
     </Shell>
   );
@@ -99,7 +100,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
       {wrote && (
         <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
           setBusy(true);
-          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null };
+          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const };
           await saveKeystore(w.privHex, p, meta);
           onPending(meta);
         }} />
@@ -143,7 +144,7 @@ function AwaitFunding({ k, onFound }: { k: StoredKey; onFound: (id: string) => v
 
 function Import({ onDone }: { onDone: (id: string) => void }) {
   const [input, setInput] = useState("");
-  const [found, setFound] = useState<{ privHex: string; publicKey: string; evm: string | null; id: string } | null>(null);
+  const [found, setFound] = useState<{ privHex: string; publicKey: string; evm: string | null; kind: "ecdsa" | "ed25519"; id: string } | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -179,11 +180,47 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
           <p className="text-xs text-success">Found on mainnet.</p>
           <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
             setBusy(true);
-            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id });
+            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind });
             onDone(found.id);
           }} />
         </>
       )}
+    </Panel>
+  );
+}
+
+function ExternalWallets({ onDone }: { onDone: (id: string) => void }) {
+  const [opts, setOpts] = useState<WalletOption[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    if (!WC_PROJECT_ID) return;
+    walletOptions().then(setOpts).catch((e) => setErr((e as Error).message));
+  }, []);
+
+  return (
+    <Panel className="mb-4">
+      <Label>HashPack or Blade</Label>
+      {!WC_PROJECT_ID ? (
+        <p className="text-sm text-muted-foreground">WalletConnect is not set up for this app yet.</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-2">
+          {(opts ?? [{ id: "hashpack", name: "HashPack", installed: false }, { id: "blade", name: "Blade", installed: false }]).map((o) => (
+            <button key={o.name} className="btn-ghost flex-col py-3" disabled={!opts || !!busy}
+              onClick={async () => {
+                setBusy(o.name); setErr("");
+                try { onDone(await connectWallet(o)); }
+                catch (e) { setErr((e as Error).message || "Connection cancelled"); }
+                setBusy(null);
+              }}>
+              <span>{busy === o.name ? "Waiting…" : o.name}</span>
+              <span className="text-[10px] text-muted-foreground">{o.installed ? "Extension" : "Scan with app"}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
+      <p className="mt-3 text-xs text-muted-foreground">Keys stay in your wallet. Every change is approved there.</p>
     </Panel>
   );
 }

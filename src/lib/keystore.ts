@@ -13,7 +13,7 @@ async function deriveKey(pass: string, salt: Uint8Array) {
   return crypto.subtle.importKey("raw", raw as Uint8Array<ArrayBuffer>, "AES-GCM", false, ["encrypt", "decrypt"]);
 }
 
-export type StoredKey = { publicKey: string; evm: string; accountId: string | null };
+export type StoredKey = { publicKey: string; evm: string; accountId: string | null; kind?: "ecdsa" | "ed25519" };
 
 export async function saveKeystore(privHex: string, pass: string, meta: StoredKey) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -26,8 +26,8 @@ export async function saveKeystore(privHex: string, pass: string, meta: StoredKe
 export function readKeystoreMeta(): StoredKey | null {
   const s = localStorage.getItem(KS);
   if (!s) return null;
-  const { publicKey, evm, accountId } = JSON.parse(s);
-  return { publicKey, evm, accountId };
+  const { publicKey, evm, accountId, kind } = JSON.parse(s);
+  return { publicKey, evm, accountId, kind };
 }
 
 export function setKeystoreAccount(accountId: string) {
