@@ -99,7 +99,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
       {wrote && (
         <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
           setBusy(true);
-          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null };
+          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const };
           await saveKeystore(w.privHex, p, meta);
           onPending(meta);
         }} />
@@ -143,7 +143,7 @@ function AwaitFunding({ k, onFound }: { k: StoredKey; onFound: (id: string) => v
 
 function Import({ onDone }: { onDone: (id: string) => void }) {
   const [input, setInput] = useState("");
-  const [found, setFound] = useState<{ privHex: string; publicKey: string; evm: string | null; id: string } | null>(null);
+  const [found, setFound] = useState<{ privHex: string; publicKey: string; evm: string | null; kind: "ecdsa" | "ed25519"; id: string } | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -179,7 +179,7 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
           <p className="text-xs text-success">Found on mainnet.</p>
           <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
             setBusy(true);
-            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id });
+            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind });
             onDone(found.id);
           }} />
         </>

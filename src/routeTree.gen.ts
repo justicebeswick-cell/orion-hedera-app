@@ -13,9 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as LegacyRouteImport } from './routes/legacy'
 import { Route as PactRouteImport } from './routes/pact'
-import { Route as SealRouteImport } from './routes/seal'
 import { Route as VaultRouteImport } from './routes/vault'
-import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as WalletRouteImport } from './routes/wallet'
 
 const IndexRoute = IndexRouteImport.update({
@@ -38,19 +36,9 @@ const PactRoute = PactRouteImport.update({
   path: '/pact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SealRoute = SealRouteImport.update({
-  id: '/seal',
-  path: '/seal',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const VaultRoute = VaultRouteImport.update({
   id: '/vault',
   path: '/vault',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerifyRoute = VerifyRouteImport.update({
-  id: '/verify',
-  path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WalletRoute = WalletRouteImport.update({
@@ -64,9 +52,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
-  '/seal': typeof SealRoute
   '/vault': typeof VaultRoute
-  '/verify': typeof VerifyRoute
   '/wallet': typeof WalletRoute
 }
 export interface FileRoutesByTo {
@@ -74,9 +60,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
-  '/seal': typeof SealRoute
   '/vault': typeof VaultRoute
-  '/verify': typeof VerifyRoute
   '/wallet': typeof WalletRoute
 }
 export interface FileRoutesById {
@@ -85,42 +69,15 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
-  '/seal': typeof SealRoute
   '/vault': typeof VaultRoute
-  '/verify': typeof VerifyRoute
   '/wallet': typeof WalletRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/legacy'
-    | '/pact'
-    | '/seal'
-    | '/vault'
-    | '/verify'
-    | '/wallet'
+  fullPaths: '/' | '/about' | '/legacy' | '/pact' | '/vault' | '/wallet'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/about'
-    | '/legacy'
-    | '/pact'
-    | '/seal'
-    | '/vault'
-    | '/verify'
-    | '/wallet'
-  id:
-    | '__root__'
-    | '/'
-    | '/about'
-    | '/legacy'
-    | '/pact'
-    | '/seal'
-    | '/vault'
-    | '/verify'
-    | '/wallet'
+  to: '/' | '/about' | '/legacy' | '/pact' | '/vault' | '/wallet'
+  id: '__root__' | '/' | '/about' | '/legacy' | '/pact' | '/vault' | '/wallet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,9 +85,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LegacyRoute: typeof LegacyRoute
   PactRoute: typeof PactRoute
-  SealRoute: typeof SealRoute
   VaultRoute: typeof VaultRoute
-  VerifyRoute: typeof VerifyRoute
   WalletRoute: typeof WalletRoute
 }
 
@@ -164,25 +119,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/seal': {
-      id: '/seal'
-      path: '/seal'
-      fullPath: '/seal'
-      preLoaderRoute: typeof SealRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/vault': {
       id: '/vault'
       path: '/vault'
       fullPath: '/vault'
       preLoaderRoute: typeof VaultRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/verify': {
-      id: '/verify'
-      path: '/verify'
-      fullPath: '/verify'
-      preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wallet': {
@@ -200,9 +141,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   LegacyRoute: LegacyRoute,
   PactRoute: PactRoute,
-  SealRoute: SealRoute,
   VaultRoute: VaultRoute,
-  VerifyRoute: VerifyRoute,
   WalletRoute: WalletRoute,
 }
 export const routeTree = rootRouteImport

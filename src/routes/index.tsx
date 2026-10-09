@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "AURION — Prove it. Agree it. Hold it." },
-      { name: "description", content: "A mainnet HBAR vault with seals, pacts and one heir transfer. On Hedera." },
+      { name: "description", content: "A mainnet HBAR vault with staking, pacts and one heir transfer. On Hedera." },
       { property: "og:title", content: "AURION — On Hedera" },
       { property: "og:description", content: "Prove it. Agree it. Hold it. On Hedera." },
       { property: "og:type", content: "website" },
@@ -60,7 +60,7 @@ function Home() {
         )}
         <div className="mt-5 space-y-2 border-t pt-4 text-sm text-muted-foreground">
           <Link to="/legacy" className="block">Switch not armed.</Link>
-          <Link to="/seal" className="block">No seals yet.</Link>
+          <Link to="/stake" className="block">View staking.</Link>
           <Link to="/pact" className="block">No pact waiting on you.</Link>
         </div>
       </Panel>

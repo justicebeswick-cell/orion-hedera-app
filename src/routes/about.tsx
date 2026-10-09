@@ -20,7 +20,7 @@ function About() {
     <Shell title="About">
       <Panel>
         <p className="text-lg leading-relaxed">
-          AURION is a mainnet HBAR vault. Identity is checked before value moves. Seals, pacts, and one heir transfer
+          AURION is a mainnet HBAR vault. Identity is checked before value moves. Staking, pacts, and one heir transfer
           sit on the same account. The network is the notary. You hold the keys.
         </p>
       </Panel>

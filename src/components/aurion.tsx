@@ -6,18 +6,17 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 const dock = [
   { to: "/", label: "Home" },
   { to: "/vault", label: "Vault" },
-  { to: "/seal", label: "Seal" },
+  { to: "/stake", label: "Stake" },
   { to: "/pact", label: "Pact" },
 ] as const;
 
 const palette = [
   { to: "/", label: "Home" },
   { to: "/vault", label: "Vault" },
-  { to: "/seal", label: "Seal" },
+  { to: "/stake", label: "Stake" },
   { to: "/pact", label: "Pact" },
   { to: "/legacy", label: "Legacy" },
   { to: "/wallet", label: "Wallet" },
-  { to: "/verify", label: "Verify a seal" },
   { to: "/about", label: "About" },
 ] as const;
 
@@ -93,7 +92,7 @@ export function IdentityGate({ action }: { action: string }) {
     <div className="rounded-lg border border-border bg-graphite p-4 text-sm">
       <p className="font-medium">{action} is off.</p>
       <p className="mt-1 text-muted-foreground">
-        Identity is not approved. Sends, seals, pacts and the switch stay locked until review passes.
+        Identity is not approved. Sends, pacts and the switch stay locked until review passes.
       </p>
       <button className="btn mt-4 w-full" disabled>
         Start identity review
