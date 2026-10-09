@@ -148,7 +148,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
   const [tOut, setOut] = useState<SwapToken | null>(null);
   const out = tOut ?? all.find((t) => t.symbol === "USDC") ?? all[1] ?? null;
   const [amt, setAmt] = useState("");
-  const [slip, setSlip] = useState(0.01);
+  const slip = 0.03; // automatic, hidden tolerance so swaps go through smoothly
   const [step, setStep] = useState<Step | null>(null);
   const [debounced, setDebounced] = useState("");
   useEffect(() => { const t = setTimeout(() => setDebounced(amt), 350); return () => clearTimeout(t); }, [amt]);
@@ -184,20 +184,12 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Slippage</span>
-        <div className="flex gap-1">{[0.005, 0.01, 0.02, 0.05].map((s) => (
-          <button key={s} type="button" onClick={() => setSlip(s)} className={`rounded-full border px-2.5 py-1 tnum ${s === slip ? "border-primary bg-primary/15" : "border-border text-muted-foreground"}`}>{s * 100}%</button>
-        ))}</div>
-      </div>
-
       {q.isError && units > 0n && <p className="mt-3 text-xs text-destructive">{(q.error as Error).message}</p>}
       {over && <p className="mt-3 text-xs text-destructive">Not enough {tIn.symbol}.</p>}
       {live && out && (
         <dl className="mt-3 space-y-1.5 rounded-xl border border-border p-3 text-xs tnum">
           <Row k="Rate" v={`1 ${tIn.symbol} ≈ ${fmtUnits((live.out * 10n ** BigInt(tIn.decimals)) / live.amountIn, out.decimals)} ${out.symbol}`} />
           <Row k="Price impact" v={`${(live.impact * 100).toFixed(2)}%`} warn={live.impact > 0.03} />
-          <Row k={`Minimum received (${slip * 100}% slippage)`} v={`${fmtUnits(minOut, out.decimals)} ${out.symbol}`} />
           <Row k={`Pool fee (${(LP_FEE * 100).toFixed(1)}% × ${live.hops})`} v="included in rate" />
           <Row k={`AURION fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
           <Row k="Network fee" v="≈ 0.05–0.5 ℏ" />
