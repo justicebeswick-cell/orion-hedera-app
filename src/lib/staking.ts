@@ -90,7 +90,7 @@ export async function redelegate(accountId: string, nodeId: number, passphrase: 
 /** Poll the mirror node for consensus timestamp of a transaction id. */
 export async function waitForConsensus(txId: string) {
   const [acct, rest] = txId.split("@");
-  const mirrorId = `${acct}-${rest.replace(".", "-")}`;
+  const mirrorId = `${acct}-${(rest ?? "").replace(".", "-")}`;
   for (let i = 0; i < 15; i++) {
     try {
       const r = await get<{ transactions: { consensus_timestamp: string; result: string }[] }>(
