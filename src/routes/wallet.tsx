@@ -175,8 +175,7 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
       <Label>Connect an existing wallet</Label>
       {!found ? (
         <>
-          <textarea className="field h-28 font-mono text-xs" placeholder="12 or 24 word recovery phrase, or private key"
-            value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" spellCheck={false} />
+          <WordBoxes onChange={setInput} />
           <p className="mt-2 text-xs text-muted-foreground">Read only on this device. Never sent anywhere.</p>
           <button className="btn mt-4 w-full" disabled={!input.trim() || busy} onClick={lookup}>
             {busy ? "Reading mainnet…" : "Find account on mainnet"}
@@ -231,5 +230,54 @@ function ExternalWallets({ onDone }: { onDone: (id: string) => void }) {
       {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
       <p className="mt-3 text-xs text-muted-foreground">Keys stay in your wallet. Every change is approved there.</p>
     </Panel>
+  );
+}
+
+function WordBoxes({ onChange }: { onChange: (v: string) => void }) {
+  const [kind, setKind] = useState<12 | 24 | "key">(24);
+  const [words, setWords] = useState<string[]>(Array(24).fill(""));
+  const [key, setKey] = useState("");
+  const n = kind === "key" ? 0 : kind;
+  const update = (w: string[]) => { setWords(w); onChange(w.slice(0, n).every(Boolean) ? w.slice(0, n).join(" ") : ""); };
+  const setAt = (i: number, v: string) => {
+    const parts = v.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (parts.length > 1) {
+      // Pasted a whole phrase: spread it across the boxes.
+      const len = parts.length === 12 ? 12 : 24;
+      if (parts.length === 12 || parts.length === 24) setKind(len);
+      const w = Array(24).fill(""); parts.slice(0, 24).forEach((p, j) => (w[j] = p));
+      setWords(w); onChange(parts.length === 12 || parts.length === 24 ? parts.join(" ") : "");
+      return;
+    }
+    const w = [...words]; w[i] = v.trim().toLowerCase(); update(w);
+  };
+  return (
+    <>
+      <div className="mb-3 grid grid-cols-3 gap-2">
+        {([12, 24, "key"] as const).map((k) => (
+          <button key={k} className={`btn-ghost py-2 text-xs ${kind === k ? "border-primary text-primary" : ""}`}
+            onClick={() => { setKind(k); onChange(k === "key" ? key.trim() : words.slice(0, k).every(Boolean) ? words.slice(0, k).join(" ") : ""); }}>
+            {k === "key" ? "Private key" : `${k} words`}
+          </button>
+        ))}
+      </div>
+      {kind === "key" ? (
+        <input type="password" className="field font-mono text-xs" placeholder="Private key" value={key} autoComplete="off"
+          onChange={(e) => { setKey(e.target.value); onChange(e.target.value.trim()); }} />
+      ) : (
+        <ol className="grid grid-cols-3 gap-2">
+          {Array.from({ length: n }, (_, i) => (
+            <li key={i} className="flex items-center gap-1 rounded-md bg-graphite px-2">
+              <span className="w-5 shrink-0 text-right text-[10px] text-muted-foreground tnum">{i + 1}</span>
+              <input className="w-full min-w-0 bg-transparent py-2 font-mono text-xs outline-none" value={words[i]}
+                autoComplete="off" autoCapitalize="none" spellCheck={false} aria-label={`Word ${i + 1}`}
+                onChange={(e) => setAt(i, e.target.value)}
+                onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); (e.currentTarget.closest("li")?.nextElementSibling?.querySelector("input") as HTMLInputElement | null)?.focus(); } }} />
+            </li>
+          ))}
+        </ol>
+      )}
+      <p className="mt-2 text-xs text-muted-foreground">Tip: paste your whole phrase into box 1 and it fills every box.</p>
+    </>
   );
 }
