@@ -347,7 +347,13 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
       <Label>Swap</Label>
       <div className="rounded-xl border border-border bg-secondary/40 p-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground"><span>You pay</span>
-          <button type="button" className="tnum hover:text-foreground" onClick={() => balIn.data && setAmt(String(Number(balIn.data) / 10 ** tIn.decimals))}>Balance {balIn.data != null ? fmtUnits(balIn.data, tIn.decimals) : "0"}</button></div>
+          <span className="flex items-center gap-2"><span className="tnum">Balance {balIn.data != null ? fmtUnits(balIn.data, tIn.decimals) : "0"}</span>
+            <button type="button" className="rounded-full border border-primary/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-signal hover:bg-primary/15" onClick={() => {
+              if (!balIn.data) return;
+              // Keep 3 HBAR back for network and service fees when paying in HBAR.
+              const max = tIn.id === "HBAR" ? balIn.data - 300_000_000n : balIn.data;
+              if (max > 0n) setAmt(String(Number(max) / 10 ** tIn.decimals));
+            }}>Max</button></span></div>
         <div className="mt-1 flex items-center gap-2">
           <input className="w-full min-w-0 bg-transparent text-2xl font-semibold tnum outline-none" inputMode="decimal" placeholder="0" value={amt} onChange={(e) => setAmt(e.target.value.replace(",", "."))} />
           <TokenPick tokens={all} value={tIn} exclude={out?.id ?? ""} onPick={(t) => { setIn(t); setAmt(""); }} />

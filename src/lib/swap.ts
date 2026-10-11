@@ -139,8 +139,18 @@ export async function executeSwap(
   else if (isH(tOut)) fn = "18cbafe5" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
   else fn = "38ed1739" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
   const params = bytes(fn);
-  const gas = q.hops > 1 ? 900_000 : isH(tIn) ? 400_000 : 600_000;
+  // Token-in swaps call the HTS system contract (transferFrom, WHBAR unwrap), which costs far more gas on Hedera;
+  // 600k ran out mid-swap ("Safe approve failed"). Unused gas is mostly refunded, so err high.
+  const gas = q.hops > 1 ? 2_000_000 : isH(tIn) ? 400_000 : 1_500_000;
   const needsAssoc = !isH(tOut) && (await tokenBalance(from, tOut)) === null;
+  let hasAllowance = false;
+  if (!isH(tIn)) {
+    try {
+      const r = await fetch(`${MIRROR}/api/v1/accounts/${from}/allowances/tokens?token.id=${tIn.id}&spender.id=${ROUTER}`);
+      const a = r.ok ? (await r.json()).allowances?.[0] : null;
+      hasAllowance = !!a && BigInt(a.amount) >= q.amountIn;
+    } catch { /* approve again */ }
+  }
   const chargeFee = from !== TREASURY && q.fee > 0n;
 
   // Same steps for both SDKs; `s` is either @hiero-ledger/sdk (wallet) or @hashgraph/sdk (device key).
@@ -187,7 +197,7 @@ export async function executeSwap(
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   try {
-    if (!isH(tIn)) { onStep("approve"); try { await run(b.approve()); } catch (e) { throw wrap("Token allowance", e); } }
+    if (!isH(tIn) && !hasAllowance) { onStep("approve"); try { await run(b.approve()); } catch (e) { throw wrap("Token allowance", e); } }
     if (needsAssoc) { onStep("associate"); try { await run(b.associate()); } catch (e) { throw wrap("Token associate", e); } }
     onStep("swap");
     let swapTx: string;
