@@ -347,7 +347,13 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
       <Label>Swap</Label>
       <div className="rounded-xl border border-border bg-secondary/40 p-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground"><span>You pay</span>
-          <button type="button" className="tnum hover:text-foreground" onClick={() => balIn.data && setAmt(String(Number(balIn.data) / 10 ** tIn.decimals))}>Balance {balIn.data != null ? fmtUnits(balIn.data, tIn.decimals) : "0"}</button></div>
+          <span className="flex items-center gap-2"><span className="tnum">Balance {balIn.data != null ? fmtUnits(balIn.data, tIn.decimals) : "0"}</span>
+            <button type="button" className="rounded-full border border-primary/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-signal hover:bg-primary/15" onClick={() => {
+              if (!balIn.data) return;
+              // Keep 3 HBAR back for network and service fees when paying in HBAR.
+              const max = tIn.id === "HBAR" ? balIn.data - 300_000_000n : balIn.data;
+              if (max > 0n) setAmt(String(Number(max) / 10 ** tIn.decimals));
+            }}>Max</button></span></div>
         <div className="mt-1 flex items-center gap-2">
           <input className="w-full min-w-0 bg-transparent text-2xl font-semibold tnum outline-none" inputMode="decimal" placeholder="0" value={amt} onChange={(e) => setAmt(e.target.value.replace(",", "."))} />
           <TokenPick tokens={all} value={tIn} exclude={out?.id ?? ""} onPick={(t) => { setIn(t); setAmt(""); }} />
@@ -372,7 +378,8 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
           <Row k="Price impact" v={`${(live.impact * 100).toFixed(2)}%`} warn={live.impact > 0.03} />
           <Row k={`Pool fee (${(LP_FEE * 100).toFixed(1)}% × ${live.hops})`} v="included in rate" />
           <Row k={`AURION fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
-          <Row k="Network fee" v="≈ 0.05–0.5 ℏ" />
+          <Row k="Network fee" v={tIn.id === "HBAR" ? "≈ 0.3–0.5 ℏ" : "≈ 1–1.5 ℏ (plus ≈ 0.5 ℏ the first time you allow a token)"} />
+          {tIn.id !== "HBAR" && Number(live.hbarValue) / 1e8 < 3 && <p className="text-destructive">This swap is worth less than the network fee to make it. Swapping a bigger amount is cheaper per HBAR.</p>}
           <p className="pt-1 text-muted-foreground">Route: {tIn.symbol} → {live.hops > 1 ? "HBAR → " : ""}{out.symbol} on SaucerSwap. Price refreshes every 10 seconds.</p>
         </dl>
       )}
