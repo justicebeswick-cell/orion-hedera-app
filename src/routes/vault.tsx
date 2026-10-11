@@ -378,7 +378,8 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
           <Row k="Price impact" v={`${(live.impact * 100).toFixed(2)}%`} warn={live.impact > 0.03} />
           <Row k={`Pool fee (${(LP_FEE * 100).toFixed(1)}% × ${live.hops})`} v="included in rate" />
           <Row k={`AURION fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
-          <Row k="Network fee" v="≈ 0.05–0.5 ℏ" />
+          <Row k="Network fee" v={tIn.id === "HBAR" ? "≈ 0.3–0.5 ℏ" : "≈ 1–1.5 ℏ (plus ≈ 0.5 ℏ the first time you allow a token)"} />
+          {tIn.id !== "HBAR" && Number(live.hbarValue) / 1e8 < 3 && <p className="text-destructive">This swap is worth less than the network fee to make it. Swapping a bigger amount is cheaper per HBAR.</p>}
           <p className="pt-1 text-muted-foreground">Route: {tIn.symbol} → {live.hops > 1 ? "HBAR → " : ""}{out.symbol} on SaucerSwap. Price refreshes every 10 seconds.</p>
         </dl>
       )}
