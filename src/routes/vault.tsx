@@ -240,6 +240,163 @@ function TokenSend({ id, tok, balance, onSent }: { id: string; tok: SwapToken; b
   );
 }
 
+// Hedera holds a scheduled transfer for at most ~62 days, so repeats are scheduled ahead inside that window
+// and topped up with "Schedule the next ones" when the user returns.
+const SCHED_KEY = "aurion.scheduled";
+const WINDOW_DAYS = 60;
+type Freq = "once" | "weekly" | "monthly";
+type SchedPay = { scheduleId: string; to: string; amount: number; at: string; memo: string; series?: string; txId: string };
+type Series = { id: string; to: string; amount: number; memo: string; freq: Exclude<Freq, "once">; next: string };
+const readSched = (): { pays: SchedPay[]; series: Series[] } => { try { return { pays: [], series: [], ...JSON.parse(localStorage.getItem(SCHED_KEY) ?? "{}") }; } catch { return { pays: [], series: [] }; } };
+const writeSched = (v: { pays: SchedPay[]; series: Series[] }) => localStorage.setItem(SCHED_KEY, JSON.stringify(v));
+const step = (d: Date, f: Exclude<Freq, "once">) => { const n = new Date(d); if (f === "weekly") n.setDate(n.getDate() + 7); else n.setMonth(n.getMonth() + 1); return n; };
+const horizon = () => Date.now() + WINDOW_DAYS * 86_400_000;
+
+async function payStatus(id: string): Promise<"waiting" | "sent" | "cancelled" | "failed"> {
+  const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/schedules/${id}`);
+  if (!r.ok) return "waiting";
+  const j = await r.json();
+  if (j.deleted) return "cancelled";
+  if (j.executed_timestamp) {
+    const t = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/transactions?timestamp=${j.executed_timestamp}`).then((x) => x.json()).catch(() => null);
+    return t?.transactions?.[0]?.result === "SUCCESS" || !t ? "sent" : "failed";
+  }
+  return "waiting";
+}
+
+function SchedulePanel({ id }: { id: string }) {
+  const [to, setTo] = useState("");
+  const [amt, setAmt] = useState("");
+  const [memo, setMemo] = useState("");
+  const [freq, setFreq] = useState<Freq>("once");
+  const [when, setWhen] = useState("");
+  const [data, setData] = useState<{ pays: SchedPay[]; series: Series[] }>({ pays: [], series: [] });
+  const [progress, setProgress] = useState("");
+  useEffect(() => { setData(readSched()); }, []);
+  const save = (v: typeof data) => { writeSched(v); setData(v); };
+  const statuses = useQuery({
+    queryKey: ["sched-status", data.pays.map((p) => p.scheduleId).join()],
+    queryFn: async () => Object.fromEntries(await Promise.all(data.pays.map(async (p) => [p.scheduleId, await payStatus(p.scheduleId)] as const))),
+    enabled: data.pays.length > 0, refetchInterval: 30_000,
+  });
+
+  const min = new Date(Date.now() + 10 * 60_000), max = new Date(horizon());
+  const local = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+  const at = when ? new Date(when) : null;
+  const n = Number(amt);
+  const dest = to.trim();
+  const ok = ACCOUNT_RE.test(dest) && dest !== id && n > 0 && !!at && at >= min && at <= max;
+
+  // Every date from `first` up to the 60-day window.
+  const datesFrom = (first: Date, f: Freq) => { const out: Date[] = []; let d = first; while (d.getTime() <= horizon() && out.length < 12) { out.push(d); if (f === "once") break; d = step(d, f); } return out; };
+  const scheduleAll = async (dates: Date[], payTo: string, amount: number, note: string, pass: string, series?: string) => {
+    const made: SchedPay[] = [];
+    for (const [i, d] of dates.entries()) {
+      setProgress(`Scheduling payment ${i + 1} of ${dates.length}…`);
+      const days = (d.getTime() - Date.now()) / 86_400_000;
+      const r = await armSwitch(id, payTo, amount, days, pass, `aurion:v1 scheduled${note ? " · " + note.slice(0, 60) : ""}`);
+      made.push({ scheduleId: r.scheduleId, to: payTo, amount, at: r.expiry, memo: note, series, txId: r.txId });
+      audit({ action: "schedule", detail: `${amount} ℏ → ${payTo} on ${new Date(r.expiry).toLocaleString()} · ${r.scheduleId}`, ok: true, txId: r.txId });
+    }
+    setProgress("");
+    return made;
+  };
+
+  const now = Date.now();
+  const upcoming = data.pays.filter((p) => new Date(p.at).getTime() > now - 86_400_000 * 7).sort((a, b) => a.at.localeCompare(b.at));
+  const due = data.series.filter((s) => new Date(s.next).getTime() <= horizon());
+  const total = n > 0 && at ? datesFrom(at, freq).length : 0;
+
+  return (
+    <Panel className="mt-4">
+      <Label>Scheduled payments</Label>
+      <p className="mb-3 text-xs text-muted-foreground">Pick a date and Hedera sends the HBAR on its own — even if this app is closed. Keep enough HBAR in your account on the day.</p>
+      <div className="space-y-3">
+        <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
+        <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
+        <div className="grid grid-cols-3 gap-2">
+          {(["once", "weekly", "monthly"] as const).map((f) => (
+            <button key={f} type="button" onClick={() => setFreq(f)} className={`rounded-xl border px-3 py-2 text-sm capitalize ${freq === f ? "border-primary bg-primary/15 text-foreground" : "border-border text-muted-foreground"}`}>{f === "once" ? "One time" : f}</button>
+          ))}
+        </div>
+        <div><p className="mb-1 text-xs text-muted-foreground">{freq === "once" ? "Send on" : "First payment on"}</p>
+          <input type="datetime-local" className="field tnum" min={local(min)} max={local(max)} value={when} onChange={(e) => setWhen(e.target.value)} /></div>
+        <input className="field" maxLength={60} placeholder="Note, like Rent (optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
+        {at && (at < min || at > max) && <p className="text-xs text-destructive">Pick a time between 10 minutes and {WINDOW_DAYS} days from now. Hedera can only hold a payment that long.</p>}
+        {freq !== "once" && total > 0 && <p className="text-xs text-muted-foreground">This signs the next {total} {freq} payment{total === 1 ? "" : "s"} now (the next {WINDOW_DAYS} days). Open the Vault now and then and tap "Schedule the next ones" to keep it going. Network fee ≈ 0.1 ℏ each.</p>}
+        {freq === "once" && <p className="text-xs text-muted-foreground">Network fee ≈ 0.1 ℏ. You can cancel any time before it sends.</p>}
+        {progress && <p className="animate-pulse text-xs text-signal">{progress}</p>}
+        <SignButton accountId={id} disabled={!ok} verb={ok ? (freq === "once" ? `Schedule ${n} ℏ` : `Start ${freq} ${n} ℏ`) : "Schedule"} run={async (pass) => {
+          const block = await checkSend(id, dest, n);
+          if (block) throw new Error(block);
+          const dates = datesFrom(at!, freq);
+          const sid = freq === "once" ? undefined : crypto.randomUUID();
+          const made = await scheduleAll(dates, dest, n, memo, pass, sid);
+          const cur = readSched();
+          const series = sid && freq !== "once" ? [...cur.series, { id: sid, to: dest, amount: n, memo, freq, next: step(dates[dates.length - 1]!, freq).toISOString() }] : cur.series;
+          save({ pays: [...cur.pays, ...made], series });
+          setAmt(""); setWhen(""); setMemo("");
+          return made[0]!.txId;
+        }} done={() => <p className="font-semibold text-success">Scheduled on Hedera</p>} />
+      </div>
+
+      {due.map((s) => {
+        const dates = datesFrom(new Date(s.next), s.freq);
+        return (
+          <div key={s.id} className="mt-4 rounded-xl border border-primary/40 p-3">
+            <p className="text-sm">Your {s.freq} {s.amount} ℏ to <span className="font-mono">{s.to}</span> has {dates.length} more payment{dates.length === 1 ? "" : "s"} ready to schedule.</p>
+            <div className="mt-2"><SignButton accountId={id} verb="Schedule the next ones" run={async (pass) => {
+              const made = await scheduleAll(dates, s.to, s.amount, s.memo, pass, s.id);
+              const cur = readSched();
+              save({ pays: [...cur.pays, ...made], series: cur.series.map((x) => x.id === s.id ? { ...x, next: step(dates[dates.length - 1]!, s.freq).toISOString() } : x) });
+              return made[0]!.txId;
+            }} done={() => <p className="font-semibold text-success">Scheduled.</p>} /></div>
+          </div>
+        );
+      })}
+
+      {data.series.length > 0 && (
+        <div className="mt-4">
+          <p className="mb-1 text-xs uppercase tracking-widest text-muted-foreground">Repeating</p>
+          {data.series.map((s) => (
+            <div key={s.id} className="flex items-center justify-between gap-2 py-1.5 text-sm">
+              <span className="tnum">{s.amount} ℏ {s.freq} → <span className="font-mono">{s.to}</span>{s.memo && <span className="text-muted-foreground"> · {s.memo}</span>}</span>
+              <button className="text-xs text-destructive" onClick={() => { if (confirm("Stop repeating? Payments already scheduled stay until you cancel them below.")) { const cur = readSched(); save({ ...cur, series: cur.series.filter((x) => x.id !== s.id) }); } }}>Stop</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {upcoming.length > 0 && (
+        <ul className="mt-4 divide-y divide-border text-sm">
+          {upcoming.map((p) => {
+            const st = statuses.data?.[p.scheduleId] ?? "waiting";
+            return (
+              <li key={p.scheduleId} className="py-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="tnum">{p.amount} ℏ → <span className="font-mono">{p.to}</span>{p.memo && <span className="text-muted-foreground"> · {p.memo}</span>}</p>
+                    <p className="text-xs text-muted-foreground tnum">{new Date(p.at).toLocaleString()} · <a className="text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/schedule/${p.scheduleId}`}>{p.scheduleId}</a></p>
+                  </div>
+                  <span className={`shrink-0 text-xs ${st === "sent" ? "text-success" : st === "waiting" ? "text-signal" : "text-destructive"}`}>{st === "waiting" ? "Waiting" : st === "sent" ? "Sent" : st === "cancelled" ? "Cancelled" : "Failed"}</span>
+                </div>
+                {st === "waiting" && (
+                  <div className="mt-2"><SignButton accountId={id} verb="Cancel this payment" run={async (pass) => {
+                    await deleteSchedule(id, p.scheduleId, pass);
+                    audit({ action: "schedule", detail: `Cancelled · ${p.scheduleId}`, ok: true });
+                    statuses.refetch();
+                    return p.scheduleId;
+                  }} done={() => <p className="text-sm">Cancelled. Nothing will be sent.</p>} /></div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Panel>
+  );
+}
+
 function ClprCard() {
   return (
     <Panel className="mt-4">
