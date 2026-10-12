@@ -16,3 +16,4 @@
 - [ ] Real mainnet test of a swap — needs the user to sign one
 
 - [ ] CLPR send page (send tokens to other blockchains) — blocked: CLPR not live on Hedera mainnet yet
+- [x] Scheduled and recurring HBAR payments in the Vault
