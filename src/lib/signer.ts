@@ -69,7 +69,7 @@ export async function sendHbar(from: string, to: string, amountHbar: number, mem
  * waitForExpiry=true means Hedera holds it until the date, then executes.
  * Admin key = owner key, so a check-in can delete it and arm a fresh one.
  */
-export async function armSwitch(from: string, heir: string, amountHbar: number, days: number, passphrase: string) {
+export async function armSwitch(from: string, heir: string, amountHbar: number, days: number, passphrase: string, memo = "aurion:v1 legacy") {
   const expiry = new Date(Date.now() + days * 86_400_000);
   const mode = signMode(from);
   if (mode.kind === "wallet") {
@@ -86,7 +86,7 @@ export async function armSwitch(from: string, heir: string, amountHbar: number, 
         .setAdminKey(signer.getAccountKey())
         .setExpirationTime(h.Timestamp.fromDate(expiry))
         .setWaitForExpiry(true)
-        .setScheduleMemo("aurion:v1 legacy")
+        .setScheduleMemo(memo)
         .setMaxTransactionFee(new h.Hbar(5))
         .freezeWithSigner(signer);
       const r = await tx.executeWithSigner(signer);
@@ -106,7 +106,7 @@ export async function armSwitch(from: string, heir: string, amountHbar: number, 
       .setAdminKey(key.publicKey)
       .setExpirationTime(sdk.Timestamp.fromDate(expiry))
       .setWaitForExpiry(true)
-      .setScheduleMemo("aurion:v1 legacy")
+      .setScheduleMemo(memo)
       .setMaxTransactionFee(new sdk.Hbar(5))
       .execute(client);
     const rc = await r.getReceipt(client);

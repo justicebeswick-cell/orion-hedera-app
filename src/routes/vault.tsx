@@ -6,7 +6,7 @@ import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurio
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
 import { getAccount, hbar, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
-import { sendHbar, sendToken } from "@/lib/signer";
+import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
@@ -63,6 +63,7 @@ function Vault() {
         <Label>Send HBAR on mainnet</Label>
         <SendForm id={id} onSent={() => acct.refetch()} />
       </Panel>
+      <SchedulePanel id={id} />
       <ClprCard />
       <SwapPanel id={id} onSwapped={() => acct.refetch()} />
       <LimitsPanel />
