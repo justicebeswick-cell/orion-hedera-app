@@ -323,7 +323,7 @@ function SchedulePanel({ id }: { id: string }) {
           <input type="datetime-local" className="field tnum" min={local(min)} max={local(max)} value={when} onChange={(e) => setWhen(e.target.value)} /></div>
         <input className="field" maxLength={60} placeholder="Note, like Rent (optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
         {at && (at < min || at > max) && <p className="text-xs text-destructive">Pick a time between 10 minutes and {WINDOW_DAYS} days from now. Hedera can only hold a payment that long.</p>}
-        {freq !== "once" && total > 0 && <p className="text-xs text-muted-foreground">This signs the next {total} {freq} payment{total === 1 ? "" : "s"} now (the next {WINDOW_DAYS} days). Open the Vault now and then and tap "Schedule the next ones" to keep it going. Network fee ≈ 0.1 ℏ each.</p>}
+        {freq !== "once" && total > 0 && <p className="text-xs text-muted-foreground">This signs the next {total} {freq} payment{total === 1 ? "" : "s"} now, up to the {WINDOW_DAYS}-day window (capped at 12). Open the Vault now and then and tap "Schedule the next ones" to keep it going. Network fee ≈ 0.1 ℏ each.</p>}
         {freq === "once" && <p className="text-xs text-muted-foreground">Network fee ≈ 0.1 ℏ. You can cancel any time before it sends.</p>}
         {progress && <p className="animate-pulse text-xs text-signal">{progress}</p>}
         <SignButton accountId={id} disabled={!ok} verb={ok ? (freq === "once" ? `Schedule ${n} ℏ` : `Start ${freq} ${n} ℏ`) : "Schedule"} run={async (pass) => {
