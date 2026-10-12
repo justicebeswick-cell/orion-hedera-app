@@ -244,12 +244,12 @@ function TokenSend({ id, tok, balance, onSent }: { id: string; tok: SwapToken; b
 // and topped up with "Schedule the next ones" when the user returns.
 const SCHED_KEY = "aurion.scheduled";
 const WINDOW_DAYS = 60;
-type Freq = "once" | "weekly" | "monthly";
+type Freq = "once" | "daily" | "weekly" | "monthly";
 type SchedPay = { scheduleId: string; to: string; amount: number; at: string; memo: string; series?: string | undefined; txId: string };
 type Series = { id: string; to: string; amount: number; memo: string; freq: Exclude<Freq, "once">; next: string };
 const readSched = (): { pays: SchedPay[]; series: Series[] } => { try { return { pays: [], series: [], ...JSON.parse(localStorage.getItem(SCHED_KEY) ?? "{}") }; } catch { return { pays: [], series: [] }; } };
 const writeSched = (v: { pays: SchedPay[]; series: Series[] }) => localStorage.setItem(SCHED_KEY, JSON.stringify(v));
-const step = (d: Date, f: Exclude<Freq, "once">) => { const n = new Date(d); if (f === "weekly") n.setDate(n.getDate() + 7); else n.setMonth(n.getMonth() + 1); return n; };
+const step = (d: Date, f: Exclude<Freq, "once">) => { const n = new Date(d); if (f === "daily") n.setDate(n.getDate() + 1); else if (f === "weekly") n.setDate(n.getDate() + 7); else n.setMonth(n.getMonth() + 1); return n; };
 const horizon = () => Date.now() + WINDOW_DAYS * 86_400_000;
 
 async function payStatus(id: string): Promise<"waiting" | "sent" | "cancelled" | "failed"> {
@@ -314,8 +314,8 @@ function SchedulePanel({ id }: { id: string }) {
       <div className="space-y-3">
         <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
         <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
-        <div className="grid grid-cols-3 gap-2">
-          {(["once", "weekly", "monthly"] as const).map((f) => (
+        <div className="grid grid-cols-4 gap-2">
+          {(["once", "daily", "weekly", "monthly"] as const).map((f) => (
             <button key={f} type="button" onClick={() => setFreq(f)} className={`rounded-xl border px-3 py-2 text-sm capitalize ${freq === f ? "border-primary bg-primary/15 text-foreground" : "border-border text-muted-foreground"}`}>{f === "once" ? "One time" : f}</button>
           ))}
         </div>
