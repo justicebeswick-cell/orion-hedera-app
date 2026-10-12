@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Polish staking company logo presentation
+- [ ] Black branded opening screen
+- [ ] Dedicated swipeable Vault sections and smooth shared navigation
+
 - [x] Replace Seal with Staking (current node, rewards, redelegate)
 - [x] AI "Ask about my activity" on Home via AI Gateway
 - [ ] HashPack and Blade via WalletConnect — built; blocked on a WalletConnect project id (VITE_WALLETCONNECT_PROJECT_ID)
