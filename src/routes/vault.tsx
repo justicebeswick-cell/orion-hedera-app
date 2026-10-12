@@ -245,7 +245,7 @@ function TokenSend({ id, tok, balance, onSent }: { id: string; tok: SwapToken; b
 const SCHED_KEY = "aurion.scheduled";
 const WINDOW_DAYS = 60;
 type Freq = "once" | "weekly" | "monthly";
-type SchedPay = { scheduleId: string; to: string; amount: number; at: string; memo: string; series?: string; txId: string };
+type SchedPay = { scheduleId: string; to: string; amount: number; at: string; memo: string; series?: string | undefined; txId: string };
 type Series = { id: string; to: string; amount: number; memo: string; freq: Exclude<Freq, "once">; next: string };
 const readSched = (): { pays: SchedPay[]; series: Series[] } => { try { return { pays: [], series: [], ...JSON.parse(localStorage.getItem(SCHED_KEY) ?? "{}") }; } catch { return { pays: [], series: [] }; } };
 const writeSched = (v: { pays: SchedPay[]; series: Series[] }) => localStorage.setItem(SCHED_KEY, JSON.stringify(v));
