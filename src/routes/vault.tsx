@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins } from "lucide-react";
+import { VaultDeck } from "@/components/vault-deck";
+import { Button } from "@/components/ui/button";
 import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
@@ -34,40 +37,19 @@ function Vault() {
 
   return (
     <Shell title="Vault">
-      <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} />
-      <Panel className="mt-4">
-        <Label>HBAR balance</Label>
-        <p className="flex items-center gap-2 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={22} /></p>
-        <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-          Held in your Hedera account. AURION cannot move it unless you sign. Every send is checked against your limits first.
-        </p>
-      </Panel>
-
-      <Panel className="mt-4">
-        <Label>Receive</Label>
-        <div className="flex items-center gap-5">
-          <div className="rounded-md bg-foreground p-2">
-            <QRCodeSVG value={id} size={96} bgColor="transparent" fgColor="oklch(0.08 0.012 310)" />
-          </div>
-          <div>
-            <p className="font-mono text-lg tnum">{id}</p>
-            <button className="btn-ghost mt-2 py-2 text-xs" onClick={() => { navigator.clipboard.writeText(id); setCopied(true); }}>
-              {copied ? "Copied" : "Copy account id"}
-            </button>
-          </div>
-        </div>
-        <p className="mt-4 text-xs text-muted-foreground">Inbound transfers are watched. Large inbounds pause sends until reviewed.</p>
-      </Panel>
-
-      <Panel className="mt-4">
-        <Label>Send HBAR on mainnet</Label>
-        <SendForm id={id} onSent={() => acct.refetch()} />
-      </Panel>
-      <SchedulePanel id={id} />
-      <ClprCard />
-      <SwapPanel id={id} onSwapped={() => acct.refetch()} />
-      <LimitsPanel />
-      <AuditPanel />
+      <VaultDeck pages={[
+        { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="holdings" /> },
+        { key: "hbar", label: "HBAR", icon: Coins, content: <Panel><Label>HBAR balance</Label><p className="flex flex-wrap items-center gap-3 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"}<HbarLogo size={36} /></p><p className="mt-4 font-mono text-sm text-muted-foreground">{id}</p><p className="mt-6 text-sm text-muted-foreground">Held in your Hedera account. Only you can sign a transfer.</p></Panel> },
+        { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
+        { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
+        { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
+        { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },
+        { key: "history", label: "Swap history", icon: History, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="history" /> },
+        { key: "fees", label: "Fees", icon: Receipt, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="fees" /> },
+        { key: "limits", label: "Limits", icon: ShieldCheck, content: <LimitsPanel /> },
+        { key: "activity", label: "Activity", icon: History, content: <AuditPanel /> },
+        { key: "cross-chain", label: "Cross-chain", icon: Globe, content: <ClprCard /> },
+      ]} />
     </Shell>
   );
 }
@@ -98,7 +80,7 @@ async function hbarUsd(): Promise<number> {
 
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 1 ? 4 : 2 });
 
-function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
+function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" | "fees" }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsd, refetchInterval: 60_000 });
   const held = useQuery({
@@ -135,7 +117,7 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
 
   return (
     <>
-      <Panel>
+      {view === "holdings" && <Panel>
         <Label>Total wallet value</Label>
         <p className="text-4xl font-semibold tnum">{totalHbar != null && px ? usd(totalHbar * px) : "—"}</p>
         <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground tnum">≈ {totalHbar != null ? totalHbar.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—"} <HbarLogo size={14} /> · HBAR plus every token you hold</p>
@@ -171,10 +153,9 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
         </ul>
         {held.isError && <p className="text-xs text-destructive">Mirror node: could not load tokens.</p>}
         {!held.isLoading && rows.length === 0 && <p className="text-xs text-muted-foreground">No tokens yet. Anything you swap into shows up here.</p>}
-      </Panel>
+      </Panel>}
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <Panel>
+        {view === "history" && <Panel>
           <Label>Swap history</Label>
           {swaps.length === 0 ? <p className="text-sm text-muted-foreground">No swaps yet.</p> : (
             <ul className="divide-y divide-border text-xs">
@@ -188,8 +169,8 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
             </ul>
           )}
           <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {feesPaid.toFixed(4)} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>
-        </Panel>
-        <Panel>
+        </Panel>}
+        {view === "fees" && <Panel>
           <Label>Upcoming fees</Label>
           <dl className="space-y-2 text-xs tnum">
             <Row k="Next swap service fee" v={`${SERVICE_FEE * 100}% of the swap, in ℏ`} />
@@ -198,8 +179,7 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
             {legacy ? <Row k={`Legacy transfer in ${days} day${days === 1 ? "" : "s"}`} v={`${legacy.amount} ℏ → ${legacy.heir}`} warn={days <= 3} /> : <Row k="Legacy transfer" v="Not set" />}
           </dl>
           <p className="mt-3 text-xs text-muted-foreground">Nothing is charged until you sign. The Legacy transfer only happens if you don't check in.</p>
-        </Panel>
-      </div>
+        </Panel>}
     </>
   );
 }

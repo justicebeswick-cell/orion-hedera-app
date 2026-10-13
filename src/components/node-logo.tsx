@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /** Company that hosts each mainnet node → its website, used for the logo. */
 const DOMAINS: [RegExp, string][] = [
@@ -16,21 +16,25 @@ const DOMAINS: [RegExp, string][] = [
 
 export const nodeCompany = (desc?: string) => desc?.match(/Hosted by ([^|]+)/)?.[1]?.trim() ?? "";
 
-export function NodeLogo({ description, size = 28 }: { description?: string | undefined; size?: number }) {
+const logoAssets = import.meta.glob<{ default: { url: string } }>("../assets/nodes/*.asset.json", { eager: true });
+
+export function NodeLogo({ description, size = 48 }: { description?: string | undefined; size?: number }) {
   const [broken, setBroken] = useState(false);
   const domain = DOMAINS.find(([re]) => re.test(description ?? ""))?.[1];
   const name = nodeCompany(description) || "?";
+  const asset = domain ? logoAssets[`../assets/nodes/${domain}.png.asset.json`]?.default : undefined;
+  useEffect(() => setBroken(false), [domain]);
   const box = { width: size, height: size };
-  if (!domain || broken)
+  if (!asset || broken)
     return (
-      <span style={box} className="flex shrink-0 items-center justify-center rounded-md bg-graphite text-[10px] font-semibold text-muted-foreground">
+      <span style={box} className="flex shrink-0 items-center justify-center node-logo text-sm font-semibold text-muted-foreground">
         {name.slice(0, 2).toUpperCase()}
       </span>
     );
   return (
-    <span style={box} className="flex shrink-0 items-center justify-center overflow-hidden rounded-md bg-foreground p-1">
-      <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`} alt={`${name} logo`} loading="lazy"
-        className="h-full w-full object-contain" onError={() => setBroken(true)} />
+    <span style={box} className="flex shrink-0 items-center justify-center node-logo overflow-hidden">
+      <img src={asset.url} alt={`${name} logo`} loading="lazy"
+        className="node-logo-image h-full w-full object-contain" onError={() => setBroken(true)} />
     </span>
   );
 }

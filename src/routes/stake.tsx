@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { NodeLogo } from "@/components/node-logo";
+import { nodeCompany, NodeLogo } from "@/components/node-logo";
+import { Button } from "@/components/ui/button";
 import { HbarLogo } from "@/components/hbar";
 import { Shell, Panel, Label, BindAccount, SealRing } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
@@ -42,7 +43,7 @@ function StakeFill({ n }: { n: Node }) {
   );
 }
 
-const nodeName = (n?: Node) => n?.description?.trim() || (n ? `Node ${n.node_id}` : "");
+const nodeName = (n?: Node) => nodeCompany(n?.description) || n?.description?.trim() || (n ? `Node ${n.node_id}` : "");
 
 function Stake() {
   const { id, ready, bind } = useAccount();
@@ -72,7 +73,7 @@ function Stake() {
           <p className="text-sm text-destructive">{(info.error as Error).message}</p>
         ) : info.data?.stakedNodeId != null ? (
           <>
-            <p className="flex items-center gap-3 text-2xl font-semibold"><NodeLogo description={current?.description} size={36} />{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
+            <p className="flex items-center gap-3 text-2xl font-semibold"><NodeLogo description={current?.description} size={64} />{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
             <p className="text-xs text-muted-foreground tnum">
               Node {info.data.stakedNodeId}{current && ` · ~${apr(current)} yearly`}
             </p>
@@ -113,18 +114,18 @@ function Stake() {
             {nodes.data?.map((n) => {
               const mine = n.node_id === info.data?.stakedNodeId;
               return (
-                <button key={n.node_id} disabled={mine} onClick={() => setPick(n)}
-                  className="flex w-full items-center justify-between px-4 py-3 text-left text-sm disabled:opacity-100">
+                <Button key={n.node_id} disabled={mine} onClick={() => setPick(n)}
+                  className="flex h-auto w-full items-center justify-between gap-0 rounded-none px-4 py-4 text-left text-sm transition-colors hover:bg-secondary disabled:opacity-100" variant="ghost">
                   <span className="mr-3 self-start"><NodeLogo description={n.description} /></span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate">{nodeName(n)}</p>
+                    <p className="whitespace-normal font-medium">{nodeName(n)}</p>
                     <p className="text-xs text-muted-foreground tnum">Node {n.node_id}</p>
                     <StakeFill n={n} />
                   </div>
                   <span className={`ml-3 shrink-0 text-xs tnum ${mine ? "text-primary" : "text-muted-foreground"}`}>
                     {mine ? "Current" : `~${apr(n)}`}
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -188,7 +189,7 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
   return (
     <Panel className="mt-6">
       <Label>Redelegate</Label>
-      <p className="flex items-center gap-3 text-lg font-semibold"><NodeLogo description={node.description} size={32} />{nodeName(node)}</p>
+      <p className="flex items-center gap-3 text-lg font-semibold"><NodeLogo description={node.description} size={56} />{nodeName(node)}</p>
       <p className="text-xs text-muted-foreground tnum">Node {node.node_id} · ~{apr(node)} yearly</p>
       <StakeFill n={node} />
       {fill(node) >= 99.5 && <p className="mt-2 text-xs text-destructive">This node is at its max stake. Stake above the max earns no extra rewards.</p>}
