@@ -113,7 +113,8 @@
   border: 1px solid var(--color-border); color: var(--color-foreground);
 }
 
-.launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; animation: launch-exit .35s ease 1.15s both; }
+.launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; }
+.launch-leaving { animation: launch-exit .35s ease both; }
 .launch-brand { text-align: center; display: flex; flex-direction: column; align-items: center; animation: launch-enter .5s ease both; }
 @keyframes launch-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes launch-exit { to { opacity: 0; visibility: hidden; } }

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
-  return <img src={aurionLogo.url} alt="AURION logo" width={960} height={960} className={`shrink-0 object-contain ${className}`} />;
+  return <img src={aurionLogo.url} alt="AURION logo" width={960} height={960} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [

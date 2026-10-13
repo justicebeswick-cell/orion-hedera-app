@@ -120,7 +120,8 @@ function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; 
       {view === "holdings" && <Panel>
         <Label>Total wallet value</Label>
         <p className="text-4xl font-semibold tnum">{totalHbar != null && px ? usd(totalHbar * px) : "—"}</p>
-        <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground tnum">≈ {totalHbar != null ? totalHbar.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—"} <HbarLogo size={14} /> · HBAR plus every token you hold</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground tnum"><span>≈ {totalHbar != null ? totalHbar.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—"}</span><HbarLogo size={14} /></p>
+        <p className="mt-1 text-xs text-muted-foreground">HBAR + your HTS tokens</p>
 
         <ul className="mt-4 divide-y divide-border">
           <li className="flex items-center gap-3 py-3">
