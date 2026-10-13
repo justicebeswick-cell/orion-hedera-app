@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Native tokenized-stock trading via SODAX — confirm Hedera trading access and integration requirements
+
 - [x] Polish staking company logo presentation
 - [x] Black branded opening screen
 - [x] Dedicated swipeable Vault sections and smooth shared navigation
