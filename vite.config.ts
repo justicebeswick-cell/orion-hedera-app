@@ -23,13 +23,14 @@ export default defineConfig({
         name: "aurion-browser-only-sdks",
         enforce: "pre",
         resolveId(id, _importer, opts) {
-          // @ts-expect-error environment exists on Vite 6+ plugin context
           const envName: string | undefined = this.environment?.name;
           const server = opts?.ssr || (envName !== undefined && envName !== "client");
           if (server && BROWSER_ONLY.test(id)) return STUB;
+          return null;
         },
         load(id) {
           if (id === STUB) return "export default {};";
+          return null;
         },
       },
     ],
