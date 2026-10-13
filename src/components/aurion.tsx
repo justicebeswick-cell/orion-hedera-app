@@ -5,16 +5,17 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HbarLogo } from "@/components/hbar";
 import aurionLogo from "@/assets/aurion-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
+import { Home, Wallet, Layers, Handshake, Grid2X2, X } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
   return <img src={aurionLogo.url} alt="AURION logo" width={960} height={960} className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [
-  { to: "/", label: "Home" },
-  { to: "/vault", label: "Vault" },
-  { to: "/stake", label: "Stake" },
-  { to: "/pact", label: "Pact" },
+  { to: "/", label: "Home", icon: Home },
+  { to: "/vault", label: "Vault", icon: Wallet },
+  { to: "/stake", label: "Stake", icon: Layers },
+  { to: "/pact", label: "Pact", icon: Handshake },
 ] as const;
 
 const palette = [
@@ -52,20 +53,20 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
           </p>
           </div>
         </div>
-        <span className="text-xs text-muted-foreground">{title}</span>
+        <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
       </header>
-      {children}
+      <main key={title} className="shell-content">{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
         <div className="mx-auto grid max-w-xl grid-cols-4">
           {dock.map((d) => (
             <Link
               key={d.to}
               to={d.to}
-              className="py-4 text-center text-xs text-muted-foreground"
-              activeProps={{ className: "text-primary" }}
+              className="flex flex-col items-center gap-1.5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "text-signal" }}
               activeOptions={{ exact: true }}
             >
-              {d.label}
+              <d.icon size={20} strokeWidth={1.6} />{d.label}
             </Link>
           ))}
         </div>
@@ -77,15 +78,17 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 420, damping: 32 }}
             className="panel mx-auto mt-24 max-w-md p-2"
+            onClick={(e) => e.stopPropagation()}
           >
+            <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">AURION</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
             {palette.map((p) => (
-              <button
+              <Button variant="ghost"
                 key={p.to}
-                onClick={() => nav({ to: p.to })}
-                className="block w-full rounded-md px-4 py-3 text-left text-sm hover:bg-graphite"
+                onClick={() => { setOpen(false); nav({ to: p.to }); }}
+                className="h-auto w-full justify-start rounded-md px-4 py-3 text-left text-sm hover:bg-graphite"
               >
                 {p.label}
-              </button>
+              </Button>
             ))}
           </motion.div>
         </div>
