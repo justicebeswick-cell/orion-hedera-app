@@ -16,4 +16,7 @@
 - AI activity answers: server route /api/ask fetches mirror-node data itself (never trusts client-supplied history) and streams via the Responses API.
 - Biometric unlock uses WebAuthn PRF to encrypt the device passphrase locally (aurion.bio); the private key is still only decrypted by the passphrase, so biometrics never weaken the keystore.
 - App branding uses one shared AurionLogo component backed by a CDN asset pointer; the favicon is a small local derivative of the same artwork so branding stays consistent.
+- Initial document loads show the shared LaunchScreen; client-side navigation does not remount it, avoiding repeated startup interruptions.
+- Vault uses an Embla deck with all sections mounted and inactive sections inert, preserving form state while making swipe navigation accessible.
+- Staking company images use project CDN asset pointers with initials as fallback, avoiding third-party image requests in the wallet.
 - Swaps route through SaucerSwap V1 via WHBAR; the token list comes from SaucerSwap's public pools API and quotes from mirror-node contract calls, so no server is needed. The service fee is a separate HBAR transfer sent after the swap succeeds, so the treasury never has to hold or add tokens.

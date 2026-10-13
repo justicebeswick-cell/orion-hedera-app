@@ -35,9 +35,14 @@
   --color-flare: var(--flare);
   --color-success: var(--success);
   --color-graphite: var(--graphite);
+  --color-launch: var(--launch);
+  --color-logo-surface: var(--logo-surface);
 }
 
 :root {
+  --launch: oklch(0 0 0);
+  --logo-surface: oklch(0.97 0 0);
+  --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --radius: 1.125rem;
   --background: oklch(0.08 0.012 310);      /* void #050308 */
   --card: oklch(0.14 0.014 300);            /* ink #0C0A12 */
@@ -107,3 +112,24 @@
   padding: 0.8rem 1.1rem; font-weight: 500; font-size: 0.9rem;
   border: 1px solid var(--color-border); color: var(--color-foreground);
 }
+
+.launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; }
+.launch-leaving { animation: launch-exit .35s ease both; }
+.launch-brand { text-align: center; display: flex; flex-direction: column; align-items: center; animation: launch-enter .5s ease both; }
+@keyframes launch-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes launch-exit { to { opacity: 0; visibility: hidden; } }
+.deck-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.deck-tabs::-webkit-scrollbar { display: none; }
+.deck-tab { flex-shrink: 0; color: var(--muted-foreground); }
+.deck-tab-active { color: var(--signal); background: var(--graphite); }
+.deck-viewport { overflow: hidden; transition: height .3s ease; }
+.deck-slide { flex: 0 0 100%; min-width: 0; padding: 0 1px 4px; }
+.deck-surface { min-height: 390px; border: 1px solid var(--border); background: var(--card); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-deck); }
+.deck-surface .panel { border: 0; border-radius: 0; background: transparent; margin-top: 0; box-shadow: none; }
+.deck-dot { height: 4px; width: 4px; border-radius: 4px; background: var(--input); transition: width .25s ease, background .25s ease; }
+.deck-dot-active { width: 20px; background: var(--primary); }
+.node-logo { border: 1px solid var(--border); background: var(--graphite); padding: 6px; border-radius: 12px; }
+.node-logo-image { background: var(--logo-surface); border-radius: 6px; padding: 3px; }
+.shell-content { animation: page-enter .28s ease both; }
+@keyframes page-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; } .launch-screen { animation: none; } }
