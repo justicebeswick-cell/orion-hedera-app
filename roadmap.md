@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Native tokenized-stock trading via SODAX — confirm Hedera trading access and integration requirements
+- [ ] PAUSED — Native tokenized-stock trading via SODAX (needs a Reown project id and a SODAX partner API key)
 
 - [x] Polish staking company logo presentation
 - [x] Black branded opening screen
