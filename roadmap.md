@@ -1,8 +1,8 @@
 # Roadmap
 
-- [ ] Polish staking company logo presentation
-- [ ] Black branded opening screen
-- [ ] Dedicated swipeable Vault sections and smooth shared navigation
+- [x] Polish staking company logo presentation
+- [x] Black branded opening screen
+- [x] Dedicated swipeable Vault sections and smooth shared navigation
 
 - [x] Replace Seal with Staking (current node, rewards, redelegate)
 - [x] AI "Ask about my activity" on Home via AI Gateway
