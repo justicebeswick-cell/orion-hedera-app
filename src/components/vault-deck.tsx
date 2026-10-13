@@ -1,0 +1,49 @@
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { ArrowLeft, ArrowRight, type LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export type VaultPage = { key: string; label: string; icon: LucideIcon; content: ReactNode };
+
+export function VaultDeck({ pages }: { pages: VaultPage[] }) {
+  const [ref, api] = useEmblaCarousel({ align: "start", watchDrag: (_api, event) => !(event.target instanceof Element && event.target.closest("input, button, a, select, textarea")) });
+  const [selected, setSelected] = useState(0);
+  const [height, setHeight] = useState<number>();
+  const slides = useRef<(HTMLDivElement | null)[]>([]);
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const update = useCallback(() => {
+    if (!api) return;
+    const index = api.selectedScrollSnap();
+    setSelected(index);
+    tabs.current[index]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+  }, [api]);
+  useEffect(() => {
+    if (!api) return;
+    update(); api.on("select", update);
+    return () => { api.off("select", update); };
+  }, [api, update]);
+  useEffect(() => {
+    const el = slides.current[selected];
+    if (!el) return;
+    const observer = new ResizeObserver(() => setHeight(el.getBoundingClientRect().height));
+    observer.observe(el); return () => observer.disconnect();
+  }, [selected]);
+  const page = pages[selected];
+  return (
+    <div className="vault-deck">
+      <div className="deck-tabs" role="tablist" aria-label="Vault sections">
+        {pages.map((p, i) => <Button key={p.key} ref={(el) => { tabs.current[i] = el; }} role="tab" id={`tab-${p.key}`} aria-controls={`page-${p.key}`} aria-selected={selected === i} variant="ghost" className={`deck-tab ${selected === i ? "deck-tab-active" : ""}`} onClick={() => api?.scrollTo(i)}><p.icon />{p.label}</Button>)}
+      </div>
+      <div className="mb-4 mt-6 flex items-center justify-between gap-4">
+        <div><p className="mb-1 text-xs text-signal tnum">VAULT / {String(selected + 1).padStart(2, "0")}</p><h1 className="text-2xl font-semibold">{page?.label}</h1></div>
+        <div className="flex gap-2"><Button size="icon" variant="outline" title="Previous section" aria-label="Previous section" disabled={selected === 0} onClick={() => api?.scrollPrev()}><ArrowLeft /></Button><Button size="icon" variant="outline" title="Next section" aria-label="Next section" disabled={selected === pages.length - 1} onClick={() => api?.scrollNext()}><ArrowRight /></Button></div>
+      </div>
+      <div ref={ref} className="deck-viewport" style={{ height }}>
+        <div className="flex items-start touch-pan-y">
+          {pages.map((p, i) => <div key={p.key} ref={(el) => { slides.current[i] = el; }} id={`page-${p.key}`} role="tabpanel" aria-labelledby={`tab-${p.key}`} aria-hidden={selected !== i} inert={selected !== i} className="deck-slide"><div className="deck-surface">{p.content}</div></div>)}
+        </div>
+      </div>
+      <div className="mt-5 flex justify-center gap-1.5" aria-hidden="true">{pages.map((p, i) => <span key={p.key} className={`deck-dot ${i === selected ? "deck-dot-active" : ""}`} />)}</div>
+    </div>
+  );
+}
