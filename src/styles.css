@@ -44,7 +44,7 @@
   --logo-surface: oklch(0.97 0 0);
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --radius: 1.125rem;
-  --background: oklch(0.08 0.012 310);      /* void #050308 */
+  --background: oklch(0 0 0);               /* pure black backdrop */
   --card: oklch(0.14 0.014 300);            /* ink #0C0A12 */
   --graphite: oklch(0.2 0.018 295);         /* #16141E */
   --foreground: oklch(0.96 0.012 310);      /* porcelain */

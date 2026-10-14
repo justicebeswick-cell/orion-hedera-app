@@ -25,3 +25,4 @@
 
 - [ ] CLPR send page (send tokens to other blockchains) — blocked: CLPR not live on Hedera mainnet yet
 - [x] Scheduled and recurring HBAR payments in the Vault
+- [x] Replace app logo with the new purple A (no box, transparent) and make the app backdrop pure black
