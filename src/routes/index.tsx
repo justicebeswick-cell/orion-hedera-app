@@ -86,7 +86,7 @@ function Home() {
                 <p className="font-display text-xl leading-tight tracking-[0.015em] text-foreground">{txLabel(t.name)}</p>
                 <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
-              <span className={`font-display text-xl tnum ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
+              <span className={`text-base font-medium tnum tracking-tight ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
                 {n > 0 ? "+" : ""}{hbar(n)}
               </span>
             </a>
