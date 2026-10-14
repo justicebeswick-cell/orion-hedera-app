@@ -5,7 +5,7 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HbarLogo } from "@/components/hbar";
 import aurionLogo from "@/assets/aurion-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
-import { Home, Wallet, Layers, Handshake, Grid2X2, X } from "lucide-react";
+import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
   return <img src={aurionLogo.url} alt="AURION logo" width={960} height={960} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
@@ -15,6 +15,7 @@ const dock = [
   { to: "/", label: "Home", icon: Home },
   { to: "/vault", label: "Vault", icon: Wallet },
   { to: "/stake", label: "Stake", icon: Layers },
+  { to: "/studio", label: "Studio", icon: Bot },
   { to: "/pact", label: "Pact", icon: Handshake },
 ] as const;
 
@@ -22,6 +23,7 @@ const palette = [
   { to: "/", label: "Home" },
   { to: "/vault", label: "Vault" },
   { to: "/stake", label: "Stake" },
+  { to: "/studio", label: "AI Studio" },
   { to: "/pact", label: "Pact" },
   { to: "/legacy", label: "Legacy" },
   { to: "/wallet", label: "Wallet" },
@@ -57,7 +59,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
       </header>
       <main key={title} className="shell-content">{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
-        <div className="mx-auto grid max-w-xl grid-cols-4">
+        <div className="mx-auto grid max-w-xl grid-cols-5">
           {dock.map((d) => (
             <Link
               key={d.to}
