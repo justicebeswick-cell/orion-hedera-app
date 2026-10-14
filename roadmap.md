@@ -1,6 +1,6 @@
 # Roadmap
 
-- [x] Apply the new uploaded glass-purple A logo across the app, browser and phone icons
+- [x] Apply the isolated purple ribbon A without an enclosing box across the app, browser and phone icons
 
 - [ ] PAUSED — Native tokenized-stock trading via SODAX (needs a Reown project id and a SODAX partner API key)
 

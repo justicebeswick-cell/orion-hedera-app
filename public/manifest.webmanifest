@@ -7,7 +7,7 @@
   "background_color": "#050308",
   "theme_color": "#050308",
   "icons": [
-    { "src": "/icon-192-aurion-glass.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icon-512-aurion-glass.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "/icon-192-aurion-a.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512-aurion-a.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }
