@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Apply the new uploaded glass-purple A logo across the app, browser and phone icons
+
 - [ ] PAUSED — Native tokenized-stock trading via SODAX (needs a Reown project id and a SODAX partner API key)
 
 - [x] Polish staking company logo presentation
