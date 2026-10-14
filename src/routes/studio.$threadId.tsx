@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, isToolUIPart, getToolName, type UIMessage } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Copy } from "lucide-react";
 import { Shell, SignButton, AurionLogo } from "@/components/aurion";
 import { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton } from "@/components/ai-elements/conversation";
@@ -40,6 +40,7 @@ function ThreadPage() {
   );
 }
 
+const startersSent = new Set<string>();
 const TOOL_TITLES: Record<string, string> = { get_wallet_overview: "Reading your wallet", get_recent_activity: "Reading your activity", draft_send: "Drafting a send" };
 
 function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessage[] }) {
@@ -61,10 +62,11 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
   const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => { if (messages.length && !busy) saveThread(threadId, messages); }, [messages, busy, threadId]);
-  const sentStarter = useRef(false);
   useEffect(() => {
-    if (q && !sentStarter.current && initial.length === 0) { sentStarter.current = true; sendMessage({ text: q }); }
-  }, [q, initial.length, sendMessage]);
+    if (!q || initial.length > 0 || startersSent.has(threadId)) return;
+    const t = setTimeout(() => { startersSent.add(threadId); sendMessage({ text: q }); }, 50);
+    return () => clearTimeout(t);
+  }, [q, initial.length, sendMessage, threadId]);
 
   return (
     <div className="flex h-[calc(100dvh-15rem)] min-h-[420px] flex-col">
