@@ -174,3 +174,73 @@ function tokenWrap(e: unknown) {
   if (/INSUFFICIENT_TOKEN_BALANCE/.test(m)) return new Error("Token transfer failed: not enough of this token");
   return wrap("Token transfer", e);
 }
+
+/**
+ * Agent ID: creates a Hedera Consensus Service topic that only the owner can write to,
+ * and posts the agent's registration as the first message. Returns the topic id.
+ */
+export async function createAgentTopic(from: string, memo: string, firstMessage: string, passphrase: string) {
+  const mode = signMode(from);
+  if (mode.kind === "wallet") {
+    const { getWcSigner } = await import("./walletconnect");
+    const signer = await getWcSigner(from);
+    if (!signer) throw new Error("Wallet session ended. Reconnect your wallet.");
+    const h = await import("@hiero-ledger/sdk");
+    let topicId = "";
+    try {
+      const tx = await new h.TopicCreateTransaction()
+        .setTopicMemo(memo.slice(0, 100))
+        .setSubmitKey(signer.getAccountKey())
+        .setAdminKey(signer.getAccountKey())
+        .setMaxTransactionFee(new h.Hbar(5))
+        .freezeWithSigner(signer);
+      const r = await tx.executeWithSigner(signer);
+      const rc = await r.getReceiptWithSigner(signer);
+      topicId = rc.topicId?.toString() ?? "";
+    } catch (e) { throw wrap("Topic create", e); }
+    const txId = await postAgentMessage(from, topicId, firstMessage, passphrase);
+    return { topicId, txId };
+  }
+  const sdk = await import("@hashgraph/sdk");
+  const key = await deviceKey(from, passphrase);
+  const client = sdk.Client.forMainnet().setOperator(from, key);
+  try {
+    const r = await new sdk.TopicCreateTransaction()
+      .setTopicMemo(memo.slice(0, 100))
+      .setSubmitKey(key.publicKey)
+      .setAdminKey(key.publicKey)
+      .setMaxTransactionFee(new sdk.Hbar(5))
+      .execute(client);
+    const rc = await r.getReceipt(client);
+    const topicId = rc.topicId?.toString() ?? "";
+    if (!topicId) throw new Error("no topic id in receipt");
+    const m = await new sdk.TopicMessageSubmitTransaction().setTopicId(topicId).setMessage(firstMessage).setMaxTransactionFee(new sdk.Hbar(2)).execute(client);
+    await m.getReceipt(client);
+    return { topicId, txId: m.transactionId.toString() };
+  } catch (e) { throw wrap("Topic create", e); } finally { client.close(); }
+}
+
+/** Append one entry to an agent's on-chain log. Only the owner's key can write. */
+export async function postAgentMessage(from: string, topicId: string, message: string, passphrase: string) {
+  const mode = signMode(from);
+  if (mode.kind === "wallet") {
+    const { getWcSigner } = await import("./walletconnect");
+    const signer = await getWcSigner(from);
+    if (!signer) throw new Error("Wallet session ended. Reconnect your wallet.");
+    const h = await import("@hiero-ledger/sdk");
+    try {
+      const tx = await new h.TopicMessageSubmitTransaction().setTopicId(topicId).setMessage(message).setMaxTransactionFee(new h.Hbar(2)).freezeWithSigner(signer);
+      const r = await tx.executeWithSigner(signer);
+      return r.transactionId.toString();
+    } catch (e) { throw wrap("Topic message", e); }
+  }
+  const sdk = await import("@hashgraph/sdk");
+  const key = await deviceKey(from, passphrase);
+  const client = sdk.Client.forMainnet().setOperator(from, key);
+  try {
+    const r = await new sdk.TopicMessageSubmitTransaction().setTopicId(topicId).setMessage(message).setMaxTransactionFee(new sdk.Hbar(2)).execute(client);
+    const rc = await r.getReceipt(client);
+    if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
+    return r.transactionId.toString();
+  } catch (e) { throw wrap("Topic message", e); } finally { client.close(); }
+}
