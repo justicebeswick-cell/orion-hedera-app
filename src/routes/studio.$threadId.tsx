@@ -12,9 +12,11 @@ import { Shimmer } from "@/components/ai-elements/shimmer";
 import { getThread, saveThread } from "@/lib/studio-threads";
 import { readContacts } from "@/lib/contacts";
 import { HASHSCAN } from "@/lib/hedera";
+import { getAgent, agentStatus, agentHash, actionMessage, type Agent, type AgentStatus } from "@/lib/agents";
+import { Bot, ShieldCheck, ShieldAlert } from "lucide-react";
 
 export const Route = createFileRoute("/studio/$threadId")({
-  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined, agent: typeof s["agent"] === "string" ? (s["agent"] as string) : undefined }),
   head: () => ({
     meta: [
       { title: "Studio chat — AURION" },
@@ -30,12 +32,22 @@ export const Route = createFileRoute("/studio/$threadId")({
 
 function ThreadPage() {
   const { threadId } = Route.useParams();
+  const { agent: agentId } = Route.useSearch();
   const [initial, setInitial] = useState<UIMessage[] | null>(null);
-  useEffect(() => { setInitial(getThread(threadId)?.messages ?? []); }, [threadId]);
+  const [agent, setAgent] = useState<Agent | null>(null);
+  const [status, setStatus] = useState<AgentStatus>("unregistered");
+  useEffect(() => {
+    const t = getThread(threadId);
+    setInitial(t?.messages ?? []);
+    const a = getAgent(agentId ?? t?.agentId ?? "");
+    setAgent(a);
+    if (a) agentStatus(a).then(setStatus);
+  }, [threadId, agentId]);
   return (
     <Shell title="Studio">
       <Link to="/studio" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft size={16} /> All chats</Link>
-      {initial && <ChatWindow key={threadId} threadId={threadId} initial={initial} />}
+      {agent && <AgentBadge agent={agent} status={status} />}
+      {initial && <ChatWindow key={threadId} threadId={threadId} initial={initial} agent={agent} agentOk={status === "verified"} />}
     </Shell>
   );
 }
@@ -43,15 +55,30 @@ function ThreadPage() {
 const startersSent = new Set<string>();
 const TOOL_TITLES: Record<string, string> = { get_wallet_overview: "Reading your wallet", get_recent_activity: "Reading your activity", draft_send: "Drafting a send" };
 
-function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessage[] }) {
+function AgentBadge({ agent, status }: { agent: Agent; status: AgentStatus }) {
+  return (
+    <div className="mb-3 flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3">
+      <Bot className="text-signal" />
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold">{agent.name}</p>
+        {status === "verified" && <a className="flex items-center gap-1 text-xs text-success" target="_blank" rel="noreferrer" href={`${HASHSCAN}/topic/${agent.topicId}`}><ShieldCheck size={12} /> Agent ID {agent.topicId} · verified on Hedera</a>}
+        {status === "changed" && <p className="flex items-center gap-1 text-xs text-destructive"><ShieldAlert size={12} /> Settings changed since registration. Sends are blocked until you re-register.</p>}
+        {status === "unregistered" && <p className="flex items-center gap-1 text-xs text-muted-foreground"><ShieldAlert size={12} /> No Agent ID yet. It can chat, but can't prepare sends.</p>}
+      </div>
+    </div>
+  );
+}
+
+function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; initial: UIMessage[]; agent: Agent | null; agentOk: boolean }) {
   const { q } = Route.useSearch();
   const [account, setAccount] = useState<string | null>(null);
   const [err, setErr] = useState("");
   useEffect(() => setAccount(localStorage.getItem("aurion.account")), []);
   const transport = useMemo(() => new DefaultChatTransport({
     api: "/api/studio",
-    body: () => ({ conversationId: threadId, accountId: localStorage.getItem("aurion.account"), contacts: readContacts().map(({ name, account }) => ({ name, account })) }),
-  }), [threadId]);
+    body: () => ({ conversationId: threadId, accountId: localStorage.getItem("aurion.account"), contacts: readContacts().map(({ name, account }) => ({ name, account })),
+      agent: agent ? { name: agent.name, instructions: agent.instructions, perms: { ...agent.perms, draftSends: agent.perms.draftSends && agentOk } } : undefined }),
+  }), [threadId, agent, agentOk]);
   const { messages, sendMessage, status, stop } = useChat({
     id: threadId, messages: initial, transport,
     onError: (e) => {
@@ -61,7 +88,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
   });
   const busy = status === "submitted" || status === "streaming";
 
-  useEffect(() => { if (messages.length && !busy) saveThread(threadId, messages); }, [messages, busy, threadId]);
+  useEffect(() => { if (messages.length && !busy) saveThread(threadId, messages, agent?.id); }, [messages, busy, threadId, agent]);
   useEffect(() => {
     if (!q || initial.length > 0 || startersSent.has(threadId)) return;
     const t = setTimeout(() => { startersSent.add(threadId); sendMessage({ text: q }); }, 50);
@@ -93,7 +120,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
                             <ToolOutput output={p.output} errorText={p.errorText} />
                           </ToolContent>
                         </Tool>
-                        {name === "draft_send" && out?.ok && <DraftCard draft={out} />}
+                        {name === "draft_send" && out?.ok && <DraftCard draft={out} agent={agent} />}
                       </div>
                     );
                   }
@@ -122,7 +149,7 @@ function ChatWindow({ threadId, initial }: { threadId: string; initial: UIMessag
   );
 }
 
-function DraftCard({ draft }: { draft: { from: string; to: string; amount_hbar: number; memo: string; contact_name: string } }) {
+function DraftCard({ draft, agent }: { draft: { from: string; to: string; amount_hbar: number; memo: string; contact_name: string }; agent: Agent | null }) {
   return (
     <div className="mt-3 rounded-xl border border-primary/50 bg-secondary/40 p-4">
       <p className="text-xs uppercase tracking-widest text-muted-foreground">Ready to sign</p>
@@ -132,12 +159,25 @@ function DraftCard({ draft }: { draft: { from: string; to: string; amount_hbar: 
       <p className="mb-3 mt-2 text-xs text-muted-foreground">Check the account before you sign. Hedera sends can't be undone.</p>
       <SignButton accountId={draft.from} verb={`Send ${draft.amount_hbar} ℏ`} run={async (pass) => {
         const [{ checkSend, audit }, { sendHbar }] = await Promise.all([import("@/lib/guard"), import("@/lib/signer")]);
+        let hash = "";
+        if (agent) {
+          // Re-check the agent's Hedera-registered limits right before signing.
+          if ((await agentStatus(agent)) !== "verified") throw new Error("Agent ID check: settings don't match the Hedera registration. Re-register the agent.");
+          if (draft.amount_hbar > agent.perms.maxPerSend) throw new Error(`Agent limit: ${agent.name} may send at most ${agent.perms.maxPerSend} ℏ`);
+          if (agent.perms.contactsOnly && !readContacts().some((c) => c.account === draft.to)) throw new Error(`Agent limit: ${agent.name} may only pay saved contacts`);
+          hash = await agentHash(agent);
+        }
         const block = await checkSend(draft.from, draft.to, draft.amount_hbar);
         const detail = `${draft.from} → ${draft.to} ${draft.amount_hbar} ℏ`;
         if (block) { audit({ action: "blocked", detail: `${detail} · ${block}`, ok: false }); throw new Error(block); }
         try {
           const txId = await sendHbar(draft.from, draft.to, draft.amount_hbar, draft.memo, pass);
-          audit({ action: "send", detail: `${detail} · via Studio`, ok: true, txId });
+          audit({ action: "send", detail: `${detail} · via ${agent ? agent.name : "Studio"}`, ok: true, txId });
+          if (agent?.topicId) {
+            const { postAgentMessage } = await import("@/lib/signer");
+            await postAgentMessage(draft.from, agent.topicId, actionMessage("send", { to: draft.to, amount_hbar: draft.amount_hbar, tx: txId }, hash), pass)
+              .catch((e) => audit({ action: "agent log", detail: `${agent.name}: ${(e as Error).message}`, ok: false }));
+          }
           return txId;
         } catch (e) { audit({ action: "send", detail: `${detail} · ${(e as Error).message}`, ok: false }); throw e; }
       }} done={(txId) => (

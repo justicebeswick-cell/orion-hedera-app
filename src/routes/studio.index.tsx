@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Download } from "lucide-react";
+import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Download, Bot } from "lucide-react";
 import { Shell, Panel, Label, AurionLogo } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
 import { clearStudio, deleteThread, readImages, readThreads, saveImage, type SavedImage, type Thread } from "@/lib/studio-threads";
 import { streamImage } from "@/lib/stream-image";
+import { AgentsStudio } from "@/components/studio-agents";
+import { GenerationCanvas, saveToPhone } from "@/components/generation-canvas";
 
 export const Route = createFileRoute("/studio/")({
   head: () => ({
@@ -29,10 +31,10 @@ const starters = [
 
 function Studio() {
   const nav = useNavigate();
-  const [tab, setTab] = useState<"chat" | "images">("chat");
+  const [tab, setTab] = useState<"chat" | "images" | "agents">("chat");
   const [threads, setThreads] = useState<Thread[]>([]);
   useEffect(() => setThreads(readThreads()), []);
-  const start = (prompt?: string) => nav({ to: "/studio/$threadId", params: { threadId: crypto.randomUUID() }, search: { q: prompt } });
+  const start = (prompt?: string) => nav({ to: "/studio/$threadId", params: { threadId: crypto.randomUUID() }, search: { q: prompt, agent: undefined } });
 
   return (
     <Shell title="Studio">
@@ -44,9 +46,10 @@ function Studio() {
           <p className="text-sm text-muted-foreground">Ask, draft, write and create.</p>
         </div>
       </div>
-      <div className="mb-5 grid grid-cols-2 gap-2 rounded-full border border-border p-1" role="tablist">
+      <div className="mb-5 grid grid-cols-3 gap-1 rounded-full border border-border p-1" role="tablist">
         <Button role="tab" aria-selected={tab === "chat"} variant={tab === "chat" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("chat")}><MessagesSquare /> Chat</Button>
         <Button role="tab" aria-selected={tab === "images"} variant={tab === "images" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("images")}><ImageIcon /> Images</Button>
+        <Button role="tab" aria-selected={tab === "agents"} variant={tab === "agents" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("agents")}><Bot /> Agents</Button>
       </div>
 
       {tab === "chat" ? (
@@ -63,7 +66,7 @@ function Studio() {
               <ul className="divide-y divide-border">
                 {threads.map((t) => (
                   <li key={t.id} className="flex items-center gap-2 py-2">
-                    <Link to="/studio/$threadId" params={{ threadId: t.id }} search={{ q: undefined }} className="min-w-0 flex-1 py-1">
+                    <Link to="/studio/$threadId" params={{ threadId: t.id }} search={{ q: undefined, agent: t.agentId }} className="min-w-0 flex-1 py-1">
                       <p className="truncate text-sm">{t.title}</p>
                       <p className="text-xs text-muted-foreground">{new Date(t.updatedAt).toLocaleString()}</p>
                     </Link>
@@ -74,7 +77,7 @@ function Studio() {
             )}
           </Panel>
         </>
-      ) : <ImageStudio />}
+      ) : tab === "images" ? <ImageStudio /> : <AgentsStudio />}
 
       <Button variant="outline" className="mt-6 w-full text-destructive" onClick={() => {
         if (confirm("Delete all Studio chats and images on this device?")) { clearStudio(); setThreads([]); location.reload(); }
@@ -119,12 +122,8 @@ function ImageStudio() {
         {busy
           ? <Button variant="outline" className="mt-3 w-full" onClick={() => abort.current?.abort()}>Stop</Button>
           : <Button className="mt-3 w-full" disabled={!prompt.trim()} onClick={go}><ImageIcon /> Create</Button>}
-        {busy && !img && <p className="mt-4 text-center text-sm text-muted-foreground">Painting…</p>}
-        {img && (
-          <div className="mt-4 overflow-hidden rounded-xl">
-            <img src={img} alt={prompt} className={`w-full transition-[filter] duration-500 ${final ? "blur-0" : "blur-2xl"}`} />
-          </div>
-        )}
+        {(busy || img) && <GenerationCanvas src={img} final={final} busy={busy} alt={prompt} />}
+        {img && final && !busy && <Button variant="outline" className="mt-3 w-full" onClick={() => saveToPhone(img, prompt)}><Download /> Save to phone</Button>}
         {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
       </Panel>
       {saved.length > 0 && (
@@ -132,10 +131,10 @@ function ImageStudio() {
           <Label>Your images</Label>
           <div className="grid grid-cols-3 gap-2">
             {saved.map((s) => (
-              <a key={s.id} href={s.url} download={`aurion-${s.id.slice(0, 6)}.png`} className="group relative block overflow-hidden rounded-lg" title={s.prompt}>
+              <button key={s.id} type="button" onClick={() => saveToPhone(s.url, s.prompt)} className="relative block overflow-hidden rounded-lg" title={`Save: ${s.prompt}`} aria-label={`Save image: ${s.prompt}`}>
                 <img src={s.url} alt={s.prompt} className="aspect-square w-full object-cover" />
-                <Download className="absolute bottom-1 right-1 size-4 opacity-0 transition-opacity group-hover:opacity-100" />
-              </a>
+                <span className="absolute bottom-1 right-1 rounded-full bg-background/80 p-1"><Download className="size-3" /></span>
+              </button>
             ))}
           </div>
         </Panel>
