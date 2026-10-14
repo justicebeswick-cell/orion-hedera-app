@@ -17,6 +17,10 @@ import { Route as StakeRouteImport } from './routes/stake'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
+import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
+import { Route as ApiStudioRouteImport } from './routes/api/studio'
+import { Route as StudioIndexRouteImport } from './routes/studio.index'
+import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +62,26 @@ const ApiAskRoute = ApiAskRouteImport.update({
   path: '/api/ask',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
+  id: '/api/generate-image',
+  path: '/api/generate-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStudioRoute = ApiStudioRouteImport.update({
+  id: '/api/studio',
+  path: '/api/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioIndexRoute = StudioIndexRouteImport.update({
+  id: '/studio/',
+  path: '/studio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
+  id: '/studio/$threadId',
+  path: '/studio/$threadId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +92,10 @@ export interface FileRoutesByFullPath {
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/studio': typeof ApiStudioRoute
+  '/studio/$threadId': typeof StudioThreadIdRoute
+  '/studio/': typeof StudioIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +106,10 @@ export interface FileRoutesByTo {
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/studio': typeof ApiStudioRoute
+  '/studio/$threadId': typeof StudioThreadIdRoute
+  '/studio': typeof StudioIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +121,10 @@ export interface FileRoutesById {
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/studio': typeof ApiStudioRoute
+  '/studio/$threadId': typeof StudioThreadIdRoute
+  '/studio/': typeof StudioIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +137,10 @@ export interface FileRouteTypes {
     | '/vault'
     | '/wallet'
     | '/api/ask'
+    | '/api/generate-image'
+    | '/api/studio'
+    | '/studio/$threadId'
+    | '/studio/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +151,10 @@ export interface FileRouteTypes {
     | '/vault'
     | '/wallet'
     | '/api/ask'
+    | '/api/generate-image'
+    | '/api/studio'
+    | '/studio/$threadId'
+    | '/studio'
   id:
     | '__root__'
     | '/'
@@ -121,6 +165,10 @@ export interface FileRouteTypes {
     | '/vault'
     | '/wallet'
     | '/api/ask'
+    | '/api/generate-image'
+    | '/api/studio'
+    | '/studio/$threadId'
+    | '/studio/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +180,10 @@ export interface RootRouteChildren {
   VaultRoute: typeof VaultRoute
   WalletRoute: typeof WalletRoute
   ApiAskRoute: typeof ApiAskRoute
+  ApiGenerateImageRoute: typeof ApiGenerateImageRoute
+  ApiStudioRoute: typeof ApiStudioRoute
+  StudioThreadIdRoute: typeof StudioThreadIdRoute
+  StudioIndexRoute: typeof StudioIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +244,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAskRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/generate-image': {
+      id: '/api/generate-image'
+      path: '/api/generate-image'
+      fullPath: '/api/generate-image'
+      preLoaderRoute: typeof ApiGenerateImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/studio': {
+      id: '/api/studio'
+      path: '/api/studio'
+      fullPath: '/api/studio'
+      preLoaderRoute: typeof ApiStudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio/': {
+      id: '/studio/'
+      path: '/studio'
+      fullPath: '/studio/'
+      preLoaderRoute: typeof StudioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio/$threadId': {
+      id: '/studio/$threadId'
+      path: '/studio/$threadId'
+      fullPath: '/studio/$threadId'
+      preLoaderRoute: typeof StudioThreadIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +284,10 @@ const rootRouteChildren: RootRouteChildren = {
   VaultRoute: VaultRoute,
   WalletRoute: WalletRoute,
   ApiAskRoute: ApiAskRoute,
+  ApiGenerateImageRoute: ApiGenerateImageRoute,
+  ApiStudioRoute: ApiStudioRoute,
+  StudioThreadIdRoute: StudioThreadIdRoute,
+  StudioIndexRoute: StudioIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser } from "lucide-react";
 import { VaultDeck } from "@/components/vault-deck";
+import { RecipientField, ContactsPanel } from "@/components/contacts";
 import { Button } from "@/components/ui/button";
 import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
@@ -42,6 +43,7 @@ function Vault() {
         { key: "hbar", label: "HBAR", icon: Coins, content: <Panel><Label>HBAR balance</Label><p className="flex flex-wrap items-center gap-3 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"}<HbarLogo size={36} /></p><p className="mt-4 font-mono text-sm text-muted-foreground">{id}</p><p className="mt-6 text-sm text-muted-foreground">Held in your Hedera account. Only you can sign a transfer.</p></Panel> },
         { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
+        { key: "contacts", label: "Contacts", icon: BookUser, content: <ContactsPanel /> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },
         { key: "history", label: "Swap history", icon: History, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="history" /> },
@@ -193,7 +195,7 @@ function TokenSend({ id, tok, balance, onSent }: { id: string; tok: SwapToken; b
   const ok = ACCOUNT_RE.test(to.trim()) && to.trim() !== id && units > 0n && !over;
   return (
     <div className="mt-3 space-y-3 rounded-xl border border-border bg-secondary/40 p-3">
-      <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
+      <RecipientField value={to} onChange={setTo} self={id} />
       <div className="relative">
         <input className="field tnum pr-20" inputMode="decimal" placeholder={`Amount ${tok.symbol}`} value={amt} onChange={(e) => setAmt(e.target.value.replace(",", "."))} />
         <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-signal" onClick={() => setAmt(String(Number(balance) / 10 ** tok.decimals))}>Max</button>
@@ -293,7 +295,7 @@ function SchedulePanel({ id }: { id: string }) {
       <Label>Scheduled payments</Label>
       <p className="mb-3 text-xs text-muted-foreground">Pick a date and Hedera sends the HBAR on its own — even if this app is closed. Keep enough HBAR in your account on the day.</p>
       <div className="space-y-3">
-        <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
+        <RecipientField value={to} onChange={setTo} self={id} />
         <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
         <div className="grid grid-cols-4 gap-2">
           {(["once", "daily", "weekly", "monthly"] as const).map((f) => (
@@ -396,7 +398,7 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const ok = ACCOUNT_RE.test(to.trim()) && n > 0;
   return (
     <div className="space-y-3">
-      <input className="field font-mono tnum" placeholder="To 0.0.…" value={to} onChange={(e) => setTo(e.target.value)} />
+      <RecipientField value={to} onChange={setTo} self={id} />
       <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
       <input className="field" maxLength={100} placeholder="Note (public, optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
       <SignButton accountId={id} disabled={!ok} verb={ok ? `Send ${n} ℏ` : "Send"} run={async (pass) => {
