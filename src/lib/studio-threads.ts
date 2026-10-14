@@ -1,7 +1,7 @@
 // AI Studio chats, saved in this browser only.
 import type { UIMessage } from "ai";
 
-export type Thread = { id: string; title: string; updatedAt: number; messages: UIMessage[] };
+export type Thread = { id: string; title: string; updatedAt: number; messages: UIMessage[]; agentId?: string | undefined };
 const KEY = "aurion.studio.threads";
 const IMG = "aurion.studio.images";
 
@@ -11,11 +11,11 @@ export function readThreads(): Thread[] {
 }
 export const getThread = (id: string) => readThreads().find((t) => t.id === id) ?? null;
 
-export function saveThread(id: string, messages: UIMessage[]) {
+export function saveThread(id: string, messages: UIMessage[], agentId?: string) {
   const all = readThreads();
   const firstText = messages.find((m) => m.role === "user")?.parts.find((p) => p.type === "text") as { text?: string } | undefined;
   const title = (firstText?.text ?? "New chat").slice(0, 60);
-  const t: Thread = { id, title, updatedAt: Date.now(), messages };
+  const t: Thread = { id, title, updatedAt: Date.now(), messages, agentId };
   const next = [t, ...all.filter((x) => x.id !== id)].slice(0, 50);
   try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage full: keep chatting, skip saving */ }
 }
@@ -39,4 +39,5 @@ export function saveImage(img: SavedImage) {
 export function clearStudio() {
   localStorage.removeItem(KEY);
   localStorage.removeItem(IMG);
+  localStorage.removeItem("aurion.agents");
 }
