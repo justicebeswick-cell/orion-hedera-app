@@ -80,3 +80,40 @@ export async function sha256Hex(data: ArrayBuffer | string) {
 export function netAmount(tx: Tx, id: string) {
   return tx.transfers?.filter((t) => t.account === id).reduce((s, t) => s + t.amount, 0) ?? 0;
 }
+
+// Hedera's own type names are jargon. Say the plain word instead.
+const TX_LABELS: Record<string, string> = {
+  CRYPTOTRANSFER: "Transfer",
+  TOKENTRANSFER: "Transfer",
+  ETHEREUMTRANSACTION: "Transfer",
+  TOKENASSOCIATE: "Add token",
+  TOKENDISSOCIATE: "Remove token",
+  TOKENMINT: "Mint",
+  TOKENBURN: "Burn",
+  TOKENCREATION: "Token created",
+  TOKENUPDATE: "Token update",
+  TOKENUPGRADE: "Token update",
+  TOKENREJECT: "Token returned",
+  SCHEDULECREATE: "Scheduled payment",
+  SCHEDULEDELETE: "Cancelled payment",
+  SCHEDULESIGN: "Approval",
+  CONSENSUSCREATETOPIC: "Message log",
+  CONSENSUSSUBMITMESSAGE: "Message",
+  CRYPTOCREATEACCOUNT: "Account created",
+  CRYPTOUPDATEACCOUNT: "Account update",
+  CRYPTODELETE: "Account closed",
+  CRYPTOAPPROVEALLOWANCE: "Allowance",
+  CRYPTODELETEALLOWANCE: "Allowance removed",
+  CONTRACTCREATETRANSACTION: "Contract",
+  CONTRACTCALL: "Contract call",
+  NODECREATE: "Node",
+  NODEUPDATE: "Node",
+  NODEDELETE: "Node",
+  ATOMICBATCH: "Batch",
+};
+
+/** Plain-word label for a mirror-node transaction type. */
+export function txLabel(name: string) {
+  const key = name.toUpperCase().replace(/[^A-Z]/g, "");
+  return TX_LABELS[key] ?? name.replace(/([A-Z])/g, " $1").trim().toLowerCase();
+}

@@ -5,7 +5,7 @@ import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
 import { useAccount } from "@/lib/account";
-import { getAccount, getTransactions, getLag, hbar, fmtTs, netAmount, HASHSCAN } from "@/lib/hedera";
+import { getAccount, getTransactions, getLag, hbar, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -72,18 +72,21 @@ function Home() {
       <AskActivity accountId={id} />
 
       <Label><span className="mt-8 block">Receipts</span></Label>
-      <div className="panel divide-y">
-        {txs.data?.length === 0 && <p className="p-4 text-sm text-muted-foreground">No transactions.</p>}
+      <div className="panel divide-y overflow-hidden">
+        {txs.data?.length === 0 && (
+          <p className="px-4 py-5 font-display text-lg text-muted-foreground">No receipts yet.</p>
+        )}
         {txs.data?.map((t) => {
           const n = netAmount(t, id);
           return (
             <a key={t.transaction_id + t.consensus_timestamp} href={`${HASHSCAN}/transaction/${t.consensus_timestamp}`}
-              target="_blank" rel="noreferrer" className="flex items-center justify-between px-4 py-3 text-sm">
-              <div>
-                <p>{t.name.replace(/([A-Z])/g, " $1").trim().toLowerCase()}</p>
-                <p className="text-xs text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
+              target="_blank" rel="noreferrer"
+              className="flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-secondary/40">
+              <div className="min-w-0">
+                <p className="font-display text-xl leading-tight tracking-[0.015em] text-foreground">{txLabel(t.name)}</p>
+                <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
-              <span className={`tnum ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
+              <span className={`text-base font-medium tnum tracking-tight ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
                 {n > 0 ? "+" : ""}{hbar(n)}
               </span>
             </a>
