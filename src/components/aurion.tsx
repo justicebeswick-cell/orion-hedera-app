@@ -5,7 +5,7 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HbarLogo } from "@/components/hbar";
 import aurionLogo from "@/assets/aurion-logo.png.asset.json";
 import { Button } from "@/components/ui/button";
-import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot } from "lucide-react";
+import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
   return <img src={aurionLogo.url} alt="AURION logo" width={768} height={768} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
@@ -27,6 +27,7 @@ const palette = [
   { to: "/pact", label: "Pact" },
   { to: "/legacy", label: "Legacy" },
   { to: "/wallet", label: "Wallet" },
+  { to: "/settings", label: "Settings" },
   { to: "/about", label: "About" },
 ] as const;
 
@@ -55,7 +56,10 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
           </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
+        <div className="flex">
+          <Button asChild variant="ghost" size="icon" title="Settings" aria-label="Settings"><Link to="/settings"><Settings /></Link></Button>
+          <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
+        </div>
       </header>
       <main key={title} className="shell-content">{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
