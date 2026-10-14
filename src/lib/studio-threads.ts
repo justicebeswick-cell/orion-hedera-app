@@ -39,5 +39,4 @@ export function saveImage(img: SavedImage) {
 export function clearStudio() {
   localStorage.removeItem(KEY);
   localStorage.removeItem(IMG);
-  localStorage.removeItem("aurion.agents");
 }
