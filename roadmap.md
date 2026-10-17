@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Check Gemini and MoonPay HBAR feeds, add Uphold pricing and manual live-rate refresh
+
 - [x] Apply the isolated purple ribbon A without an enclosing box across the app, browser and phone icons
 
 - [ ] PAUSED — Native tokenized-stock trading via SODAX (needs a Reown project id and a SODAX partner API key)
