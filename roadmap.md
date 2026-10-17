@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Replace low-quality company logos with authentic detailed artwork and verify every staking logo on black
+- [x] Replace low-quality company logos with authentic detailed artwork and verify every staking logo on black
+- [ ] Publish the verified company-logo update
 
 - [x] Verify each Buy HBAR exchange destination and prevent mismatched exchange links
 
