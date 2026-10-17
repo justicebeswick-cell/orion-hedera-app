@@ -8,11 +8,13 @@ export function useAccount() {
   const [id, setId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    setId(localStorage.getItem(KEY));
+    const cur = localStorage.getItem(KEY);
+    setId(cur);
+    if (cur) import("./keystore").then((k) => k.rememberAccount(cur));
     setReady(true);
   }, []);
   const bind = (v: string | null) => {
-    if (v) localStorage.setItem(KEY, v);
+    if (v) { localStorage.setItem(KEY, v); import("./keystore").then((k) => k.rememberAccount(v)); }
     else localStorage.removeItem(KEY);
     setId(v);
   };

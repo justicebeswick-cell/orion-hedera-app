@@ -21,6 +21,43 @@ export async function saveKeystore(privHex: string, pass: string, meta: StoredKe
   const key = await deriveKey(pass, salt);
   const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(privHex)));
   localStorage.setItem(KS, JSON.stringify({ v: 1, salt: b64(salt), iv: b64(iv), ct: b64(ct), ...meta }));
+  rememberKeystore();
+}
+
+// Saved accounts: every account used on this device, with its encrypted key blob if it has one.
+const SAVED = "aurion.accounts";
+export type SavedAccount = { id: string; label: string; blob?: string; added: number };
+function readSaved(): Record<string, SavedAccount> {
+  try { return JSON.parse(localStorage.getItem(SAVED) ?? "{}"); } catch { return {}; }
+}
+export function listSavedAccounts(): SavedAccount[] {
+  return Object.values(readSaved()).sort((a, b) => b.added - a.added);
+}
+export function rememberAccount(id: string) {
+  const all = readSaved();
+  const cur = localStorage.getItem(KS);
+  const curId = cur ? JSON.parse(cur).accountId : null;
+  all[id] = { label: all[id]?.label ?? "", added: Date.now(), blob: curId === id ? cur! : all[id]?.blob };
+  localStorage.setItem(SAVED, JSON.stringify(all));
+}
+function rememberKeystore() {
+  const cur = localStorage.getItem(KS);
+  const id = cur ? JSON.parse(cur).accountId : null;
+  if (id) rememberAccount(id);
+}
+export function renameSavedAccount(id: string, label: string) {
+  const all = readSaved(); if (!all[id]) return;
+  all[id].label = label; localStorage.setItem(SAVED, JSON.stringify(all));
+}
+export function forgetSavedAccount(id: string) {
+  const all = readSaved(); delete all[id]; localStorage.setItem(SAVED, JSON.stringify(all));
+}
+/** Make a saved account's key the active device key. */
+export function activateSavedAccount(id: string): boolean {
+  const blob = readSaved()[id]?.blob;
+  if (!blob) return false;
+  localStorage.setItem(KS, blob);
+  return true;
 }
 
 export function readKeystoreMeta(): StoredKey | null {
@@ -34,6 +71,7 @@ export function setKeystoreAccount(accountId: string) {
   const s = localStorage.getItem(KS);
   if (!s) return;
   localStorage.setItem(KS, JSON.stringify({ ...JSON.parse(s), accountId }));
+  rememberKeystore();
 }
 
 export async function unlockKeystore(pass: string): Promise<string> {
