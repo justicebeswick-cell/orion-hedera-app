@@ -78,6 +78,13 @@ const PAIRS = [
   { name: "AURION today", display: '"Cormorant Garamond", serif', sans: '"Sora", sans-serif', mono: '"JetBrains Mono", monospace' },
 ];
 
+const NEW_PAIRS = [
+  { name: "Bookroom", display: '"EB Garamond", serif', sans: '"Manrope", sans-serif', mono: '"Fragment Mono", monospace' },
+  { name: "Vercel-clean", display: '"Libre Caslon Display", serif', sans: '"Geist", sans-serif', mono: '"Geist Mono", monospace' },
+  { name: "Soft money", display: '"Petrona", serif', sans: '"Urbanist", sans-serif', mono: '"Sometype Mono", monospace' },
+  { name: "Bold poster", display: '"DM Serif Display", serif', sans: '"Outfit", sans-serif', mono: '"Kode Mono", monospace' },
+];
+
 export const Route = createFileRoute("/fonts")({
   head: () => ({
     meta: [
@@ -96,6 +103,9 @@ const SHEETS = [
   "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@400;500;600&family=Marcellus&family=Bodoni+Moda:opsz,wght@6..96,400..700&family=Prata&family=Playfair+Display:wght@400;500;600&family=Instrument+Serif&family=Newsreader:opsz,wght@6..72,400..600&family=Young+Serif&family=Fraunces:opsz,wght@9..144,400..600&display=swap",
   "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;600&family=Onest:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,400..600&family=Jost:wght@400;500;600&family=Figtree:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap",
   "https://fonts.googleapis.com/css2?family=Victor+Mono:ital,wght@0,400;0,500&family=Spline+Sans+Mono:wght@400;500&family=Azeret+Mono:wght@400;500;600&family=DM+Mono:wght@400;500&family=Chivo+Mono:wght@400;500;600&family=Share+Tech+Mono&family=Martian+Mono:wdth,wght@75..100,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap",
+  "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Spectral:wght@400;500;600&family=Libre+Caslon+Display&family=DM+Serif+Display&family=Crimson+Pro:wght@400;500;600&family=Petrona:wght@400;500;600&family=Radley&display=swap",
+  "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Outfit:wght@400;500;600&family=Urbanist:wght@400;500;600&family=Geist:wght@400;500;600&family=Albert+Sans:wght@400;500;600&family=Geologica:wght@400;500;600&family=Gantari:wght@400;500;600&display=swap",
+  "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Fira+Code:wght@400;500&family=Red+Hat+Mono:ital,wght@0,400;0,500&family=Fragment+Mono&family=Sometype+Mono:wght@400;500&family=Kode+Mono:wght@400;500&family=Reddit+Mono:wght@400;500&display=swap",
 ];
 
 function Fonts() {
@@ -116,7 +126,16 @@ function Fonts() {
         judge it the way you'll actually see it.
       </p>
 
-      <Label><span className="mt-2 block">Serifs — the words that matter</span></Label>
+      <Label><span className="mt-2 block">New — round two, serifs</span></Label>
+      {NEW_SERIFS.map((f) => <Sample key={f.name} f={f} />)}
+
+      <Label><span className="mt-8 block">New — round two, sans</span></Label>
+      {NEW_SANS.map((f) => <Sample key={f.name} f={f} />)}
+
+      <Label><span className="mt-8 block">New — round two, mono</span></Label>
+      {NEW_MONOS.map((f) => <Sample key={f.name} f={f} />)}
+
+      <Label><span className="mt-8 block">Round one — serifs</span></Label>
       {SERIFS.map((f) => <Sample key={f.name} f={f} />)}
 
       <Label><span className="mt-8 block">Sans — buttons, menus, everything else</span></Label>
