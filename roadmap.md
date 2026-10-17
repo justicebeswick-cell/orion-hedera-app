@@ -32,6 +32,7 @@
 - [x] Replace app logo with the new purple A (no box, transparent) and make the app backdrop pure black
 
 - [ ] Pick the app's type direction — samples live at /fonts (serif, sans, mono and three full looks), nothing swapped in yet
+- [x] Receipt labels: Optima applied, then switched to Worstveld Sting (exact face is paid on MyFonts; free Worstveld Sling used as the stand-in until a licensed file is supplied)
 - [x] Vault cards swipe from anywhere (including over buttons)
 - [x] Biometric signing — turn on from Settings, sign any transaction with Face ID / fingerprint
 - [x] Saved accounts list for signing back in
