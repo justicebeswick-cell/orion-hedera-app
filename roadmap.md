@@ -31,4 +31,4 @@
 - [x] Vault cards swipe from anywhere (including over buttons)
 - [x] Biometric signing — turn on from Settings, sign any transaction with Face ID / fingerprint
 - [x] Saved accounts list for signing back in
-- [ ] Buy HBAR in-app via Onramper (best-rate aggregator) — built; blocked on VITE_ONRAMPER_API_KEY from onramper.com
+- [ ] Buy HBAR seamlessly inside AURION through a connected provider — MoonPay embed prepared; blocked on approved provider access and MoonPay publishable/signing keys. Exchange login alone does not enable embedded fiat checkout.
