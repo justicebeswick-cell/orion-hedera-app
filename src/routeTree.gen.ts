@@ -20,6 +20,7 @@ import { Route as VaultRouteImport } from './routes/vault'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
 import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
+import { Route as ApiHbarRatesRouteImport } from './routes/api/hbar-rates'
 import { Route as ApiStudioRouteImport } from './routes/api/studio'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
@@ -79,6 +80,11 @@ const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
   path: '/api/generate-image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHbarRatesRoute = ApiHbarRatesRouteImport.update({
+  id: '/api/hbar-rates',
+  path: '/api/hbar-rates',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStudioRoute = ApiStudioRouteImport.update({
   id: '/api/studio',
   path: '/api/studio',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/': typeof StudioIndexRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio': typeof StudioIndexRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/': typeof StudioIndexRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/ask'
     | '/api/generate-image'
+    | '/api/hbar-rates'
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio/'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/ask'
     | '/api/generate-image'
+    | '/api/hbar-rates'
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/ask'
     | '/api/generate-image'
+    | '/api/hbar-rates'
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio/'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   ApiAskRoute: typeof ApiAskRoute
   ApiGenerateImageRoute: typeof ApiGenerateImageRoute
+  ApiHbarRatesRoute: typeof ApiHbarRatesRoute
   ApiStudioRoute: typeof ApiStudioRoute
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioIndexRoute: typeof StudioIndexRoute
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/hbar-rates': {
+      id: '/api/hbar-rates'
+      path: '/api/hbar-rates'
+      fullPath: '/api/hbar-rates'
+      preLoaderRoute: typeof ApiHbarRatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/studio': {
       id: '/api/studio'
       path: '/api/studio'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   ApiAskRoute: ApiAskRoute,
   ApiGenerateImageRoute: ApiGenerateImageRoute,
+  ApiHbarRatesRoute: ApiHbarRatesRoute,
   ApiStudioRoute: ApiStudioRoute,
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioIndexRoute: StudioIndexRoute,
