@@ -16,6 +16,16 @@ const SERIFS = [
   { name: "Fraunces", stack: '"Fraunces", serif', note: "modern with character" },
 ];
 
+const NEW_SERIFS = [
+  { name: "EB Garamond", stack: '"EB Garamond", serif', note: "the book serif — quiet, timeless" },
+  { name: "Spectral", stack: '"Spectral", serif', note: "made for screens, very even" },
+  { name: "Libre Caslon Display", stack: '"Libre Caslon Display", serif', note: "elegant, tall, luxurious" },
+  { name: "DM Serif Display", stack: '"DM Serif Display", serif', note: "thick, confident, poster-like" },
+  { name: "Crimson Pro", stack: '"Crimson Pro", serif', note: "soft and bookish" },
+  { name: "Petrona", stack: '"Petrona", serif', note: "light, contemporary serif" },
+  { name: "Radley", stack: '"Radley", serif', note: "delicate, old London" },
+];
+
 const SANS = [
   { name: "Sora", stack: '"Sora", sans-serif', note: "in use now — geometric" },
   { name: "Hanken Grotesk", stack: '"Hanken Grotesk", sans-serif', note: "friendly, grown-up" },
@@ -27,6 +37,16 @@ const SANS = [
   { name: "Space Grotesk", stack: '"Space Grotesk", sans-serif', note: "techy, angular" },
   { name: "Syne", stack: '"Syne", sans-serif', note: "futuristic capitals" },
   { name: "Instrument Sans", stack: '"Instrument Sans", sans-serif', note: "quiet, very clean" },
+];
+
+const NEW_SANS = [
+  { name: "Manrope", stack: '"Manrope", sans-serif', note: "soft geometric — very polished" },
+  { name: "Outfit", stack: '"Outfit", sans-serif', note: "clean geometric, friendly" },
+  { name: "Urbanist", stack: '"Urbanist", sans-serif', note: "airy, low-contrast, calm" },
+  { name: "Geist", stack: '"Geist", sans-serif', note: "the Vercel font — sharp and neutral" },
+  { name: "Albert Sans", stack: '"Albert Sans", sans-serif', note: "Scandinavian, even, modern" },
+  { name: "Geologica", stack: '"Geologica", sans-serif', note: "humane, highly readable" },
+  { name: "Gantari", stack: '"Gantari", sans-serif', note: "rounded, easy, light" },
 ];
 
 const MONOS = [
@@ -41,11 +61,28 @@ const MONOS = [
   { name: "IBM Plex Mono", stack: '"IBM Plex Mono", monospace', note: "data-focused" },
 ];
 
+const NEW_MONOS = [
+  { name: "Geist Mono", stack: '"Geist Mono", monospace', note: "pairs with Geist — very sharp" },
+  { name: "Fira Code", stack: '"Fira Code", monospace', note: "developer favorite, clean" },
+  { name: "Red Hat Mono", stack: '"Red Hat Mono", monospace', note: "industrial, has a real italic" },
+  { name: "Fragment Mono", stack: '"Fragment Mono", monospace', note: "Helvetica, but monospaced" },
+  { name: "Sometype Mono", stack: '"Sometype Mono", monospace', note: "warm, easy to read" },
+  { name: "Kode Mono", stack: '"Kode Mono", monospace', note: "squared, techy, distinctive" },
+  { name: "Reddit Mono", stack: '"Reddit Mono", monospace', note: "modern, even width" },
+];
+
 const PAIRS = [
   { name: "Monument", display: '"Cinzel", serif', sans: '"Hanken Grotesk", sans-serif', mono: '"Victor Mono", monospace' },
   { name: "Whisper", display: '"Marcellus", serif', sans: '"Onest", sans-serif', mono: '"DM Mono", monospace' },
   { name: "Editorial", display: '"Newsreader", serif', sans: '"Schibsted Grotesk", sans-serif', mono: '"Spline Sans Mono", monospace' },
   { name: "AURION today", display: '"Cormorant Garamond", serif', sans: '"Sora", sans-serif', mono: '"JetBrains Mono", monospace' },
+];
+
+const NEW_PAIRS = [
+  { name: "Bookroom", display: '"EB Garamond", serif', sans: '"Manrope", sans-serif', mono: '"Fragment Mono", monospace' },
+  { name: "Vercel-clean", display: '"Libre Caslon Display", serif', sans: '"Geist", sans-serif', mono: '"Geist Mono", monospace' },
+  { name: "Soft money", display: '"Petrona", serif', sans: '"Urbanist", sans-serif', mono: '"Sometype Mono", monospace' },
+  { name: "Bold poster", display: '"DM Serif Display", serif', sans: '"Outfit", sans-serif', mono: '"Kode Mono", monospace' },
 ];
 
 export const Route = createFileRoute("/fonts")({
@@ -66,6 +103,9 @@ const SHEETS = [
   "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@400;500;600&family=Marcellus&family=Bodoni+Moda:opsz,wght@6..96,400..700&family=Prata&family=Playfair+Display:wght@400;500;600&family=Instrument+Serif&family=Newsreader:opsz,wght@6..72,400..600&family=Young+Serif&family=Fraunces:opsz,wght@9..144,400..600&display=swap",
   "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;600&family=Onest:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,400..600&family=Jost:wght@400;500;600&family=Figtree:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap",
   "https://fonts.googleapis.com/css2?family=Victor+Mono:ital,wght@0,400;0,500&family=Spline+Sans+Mono:wght@400;500&family=Azeret+Mono:wght@400;500;600&family=DM+Mono:wght@400;500&family=Chivo+Mono:wght@400;500;600&family=Share+Tech+Mono&family=Martian+Mono:wdth,wght@75..100,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap",
+  "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Spectral:wght@400;500;600&family=Libre+Caslon+Display&family=DM+Serif+Display&family=Crimson+Pro:wght@400;500;600&family=Petrona:wght@400;500;600&family=Radley&display=swap",
+  "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Outfit:wght@400;500;600&family=Urbanist:wght@400;500;600&family=Geist:wght@400;500;600&family=Albert+Sans:wght@400;500;600&family=Geologica:wght@400;500;600&family=Gantari:wght@400;500;600&display=swap",
+  "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Fira+Code:wght@400;500&family=Red+Hat+Mono:ital,wght@0,400;0,500&family=Fragment+Mono&family=Sometype+Mono:wght@400;500&family=Kode+Mono:wght@400;500&family=Reddit+Mono:wght@400;500&display=swap",
 ];
 
 function Fonts() {
@@ -86,7 +126,16 @@ function Fonts() {
         judge it the way you'll actually see it.
       </p>
 
-      <Label><span className="mt-2 block">Serifs — the words that matter</span></Label>
+      <Label><span className="mt-2 block">New — round two, serifs</span></Label>
+      {NEW_SERIFS.map((f) => <Sample key={f.name} f={f} />)}
+
+      <Label><span className="mt-8 block">New — round two, sans</span></Label>
+      {NEW_SANS.map((f) => <Sample key={f.name} f={f} />)}
+
+      <Label><span className="mt-8 block">New — round two, mono</span></Label>
+      {NEW_MONOS.map((f) => <Sample key={f.name} f={f} />)}
+
+      <Label><span className="mt-8 block">Round one — serifs</span></Label>
       {SERIFS.map((f) => <Sample key={f.name} f={f} />)}
 
       <Label><span className="mt-8 block">Sans — buttons, menus, everything else</span></Label>
@@ -95,7 +144,12 @@ function Fonts() {
       <Label><span className="mt-8 block">Monospace — numbers, dates, account ids</span></Label>
       {MONOS.map((f) => <Sample key={f.name} f={f} />)}
 
-      <Label><span className="mt-8 block">Full looks — three fonts working together</span></Label>
+      <Label><span className="mt-8 block">New — round two, full looks</span></Label>
+      <div className="space-y-4">
+        {NEW_PAIRS.map((p) => <Mock key={p.name} p={p} />)}
+      </div>
+
+      <Label><span className="mt-8 block">Round one — full looks</span></Label>
       <div className="space-y-4">
         {PAIRS.map((p) => <Mock key={p.name} p={p} />)}
       </div>
