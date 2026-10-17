@@ -3,7 +3,7 @@ import { Panel, Label } from "@/components/aurion";
 /** Buy HBAR with a card, Apple Pay, Google Pay or bank transfer.
  * Onramper compares every provider (MoonPay, Banxa, Transak, …) and shows the best rate first. */
 export function BuyHbar({ id }: { id: string }) {
-  const key = import.meta.env.VITE_ONRAMPER_API_KEY as string | undefined;
+  const key = import.meta.env['VITE_ONRAMPER_API_KEY'] as string | undefined;
   if (!key) return (
     <Panel>
       <Label>Buy HBAR</Label>

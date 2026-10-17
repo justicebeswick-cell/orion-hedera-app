@@ -26,7 +26,7 @@ export async function saveKeystore(privHex: string, pass: string, meta: StoredKe
 
 // Saved accounts: every account used on this device, with its encrypted key blob if it has one.
 const SAVED = "aurion.accounts";
-export type SavedAccount = { id: string; label: string; blob?: string; added: number };
+export type SavedAccount = { id: string; label: string; blob?: string | undefined; added: number };
 function readSaved(): Record<string, SavedAccount> {
   try { return JSON.parse(localStorage.getItem(SAVED) ?? "{}"); } catch { return {}; }
 }
