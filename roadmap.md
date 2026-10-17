@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Add Uphold pricing and manual live-rate refresh; remove Gemini and MoonPay from Buy HBAR
+- [x] Add Uphold pricing and manual live-rate refresh; remove Gemini and MoonPay from Buy HBAR
 
 - [x] Apply the isolated purple ribbon A without an enclosing box across the app, browser and phone icons
 
