@@ -83,10 +83,10 @@ function Home() {
               target="_blank" rel="noreferrer"
               className="flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-secondary/40">
               <div className="min-w-0">
-                <p className="font-display text-2xl font-medium italic leading-tight tracking-[0.01em] text-foreground">{txLabel(t.name)}</p>
+                <p className="font-receipt text-2xl leading-tight text-foreground">{txLabel(t.name)}</p>
                 <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
-              <span className={`font-display text-xl italic tnum tracking-tight ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
+              <span className={`font-sans text-lg font-medium tnum tracking-tight ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
                 {n > 0 ? "+" : ""}{hbar(n)}
               </span>
             </a>
