@@ -16,6 +16,16 @@ const SERIFS = [
   { name: "Fraunces", stack: '"Fraunces", serif', note: "modern with character" },
 ];
 
+const NEW_SERIFS = [
+  { name: "EB Garamond", stack: '"EB Garamond", serif', note: "the book serif — quiet, timeless" },
+  { name: "Spectral", stack: '"Spectral", serif', note: "made for screens, very even" },
+  { name: "Libre Caslon Display", stack: '"Libre Caslon Display", serif', note: "elegant, tall, luxurious" },
+  { name: "DM Serif Display", stack: '"DM Serif Display", serif', note: "thick, confident, poster-like" },
+  { name: "Crimson Pro", stack: '"Crimson Pro", serif', note: "soft and bookish" },
+  { name: "Petrona", stack: '"Petrona", serif', note: "light, contemporary serif" },
+  { name: "Radley", stack: '"Radley", serif', note: "delicate, old London" },
+];
+
 const SANS = [
   { name: "Sora", stack: '"Sora", sans-serif', note: "in use now — geometric" },
   { name: "Hanken Grotesk", stack: '"Hanken Grotesk", sans-serif', note: "friendly, grown-up" },
@@ -29,6 +39,16 @@ const SANS = [
   { name: "Instrument Sans", stack: '"Instrument Sans", sans-serif', note: "quiet, very clean" },
 ];
 
+const NEW_SANS = [
+  { name: "Manrope", stack: '"Manrope", sans-serif', note: "soft geometric — very polished" },
+  { name: "Outfit", stack: '"Outfit", sans-serif', note: "clean geometric, friendly" },
+  { name: "Urbanist", stack: '"Urbanist", sans-serif', note: "airy, low-contrast, calm" },
+  { name: "Geist", stack: '"Geist", sans-serif', note: "the Vercel font — sharp and neutral" },
+  { name: "Albert Sans", stack: '"Albert Sans", sans-serif', note: "Scandinavian, even, modern" },
+  { name: "Geologica", stack: '"Geologica", sans-serif', note: "humane, highly readable" },
+  { name: "Gantari", stack: '"Gantari", sans-serif', note: "rounded, easy, light" },
+];
+
 const MONOS = [
   { name: "JetBrains Mono", stack: '"JetBrains Mono", monospace', note: "in use now — crisp" },
   { name: "Victor Mono", stack: '"Victor Mono", monospace', note: "elegant, has a real italic" },
@@ -39,6 +59,16 @@ const MONOS = [
   { name: "Share Tech Mono", stack: '"Share Tech Mono", monospace', note: "retro terminal" },
   { name: "Martian Mono", stack: '"Martian Mono", monospace', note: "very wide, striking" },
   { name: "IBM Plex Mono", stack: '"IBM Plex Mono", monospace', note: "data-focused" },
+];
+
+const NEW_MONOS = [
+  { name: "Geist Mono", stack: '"Geist Mono", monospace', note: "pairs with Geist — very sharp" },
+  { name: "Fira Code", stack: '"Fira Code", monospace', note: "developer favorite, clean" },
+  { name: "Red Hat Mono", stack: '"Red Hat Mono", monospace', note: "industrial, has a real italic" },
+  { name: "Fragment Mono", stack: '"Fragment Mono", monospace', note: "Helvetica, but monospaced" },
+  { name: "Sometype Mono", stack: '"Sometype Mono", monospace', note: "warm, easy to read" },
+  { name: "Kode Mono", stack: '"Kode Mono", monospace', note: "squared, techy, distinctive" },
+  { name: "Reddit Mono", stack: '"Reddit Mono", monospace', note: "modern, even width" },
 ];
 
 const PAIRS = [
