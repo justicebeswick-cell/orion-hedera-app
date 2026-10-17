@@ -27,4 +27,4 @@
 - [x] Scheduled and recurring HBAR payments in the Vault
 - [x] Replace app logo with the new purple A (no box, transparent) and make the app backdrop pure black
 
-- [ ] Pick the app's type direction — user is reviewing font options, nothing swapped in yet
+- [ ] Pick the app's type direction — samples live at /fonts (serif, sans, mono and three full looks), nothing swapped in yet
