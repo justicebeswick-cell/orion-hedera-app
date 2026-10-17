@@ -31,4 +31,4 @@
 - [x] Vault cards swipe from anywhere (including over buttons)
 - [x] Biometric signing — turn on from Settings, sign any transaction with Face ID / fingerprint
 - [x] Saved accounts list for signing back in
-- [ ] Buy HBAR seamlessly inside AURION through a connected provider — MoonPay embed prepared; blocked on approved provider access and MoonPay publishable/signing keys. Exchange login alone does not enable embedded fiat checkout.
+- [ ] Compare exchange rates, authorize each user's exchange account, buy HBAR and withdraw to their connected AURION wallet — blocked on exchange-approved application access with trading and withdrawal permissions; Coinbase OAuth client creation is limited to approved partners. Do not substitute MoonPay for this requested flow.
