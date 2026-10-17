@@ -1,7 +1,7 @@
 @font-face {
-  font-family: "Optima Alt";
-  src: url("@/assets/fonts/optima-alt.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "Worstveld";
+  src: url("@/assets/fonts/worstveld.woff2") format("woff2");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -16,7 +16,7 @@
   --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-display: "Cormorant Garamond", "Sora", ui-serif, Georgia, serif;
-  --font-receipt: "Optima", "Optima Alt", "Cormorant Garamond", ui-sans-serif, sans-serif;
+  --font-receipt: "Worstveld", "Cormorant Garamond", cursive;
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
@@ -140,7 +140,7 @@
 .deck-dot-active { width: 20px; background: var(--primary); }
 .node-logo { padding: 0; border-radius: 0; }
 .node-logo-image { background: transparent; filter: drop-shadow(0 2px 10px color-mix(in oklab, var(--signal) 18%, transparent)); }
-.receipt-label { font-weight: 500; font-variation-settings: "FLAR" 100; }
+.receipt-label { font-weight: 400; }
 .shell-content { animation: page-enter .28s ease both; }
 @keyframes page-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; } .launch-screen { animation: none; } }
