@@ -13,24 +13,35 @@ const EXCHANGES = [
 
 type Rates = Record<string, number | null>;
 
-/** Onramper public (pk_) key — publishable, safe in the browser. Paste it here to turn on in-app buying. */
-const ONRAMPER_KEY = (import.meta.env['VITE_ONRAMPER_API_KEY'] as string | undefined) ?? "";
+/** MoonPay publishable (pk_) key — safe in the browser. The secret key stays on the server for URL signing. */
+const MOONPAY_KEY = (import.meta.env['VITE_MOONPAY_API_KEY'] as string | undefined) ?? "";
 
 export function BuyHbar({ id }: { id: string }) {
-  if (ONRAMPER_KEY) return <BuyInApp id={id} />;
+  if (MOONPAY_KEY) return <BuyInApp id={id} />;
   return <BuyOnExchange id={id} />;
 }
 
 function BuyInApp({ id }: { id: string }) {
-  const q = new URLSearchParams({
-    apiKey: ONRAMPER_KEY, mode: "buy", defaultCrypto: "hbar", onlyCryptos: "hbar", wallets: `hbar:${id}`,
-    defaultFiat: "usd", defaultPaymentMethod: "googlepay", themeName: "dark", primaryColor: "8b5cf6", containerColor: "000000", borderRadius: "1",
-  });
+  const [src, setSrc] = useState<string | null>(null);
+  const [err, setErr] = useState(false);
+  useEffect(() => {
+    const q = new URLSearchParams({
+      apiKey: MOONPAY_KEY, currencyCode: "hbar", walletAddress: id, baseCurrencyCode: "usd",
+      paymentMethod: "google_pay", theme: "dark", colorCode: "#8b5cf6",
+    });
+    const url = `https://buy.moonpay.com?${q}`;
+    fetch("/api/moonpay-sign", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ url }) })
+      .then((r) => r.json()).then((j) => j.signature ? setSrc(`${url}&signature=${encodeURIComponent(j.signature)}`) : setErr(true))
+      .catch(() => setErr(true));
+  }, [id]);
+  if (err) return <BuyOnExchange id={id} />;
   return (
     <Panel>
       <Label>Buy HBAR</Label>
-      <p className="mb-3 text-sm text-muted-foreground">Pay with Google Pay, Apple Pay, card or bank. MoonPay, Transak, Banxa and more are compared; the best rate shows first. HBAR lands in {id}.</p>
-      <iframe data-no-swipe title="Buy HBAR" src={`https://buy.onramper.com/?${q}`} allow="accelerometer; autoplay; camera; gyroscope; payment; microphone" className="h-[630px] w-full rounded-lg border border-border" />
+      <p className="mb-3 text-sm text-muted-foreground">Pay with Google Pay, Apple Pay or card through MoonPay. HBAR lands in {id}.</p>
+      {src
+        ? <iframe data-no-swipe title="Buy HBAR with MoonPay" src={src} allow="accelerometer; autoplay; camera; gyroscope; payment" className="h-[630px] w-full rounded-lg border border-border" />
+        : <div className="h-[630px] w-full animate-pulse rounded-lg border border-border bg-card" />}
     </Panel>
   );
 }
