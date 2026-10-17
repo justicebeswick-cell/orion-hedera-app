@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as FontsRouteImport } from './routes/fonts'
 import { Route as LegacyRouteImport } from './routes/legacy'
 import { Route as PactRouteImport } from './routes/pact'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -31,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FontsRoute = FontsRouteImport.update({
+  id: '/fonts',
+  path: '/fonts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegacyRoute = LegacyRouteImport.update({
@@ -92,6 +98,7 @@ const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/fonts': typeof FontsRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
   '/settings': typeof SettingsRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/fonts': typeof FontsRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
   '/settings': typeof SettingsRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/fonts': typeof FontsRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
   '/settings': typeof SettingsRoute
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/fonts'
     | '/legacy'
     | '/pact'
     | '/settings'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/fonts'
     | '/legacy'
     | '/pact'
     | '/settings'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/fonts'
     | '/legacy'
     | '/pact'
     | '/settings'
@@ -186,6 +198,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  FontsRoute: typeof FontsRoute
   LegacyRoute: typeof LegacyRoute
   PactRoute: typeof PactRoute
   SettingsRoute: typeof SettingsRoute
@@ -213,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fonts': {
+      id: '/fonts'
+      path: '/fonts'
+      fullPath: '/fonts'
+      preLoaderRoute: typeof FontsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legacy': {
@@ -298,6 +318,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  FontsRoute: FontsRoute,
   LegacyRoute: LegacyRoute,
   PactRoute: PactRoute,
   SettingsRoute: SettingsRoute,
