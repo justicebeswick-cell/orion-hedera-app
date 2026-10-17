@@ -144,7 +144,12 @@ function Fonts() {
       <Label><span className="mt-8 block">Monospace — numbers, dates, account ids</span></Label>
       {MONOS.map((f) => <Sample key={f.name} f={f} />)}
 
-      <Label><span className="mt-8 block">Full looks — three fonts working together</span></Label>
+      <Label><span className="mt-8 block">New — round two, full looks</span></Label>
+      <div className="space-y-4">
+        {NEW_PAIRS.map((p) => <Mock key={p.name} p={p} />)}
+      </div>
+
+      <Label><span className="mt-8 block">Round one — full looks</span></Label>
       <div className="space-y-4">
         {PAIRS.map((p) => <Mock key={p.name} p={p} />)}
       </div>
