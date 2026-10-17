@@ -37,7 +37,7 @@ export function rememberAccount(id: string) {
   const all = readSaved();
   const cur = localStorage.getItem(KS);
   const curId = cur ? JSON.parse(cur).accountId : null;
-  all[id] = { label: all[id]?.label ?? "", added: Date.now(), blob: curId === id ? cur! : all[id]?.blob };
+  all[id] = { id, label: all[id]?.label ?? "", added: Date.now(), blob: curId === id ? cur! : all[id]?.blob };
   localStorage.setItem(SAVED, JSON.stringify(all));
 }
 function rememberKeystore() {
