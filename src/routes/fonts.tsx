@@ -53,6 +53,10 @@ export const Route = createFileRoute("/fonts")({
     meta: [
       { title: "AURION — Type samples" },
       { name: "description", content: "Font samples for AURION, shown inside the real wallet screens." },
+      { property: "og:title", content: "AURION — Type samples" },
+      { property: "og:description", content: "Compare font styles in AURION wallet previews." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Fonts,
