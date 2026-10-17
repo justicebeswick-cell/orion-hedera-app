@@ -34,6 +34,7 @@
 - [ ] Pick the app's type direction — samples live at /fonts (serif, sans, mono and three full looks), nothing swapped in yet
 - [x] Receipt labels: Optima applied, then switched to Worstveld Sting (exact face is paid on MyFonts; free Worstveld Sling used as the stand-in until a licensed file is supplied)
 - [x] Receipt labels: switched to Parisienne (Google Fonts, SIL OFL) — free and fully licensed, so no purchase needed; Worstveld stand-in retired
+- [x] Receipt labels: back to Optima (Commissioner variable, wght 300 + FLAR 100) at a smaller size — skinnier and smaller per user request
 - [x] Vault cards swipe from anywhere (including over buttons)
 - [x] Biometric signing — turn on from Settings, sign any transaction with Face ID / fingerprint
 - [x] Saved accounts list for signing back in
