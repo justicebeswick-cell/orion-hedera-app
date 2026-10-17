@@ -64,7 +64,7 @@ function Settings() {
           <div className="flex items-center justify-between text-sm">
             <span>Face ID / fingerprint</span>
             {bio ? <Button size="sm" variant="ghost" onClick={() => { bioRemove(); setBio(false); }}>Turn off</Button>
-              : <span className="text-xs text-muted-foreground">Offered after your next passphrase sign</span>}
+              : meta ? <BioTurnOn onOn={() => setBio(true)} /> : <span className="text-xs text-muted-foreground">Needs a key on this device</span>}
           </div>
         </Panel>
 
@@ -137,5 +137,23 @@ function RevealKey() {
       )}
       {err && <p className="mt-2 text-xs text-destructive">{err}</p>}
     </Panel>
+  );
+}
+
+function BioTurnOn({ onOn }: { onOn: () => void }) {
+  const [pass, setPass] = useState("");
+  const [open, setOpen] = useState(false);
+  const [err, setErr] = useState("");
+  if (!open) return <Button size="sm" onClick={() => setOpen(true)}>Turn on</Button>;
+  return (
+    <div className="flex flex-col items-end gap-2">
+      <Input type="password" placeholder="Device passphrase" value={pass} onChange={(e) => setPass(e.target.value)} />
+      <Button size="sm" disabled={!pass} onClick={async () => {
+        setErr("");
+        try { await unlockKeystore(pass); await (await import("@/lib/biometric")).bioEnroll(pass); onOn(); }
+        catch (e) { setErr((e as Error).message); }
+      }}>Turn on Face ID / fingerprint</Button>
+      {err && <p className="text-xs text-destructive">{err}</p>}
+    </div>
   );
 }
