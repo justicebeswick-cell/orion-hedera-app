@@ -8,7 +8,7 @@ export type VaultPage = { key: string; label: string; icon: LucideIcon; content:
 
 export function VaultDeck({ pages }: { pages: VaultPage[] }) {
   const reduce = useReducedMotion();
-  const [ref, api] = useEmblaCarousel({ align: "start", watchDrag: (_api, event) => !(event.target instanceof Element && event.target.closest("input, button, a, select, textarea")) });
+  const [ref, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragThreshold: 6, watchDrag: (_api, event) => !(event.target instanceof Element && event.target.closest("input, select, textarea, [contenteditable], [data-no-swipe]")) });
   const [selected, setSelected] = useState(0);
   const [height, setHeight] = useState<number>();
   const slides = useRef<(HTMLDivElement | null)[]>([]);

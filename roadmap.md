@@ -28,3 +28,7 @@
 - [x] Replace app logo with the new purple A (no box, transparent) and make the app backdrop pure black
 
 - [ ] Pick the app's type direction — samples live at /fonts (serif, sans, mono and three full looks), nothing swapped in yet
+- [x] Vault cards swipe from anywhere (including over buttons)
+- [x] Biometric signing — turn on from Settings, sign any transaction with Face ID / fingerprint
+- [x] Saved accounts list for signing back in
+- [ ] Buy HBAR in-app via Onramper (best-rate aggregator) — built; blocked on VITE_ONRAMPER_API_KEY from onramper.com

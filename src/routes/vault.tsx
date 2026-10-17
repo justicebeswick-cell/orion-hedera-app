@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard } from "lucide-react";
+import { BuyHbar } from "@/components/buy-hbar";
 import { VaultDeck } from "@/components/vault-deck";
 import { RecipientField, ContactsPanel } from "@/components/contacts";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ function Vault() {
       <VaultDeck pages={[
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="holdings" /> },
         { key: "hbar", label: "HBAR", icon: Coins, content: <Panel><Label>HBAR balance</Label><p className="flex flex-wrap items-center gap-3 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"}<HbarLogo size={36} /></p><p className="mt-4 font-mono text-sm text-muted-foreground">{id}</p><p className="mt-6 text-sm text-muted-foreground">Held in your Hedera account. Only you can sign a transfer.</p></Panel> },
+        { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
         { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
         { key: "contacts", label: "Contacts", icon: BookUser, content: <ContactsPanel /> },
