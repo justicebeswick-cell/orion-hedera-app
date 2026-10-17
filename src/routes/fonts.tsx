@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Shell, Panel, Label, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
