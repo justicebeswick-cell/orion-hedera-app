@@ -6,7 +6,6 @@ afterEach(() => vi.unstubAllGlobals());
 function mockMarkets() {
   const fetcher = vi.fn(async (url: string) => {
     const data = url.includes("uphold") ? { ask: "0.0854429304", bid: "0.0852735318" }
-      : url.includes("moonpay") ? { totalAmount: 105, quoteCurrencyAmount: 1000 }
       : url.includes("coinbase") ? { data: { amount: "0.085" } }
       : url.includes("kraken") ? { result: { HBARUSD: { a: ["0.086"] } } }
       : url.includes("crypto.com") ? { result: { data: [{ k: "0.087" }] } }
@@ -24,18 +23,14 @@ describe("HBAR exchange pricing", () => {
     expect(feed.rates.find((r) => r.id === "uphold")?.price).toBe(0.0854429304);
     expect(fetcher).toHaveBeenCalledWith("https://api.uphold.com/v0/ticker/HBAR-USD", expect.objectContaining({ cache: "no-store" }));
   });
-  it("does not invent a Gemini HBAR price when the market is not listed", async () => {
+  it("excludes Gemini from the exchange feed", async () => {
     mockMarkets();
-    expect((await fetchExchangeRates()).rates.find((r) => r.id === "gemini")?.price).toBeNull();
+    expect((await fetchExchangeRates()).rates.map((r) => r.id)).not.toContain("gemini");
   });
-  it("does not invent a MoonPay quote without provider access", async () => {
+  it("excludes MoonPay from the exchange feed and makes no quote requests", async () => {
     const fetcher = mockMarkets();
-    expect((await fetchExchangeRates()).rates.find((r) => r.id === "moonpay")?.price).toBeNull();
+    expect((await fetchExchangeRates()).rates.map((r) => r.id)).not.toContain("moonpay");
     expect(fetcher.mock.calls.some(([url]) => url.includes("moonpay"))).toBe(false);
-  });
-  it("calculates an authorized MoonPay quote using the quoted total including fees", async () => {
-    mockMarkets();
-    expect((await fetchExchangeRates("pk_fixture")).rates.find((r) => r.id === "moonpay")?.price).toBe(0.105);
   });
   it("fetches prices again on a refresh rather than reusing old results", async () => {
     const fetcher = mockMarkets();

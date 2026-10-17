@@ -6,7 +6,7 @@ export const Route = createFileRoute("/api/hbar-rates")({
   server: {
     handlers: {
       GET: async () => {
-        const feed = await fetchExchangeRates(process.env['MOONPAY_PUBLISHABLE_KEY'] ?? process.env['VITE_MOONPAY_API_KEY']);
+        const feed = await fetchExchangeRates();
         return Response.json(feed, { headers: { "cache-control": "no-store" } });
       },
     },
