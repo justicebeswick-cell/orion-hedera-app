@@ -54,28 +54,27 @@ export const Route = createFileRoute("/fonts")({
       { title: "AURION — Type samples" },
       { name: "description", content: "Font samples for AURION, shown inside the real wallet screens." },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href:
-          "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@400;500;600&family=Marcellus&family=Bodoni+Moda:opsz,wght@6..96,400;600&family=Prata&family=Playfair+Display:wght@400;500;600&family=Instrument+Serif&family=Newsreader:opsz,wght@6..72,400;600&family=Young+Serif&family=Fraunces:opsz,wght@9..144,400;600&display=swap",
-      },
-      {
-        rel: "stylesheet",
-        href:
-          "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;600&family=Onest:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,400;600&family=Jost:wght@400;500;600&family=Figtree:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap",
-      },
-      {
-        rel: "stylesheet",
-        href:
-          "https://fonts.googleapis.com/css2?family=Victor+Mono:ital,wght@0,400;0,500&family=Spline+Sans+Mono:wght@400;500&family=Azeret+Mono:wght@400;500;600&family=DM+Mono:wght@400;500&family=Chivo+Mono:wght@400;500;600&family=Share+Tech+Mono&family=Martian+Mono:wdth,wght@75..100,400;600&family=IBM+Plex+Mono:wght@400;500&display=swap",
-      },
-    ],
   }),
   component: Fonts,
 });
 
+const SHEETS = [
+  "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@400;500;600&family=Marcellus&family=Bodoni+Moda:opsz,wght@6..96,400;600&family=Prata&family=Playfair+Display:wght@400;500;600&family=Instrument+Serif&family=Newsreader:opsz,wght@6..72,400;600&family=Young+Serif&family=Fraunces:opsz,wght@9..144,400;600&display=swap",
+  "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Schibsted+Grotesk:wght@400;500;600&family=Onest:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,400;600&family=Jost:wght@400;500;600&family=Figtree:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&display=swap",
+  "https://fonts.googleapis.com/css2?family=Victor+Mono:ital,wght@0,400;0,500&family=Spline+Sans+Mono:wght@400;500&family=Azeret+Mono:wght@400;500;600&family=DM+Mono:wght@400;500&family=Chivo+Mono:wght@400;500;600&family=Share+Tech+Mono&family=Martian+Mono:wdth,wght@75..100,400;600&family=IBM+Plex+Mono:wght@400;500&display=swap",
+];
+
 function Fonts() {
+  useEffect(() => {
+    SHEETS.forEach((href) => {
+      if (document.querySelector(`link[href="${href}"]`)) return;
+      const l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = href;
+      document.head.appendChild(l);
+    });
+  }, []);
+
   return (
     <Shell title="Type samples">
       <p className="mb-6 text-sm text-muted-foreground">
