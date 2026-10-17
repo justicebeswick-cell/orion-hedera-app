@@ -27,12 +27,12 @@ export function NodeLogo({ description, size = 48 }: { description?: string | un
   const box = { width: size, height: size };
   if (!asset || broken)
     return (
-      <span style={box} className="flex shrink-0 items-center justify-center node-logo text-sm font-semibold text-muted-foreground">
+      <span style={box} className="flex shrink-0 items-center justify-center font-display text-xl font-medium text-muted-foreground">
         {name.slice(0, 2).toUpperCase()}
       </span>
     );
   return (
-    <span style={box} className="flex shrink-0 items-center justify-center node-logo overflow-hidden">
+    <span style={box} className="flex shrink-0 items-center justify-center">
       <img src={asset.url} alt={`${name} logo`} loading="lazy"
         className="node-logo-image h-full w-full object-contain" onError={() => setBroken(true)} />
     </span>
