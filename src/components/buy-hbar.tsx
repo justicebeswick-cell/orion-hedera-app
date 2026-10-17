@@ -3,16 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { RefreshCw, Copy, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { RateFeed } from "@/lib/exchange-rates";
+import { EXCHANGES } from "@/lib/exchanges";
 import { Panel, Label } from "@/components/aurion";
 
 /** Buy HBAR on an exchange, then send it to this wallet. Live prices from each exchange's public market data. */
-const EXCHANGES = [
-  { id: "coinbase", name: "Coinbase", url: "https://www.coinbase.com/price/hedera" },
-  { id: "kraken", name: "Kraken", url: "https://www.kraken.com/prices/hedera" },
-  { id: "cryptocom", name: "Crypto.com", url: "https://crypto.com/price/hedera-hashgraph" },
-  { id: "binanceus", name: "Binance.US", url: "https://www.binance.us/buy-sell-crypto" },
-  { id: "uphold", name: "Uphold", url: "https://uphold.com/en/prices/crypto/hedera-price" },
-] as const;
 
 export function BuyHbar({ id }: { id: string }) {
   return <BuyOnExchange id={id} />;
@@ -37,7 +31,6 @@ function BuyOnExchange({ id }: { id: string }) {
     return { ...e, price: rate?.price ?? null, detail: rate?.detail ?? "Loading…" };
   });
   const best = Math.min(...priced.map((p) => p.price ?? Infinity));
-  const sorted = [...priced].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
 
   const copy = async () => {
     try {
@@ -62,7 +55,7 @@ function BuyOnExchange({ id }: { id: string }) {
         <Button data-no-swipe variant="outline" size="icon" aria-label="Refresh live rates" title="Refresh live rates" disabled={feed.isFetching} onClick={() => void feed.refetch()}><RefreshCw className={feed.isFetching ? "animate-spin motion-reduce:animate-none" : ""} /></Button>
       </div>
       <ul className="divide-y divide-border rounded-lg border border-border">
-        {sorted.map((e) => (
+        {priced.map((e) => (
           <li key={e.id}>
             <div className="flex items-center justify-between gap-3 px-3 py-3">
               <div className="min-w-0">
@@ -74,7 +67,7 @@ function BuyOnExchange({ id }: { id: string }) {
               </div>
               <div className="shrink-0 text-right">
                 <div className="font-mono text-sm">{e.price !== null ? `$${e.price.toFixed(5)}` : "—"}</div>
-                <Button asChild variant="link" size="sm" className="h-6 px-0 text-xs"><a data-no-swipe href={e.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${e.name}`}>Visit <ExternalLink /></a></Button>
+                <Button asChild variant="link" size="sm" className="h-6 px-0 text-xs"><a data-no-swipe href={e.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${e.name}`} title={`Open ${e.name} · ${new URL(e.url).hostname}`}>Visit <ExternalLink /></a></Button>
               </div>
             </div>
           </li>
