@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Verify each Buy HBAR exchange destination and prevent mismatched exchange links
+- [x] Verify each Buy HBAR exchange destination and prevent mismatched exchange links
 
 - [x] Add Uphold pricing and manual live-rate refresh; remove Gemini and MoonPay from Buy HBAR
 
