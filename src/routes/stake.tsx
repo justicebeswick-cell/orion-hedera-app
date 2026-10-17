@@ -73,7 +73,7 @@ function Stake() {
           <p className="text-sm text-destructive">{(info.error as Error).message}</p>
         ) : info.data?.stakedNodeId != null ? (
           <>
-            <p className="flex items-center gap-3 text-2xl font-semibold"><NodeLogo description={current?.description} size={64} />{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
+            <p className="flex items-center gap-4 text-2xl font-semibold"><NodeLogo description={current?.description} size={64} /><span className="min-w-0 break-words">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</span></p>
             <p className="text-xs text-muted-foreground tnum">
               Node {info.data.stakedNodeId}{current && ` · ~${apr(current)} yearly`}
             </p>
@@ -116,7 +116,7 @@ function Stake() {
               return (
                 <Button key={n.node_id} disabled={mine} onClick={() => setPick(n)}
                   className="flex h-auto w-full items-center justify-between gap-0 rounded-none px-4 py-4 text-left text-sm transition-colors hover:bg-secondary disabled:opacity-100" variant="ghost">
-                  <span className="mr-3 self-start"><NodeLogo description={n.description} /></span>
+                  <span className="mr-4 flex shrink-0 items-center"><NodeLogo description={n.description} /></span>
                   <div className="min-w-0 flex-1">
                     <p className="whitespace-normal font-medium">{nodeName(n)}</p>
                     <p className="text-xs text-muted-foreground tnum">Node {n.node_id}</p>
@@ -189,7 +189,7 @@ function Redelegate({ accountId, node, hasKey, wallet, onClose }: { accountId: s
   return (
     <Panel className="mt-6">
       <Label>Redelegate</Label>
-      <p className="flex items-center gap-3 text-lg font-semibold"><NodeLogo description={node.description} size={56} />{nodeName(node)}</p>
+      <p className="flex items-center gap-4 text-lg font-semibold"><NodeLogo description={node.description} size={56} /><span className="min-w-0 break-words">{nodeName(node)}</span></p>
       <p className="text-xs text-muted-foreground tnum">Node {node.node_id} · ~{apr(node)} yearly</p>
       <StakeFill n={node} />
       {fill(node) >= 99.5 && <p className="mt-2 text-xs text-destructive">This node is at its max stake. Stake above the max earns no extra rewards.</p>}

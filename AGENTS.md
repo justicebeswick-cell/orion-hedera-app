@@ -18,7 +18,7 @@
 - App branding uses one shared AurionLogo component backed by a CDN asset pointer; the favicon is a small local derivative of the same artwork so branding stays consistent.
 - Initial document loads show the shared LaunchScreen; client-side navigation does not remount it, avoiding repeated startup interruptions.
 - Vault uses an Embla deck with all sections mounted and inactive sections inert, preserving form state while making swipe navigation accessible.
-- Staking company images use project CDN asset pointers with initials as fallback, avoiding third-party image requests in the wallet.
+- Staking company images use the shared NodeLogo with first-party council artwork and verified brand assets stored as project CDN pointers; preserve SVG detail and native aspect ratios, with legacy assets/initials as fallback, avoiding third-party image requests in the wallet.
 - Swaps route through SaucerSwap V1 via WHBAR; the token list comes from SaucerSwap's public pools API and quotes from mirror-node contract calls, so no server is needed. The service fee is a separate HBAR transfer sent after the swap succeeds, so the treasury never has to hold or add tokens.
 - AI Studio: chat streams from /api/studio (server fetches mirror data itself; draft_send only prepares a send, the user signs in-app) and images from /api/generate-image; chats, images and contacts live in localStorage so wallet data stays on the device.
 - Hedera/WalletConnect SDKs are stubbed out of the server bundle in vite.config.ts; they crash the Worker at startup, so never use them server-side.
