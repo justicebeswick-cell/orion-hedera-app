@@ -16,15 +16,20 @@ const DOMAINS: [RegExp, string][] = [
 
 export const nodeCompany = (desc?: string) => desc?.match(/Hosted by ([^|]+)/)?.[1]?.trim() ?? "";
 
-const logoAssets = import.meta.glob<{ default: { url: string } }>("../assets/nodes/*.asset.json", { eager: true });
+const logoAssets = import.meta.glob<{ default: { url: string } }>("../assets/company-logos/*.asset.json", { eager: true });
+const legacyAssets = import.meta.glob<{ default: { url: string } }>("../assets/nodes/*.asset.json", { eager: true });
 
 export function NodeLogo({ description, size = 48 }: { description?: string | undefined; size?: number }) {
   const [broken, setBroken] = useState(false);
   const domain = DOMAINS.find(([re]) => re.test(description ?? ""))?.[1];
   const name = nodeCompany(description) || "?";
-  const asset = domain ? logoAssets[`../assets/nodes/${domain}.png.asset.json`]?.default : undefined;
+  const asset = domain
+    ? (logoAssets[`../assets/company-logos/${domain}.svg.asset.json`]?.default
+      ?? logoAssets[`../assets/company-logos/${domain}.png.asset.json`]?.default
+      ?? legacyAssets[`../assets/nodes/${domain}.png.asset.json`]?.default)
+    : undefined;
   useEffect(() => setBroken(false), [domain]);
-  const box = { width: size, height: size };
+  const box = { width: Math.min(size * 2, 112), height: size };
   if (!asset || broken)
     return (
       <span style={box} className="flex shrink-0 items-center justify-center font-display text-xl font-medium text-muted-foreground">
@@ -33,7 +38,7 @@ export function NodeLogo({ description, size = 48 }: { description?: string | un
     );
   return (
     <span style={box} className="flex shrink-0 items-center justify-center">
-      <img src={asset.url} alt={`${name} logo`} loading="lazy"
+      <img src={asset.url} alt={`${name} logo`} loading="lazy" decoding="async"
         className="node-logo-image h-full w-full object-contain" onError={() => setBroken(true)} />
     </span>
   );
