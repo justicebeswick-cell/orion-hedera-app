@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Enlarge the approved A artwork across homescreen icons with fresh icon filenames
+
 - [x] Match every app card to the Home balance card without changing functionality or swipe gestures
 - [x] Request publishing of the redesigned app including the matching card finish
 
