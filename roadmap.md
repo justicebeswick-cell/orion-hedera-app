@@ -1,6 +1,9 @@
 # Roadmap
 
 - [x] Enlarge the approved A artwork across homescreen icons with fresh icon filenames
+- [x] Add the pre-login "Hello" welcome screen cycling World, Future, Hedera with a fixed Hello, and use the Hedera H mark as the H in Hello
+- [x] Request publishing of the welcome screen and enlarged icons
+
 
 - [x] Match every app card to the Home balance card without changing functionality or swipe gestures
 - [x] Request publishing of the redesigned app including the matching card finish
