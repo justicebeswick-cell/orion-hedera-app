@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Sparkles, Coins, Network, X } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Sparkles, Coins, Network } from "lucide-react";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
@@ -79,12 +79,7 @@ function Home() {
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
       <div className="mb-5 flex flex-wrap items-center gap-2.5">
-        <span className="chip tnum">
-          {id}
-          <button onClick={signOut} aria-label="Sign out" className="text-muted-foreground transition-colors hover:text-foreground">
-            <X size={14} />
-          </button>
-        </span>
+        <span className="chip tnum">{id}</span>
       </div>
 
       <section className="hero-card p-6">
@@ -162,6 +157,10 @@ function Home() {
           );
         })}
       </div>
+
+      <button onClick={signOut} className="btn-ghost mt-9 w-full text-muted-foreground">
+        Sign out
+      </button>
     </Shell>
   );
 }
