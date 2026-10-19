@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Sign out moved out of the address pill to a button at the bottom of Home
+
+
+
 - [x] OS-style design overhaul matching the Primio reference: purple-glow hero balance card with stat tiles, account pill chips, icon-led activity rows, pill Vault tabs
 
 
