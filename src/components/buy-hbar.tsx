@@ -54,7 +54,7 @@ function BuyOnExchange({ id }: { id: string }) {
         <div className="min-w-0"><p>Price per HBAR (USD)</p><p aria-live="polite" className="mt-1">{feed.isError ? "Refresh failed · try again" : feed.isFetching ? "Refreshing…" : feed.data ? `Updated ${new Date(feed.data.at).toLocaleTimeString()} · every 30s` : "Loading…"}</p></div>
         <Button data-no-swipe variant="outline" size="icon" aria-label="Refresh live rates" title="Refresh live rates" disabled={feed.isFetching} onClick={() => void feed.refetch()}><RefreshCw className={feed.isFetching ? "animate-spin motion-reduce:animate-none" : ""} /></Button>
       </div>
-      <ul className="divide-y divide-border rounded-lg border border-border">
+      <ul className="card-surface divide-y divide-border overflow-hidden">
         {priced.map((e) => (
           <li key={e.id}>
             <div className="flex items-center justify-between gap-3 px-3 py-3">

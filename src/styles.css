@@ -53,6 +53,12 @@
   --launch: oklch(0 0 0);
   --logo-surface: oklch(0.97 0 0);
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
+  --card-radius: 1.75rem;
+  --card-border: oklch(0.72 0.18 306 / 20%);
+  --card-finish:
+    radial-gradient(130% 95% at 12% 0%, oklch(0.42 0.15 305 / 55%) 0%, transparent 62%),
+    radial-gradient(110% 110% at 92% 100%, oklch(0.32 0.1 300 / 38%) 0%, transparent 55%),
+    var(--card);
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
   --card: oklch(0.16 0.028 300);            /* purple ink */
@@ -94,9 +100,16 @@
   background: radial-gradient(circle, oklch(0.63 0.25 304 / 28%) 0%, transparent 65%);
 }
 @utility panel {
-  background-color: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  background: var(--card-finish);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-deck);
+}
+@utility card-surface {
+  background: var(--card-finish);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-deck);
 }
 @utility field {
   width: 100%;
@@ -125,18 +138,16 @@
 @utility hero-card {
   position: relative;
   overflow: hidden;
-  border-radius: 1.75rem;
-  border: 1px solid oklch(0.72 0.18 306 / 20%);
-  background:
-    radial-gradient(130% 95% at 12% 0%, oklch(0.42 0.15 305 / 55%) 0%, transparent 62%),
-    radial-gradient(110% 110% at 92% 100%, oklch(0.32 0.1 300 / 38%) 0%, transparent 55%),
-    var(--color-card);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  background: var(--card-finish);
   box-shadow: var(--shadow-deck);
 }
 @utility stat-tile {
-  border-radius: 1rem;
-  background: oklch(0.96 0.01 310 / 7%);
-  border: 1px solid oklch(0.96 0.01 310 / 9%);
+  border-radius: var(--card-radius);
+  background: var(--card-finish);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-deck);
   padding: 0.85rem 0.9rem;
 }
 @utility chip {
@@ -159,6 +170,8 @@
   &:hover { border-color: var(--color-primary); background: oklch(0.63 0.25 304 / 10%); }
 }
 
+/* Card corners stay consistent when a control's base variant sets a radius. */
+.panel, .card-surface, .stat-tile { border-radius: var(--card-radius); }
 .launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; }
 .launch-leaving { animation: launch-exit .35s ease both; }
 .launch-brand { text-align: center; display: flex; flex-direction: column; align-items: center; animation: launch-enter .5s ease both; }
@@ -170,7 +183,7 @@
 .deck-tab-active { color: var(--signal); background: oklch(0.63 0.25 304 / 14%); border-color: oklch(0.72 0.18 306 / 30%); }
 .deck-viewport { overflow: hidden; transition: height .3s ease; }
 .deck-slide { flex: 0 0 100%; min-width: 0; padding: 0 1px 4px; }
-.deck-surface { min-height: 390px; border: 1px solid var(--border); background: var(--card); border-radius: 1.5rem; overflow: hidden; box-shadow: var(--shadow-deck); }
+.deck-surface { min-height: 390px; border: 1px solid var(--card-border); background: var(--card-finish); border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow-deck); }
 .deck-surface .panel { border: 0; border-radius: 0; background: transparent; margin-top: 0; box-shadow: none; }
 .deck-dot { height: 4px; width: 4px; border-radius: 4px; background: var(--input); transition: width .25s ease, background .25s ease; }
 .deck-dot-active { width: 20px; background: var(--primary); }

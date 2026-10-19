@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## AURION decisions
+- Card surfaces share the global card-finish, card-border, card-radius and shadow tokens through panel/card-surface/hero-card/stat-tile and the Vault deck; this keeps the app-wide card design consistent without changing layouts or interactions.
 - Native reward claims use a signed account update preserving staking settings; report payout from mirror staking_reward_transfers, never a successful receipt or net balance alone, because fees and unrelated transfers can obscure rewards.
 - Hedera mainnet only; reads go through the public mirror node from the browser (no server needed for public chain data).
 - Device keys live only in localStorage, AES-GCM encrypted with an Argon2id-derived key; never sent to the server.

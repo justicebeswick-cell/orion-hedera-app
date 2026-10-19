@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Match every app card to the Home balance card without changing functionality or swipe gestures
+- [x] Request publishing of the redesigned app including the matching card finish
+
 - [x] Home reward claim button with accurate tinybar amounts, biometric/passphrase signing and payout reporting; nine automated checks pass
 - [ ] Real-device biometric reward claim on mainnet — requires the user to approve a claim on their device; no funded keys should be shared
 

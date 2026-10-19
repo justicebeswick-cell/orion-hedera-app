@@ -127,7 +127,7 @@ function Home() {
           <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
         </button>
       </div>
-      <div className="panel divide-y overflow-hidden rounded-3xl">
+      <div className="panel divide-y overflow-hidden">
         {txs.data?.length === 0 && (
           <p className="px-5 py-5 font-display text-lg text-muted-foreground">No receipts yet.</p>
         )}
