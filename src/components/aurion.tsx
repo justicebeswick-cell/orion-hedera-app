@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
-import { HbarLogo } from "@/components/hbar";
+import { HederaMark } from "@/components/hbar";
 import aurionLogo from "@/assets/aurion-logo-v2.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
@@ -52,7 +52,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             AURION
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            <HbarLogo size={12} /> Powered by Hedera
+            <HederaMark size={12} /> Powered by Hedera
           </p>
           </div>
         </div>
