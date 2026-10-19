@@ -220,6 +220,7 @@
 
 /* Welcome greeting: fixed "Hello", cycling word */
 .hello-line { display: flex; justify-content: center; align-items: baseline; gap: 0.35em; font-size: 2.6rem; font-weight: 300; letter-spacing: -0.01em; }
+.hello-hbar-h { display: block; margin-right: 0.045em; transform: translateY(0.018em); user-select: none; }
 .hello-word-slot { position: relative; display: inline-block; text-align: left; }
 .hello-word { position: absolute; left: 0; top: 0; opacity: 0; transform: translateY(0.45em); filter: blur(6px); color: var(--primary);
   transition: opacity 900ms cubic-bezier(.22,1,.36,1), transform 900ms cubic-bezier(.22,1,.36,1), filter 900ms cubic-bezier(.22,1,.36,1); }
