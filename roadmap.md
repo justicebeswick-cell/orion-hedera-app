@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Home reward claim button with accurate tinybar amounts, biometric/passphrase signing and payout reporting; nine automated checks pass
+- [ ] Real-device biometric reward claim on mainnet — requires the user to approve a claim on their device; no funded keys should be shared
+
 - [x] Sign out moved out of the address pill to a button at the bottom of Home
 
 

@@ -1,5 +1,6 @@
 import { MIRROR } from "./hedera";
 import { readKeystoreMeta, unlockKeystore } from "./keystore";
+import { canClaimReward, paidRewardForAccount } from "./rewards";
 
 async function get<T>(path: string): Promise<T> {
   const r = await fetch(MIRROR + path).catch(() => { throw new Error("Hedera unreachable"); });
@@ -58,6 +59,55 @@ export const apr = (n: Node) => ((n.reward_rate_start / 1e8) * 365 * 100).toFixe
 
 export const MAX_FEE_HBAR = 2;
 
+/** Trigger native staking payout without changing the staking target or reward preference. */
+export async function claimStakingRewards(accountId: string, passphrase: string) {
+  const info = await getStakeInfo(accountId);
+  if (!canClaimReward(info.pendingReward)) throw new Error("Reward claim: no pending rewards available");
+  if (info.declineReward) throw new Error("Reward claim: this account declines staking rewards");
+  if (info.stakedNodeId === null) throw new Error("Reward claim: this account is not staked directly to a node");
+  const { signMode, deviceKey } = await import("./signer");
+  const mode = signMode(accountId);
+  if (mode.kind === "none") throw new Error("Reward claim: connect this account's wallet or key");
+  let txId: string;
+  if (mode.kind === "wallet") {
+    const { getWcSigner } = await import("./walletconnect");
+    const signer = await getWcSigner(accountId);
+    if (!signer) throw new Error("Wallet session ended. Reconnect your wallet.");
+    const sdk = await import("@hiero-ledger/sdk");
+    const tx = await new sdk.AccountUpdateTransaction()
+      .setAccountId(accountId)
+      .setTransactionId(sdk.TransactionId.generate(accountId))
+      .setTransactionMemo("aurion:v1 claim rewards")
+      .setMaxTransactionFee(new sdk.Hbar(MAX_FEE_HBAR))
+      .freezeWithSigner(signer);
+    const response = await tx.executeWithSigner(signer);
+    const receipt = await response.getReceiptWithSigner(signer);
+    if (receipt.status.toString() !== "SUCCESS") throw new Error(`Account update failed: ${receipt.status}`);
+    txId = response.transactionId.toString();
+  } else {
+    const sdk = await import("@hashgraph/sdk");
+    const key = await deviceKey(accountId, passphrase);
+    const client = sdk.Client.forMainnet().setOperator(accountId, key);
+    try {
+      const response = await new sdk.AccountUpdateTransaction()
+        .setAccountId(accountId)
+        .setTransactionId(sdk.TransactionId.generate(accountId))
+        .setTransactionMemo("aurion:v1 claim rewards")
+        .setMaxTransactionFee(new sdk.Hbar(MAX_FEE_HBAR))
+        .execute(client);
+      const receipt = await response.getReceipt(client);
+      if (receipt.status.toString() !== "SUCCESS") throw new Error(`Account update failed: ${receipt.status}`);
+      txId = response.transactionId.toString();
+    } finally { client.close(); }
+  }
+  // A successful account update is not proof that Hedera paid a reward.
+  const consensus = await waitForConsensus(txId);
+  const paidTinybar = consensus ? paidRewardForAccount(consensus.staking_reward_transfers, accountId) : null;
+  const { audit } = await import("./guard");
+  try { audit({ action: "claim-rewards", detail: `${accountId} · ${paidTinybar === null ? "payout unconfirmed" : `${paidTinybar} tinybar paid`}`, ok: true, txId }); } catch { /* Storage failure must not suggest a confirmed transaction failed. */ }
+  return { txId, timestamp: consensus?.consensus_timestamp ?? null, paidTinybar };
+}
+
 /** Sign and submit an AccountUpdate setting the staked node. Returns transaction id. */
 export async function redelegate(accountId: string, nodeId: number, passphrase: string) {
   const sdk = await import("@hashgraph/sdk");
@@ -110,7 +160,7 @@ export async function waitForConsensus(txId: string) {
   const mirrorId = `${acct}-${(rest ?? "").replace(".", "-")}`;
   for (let i = 0; i < 15; i++) {
     try {
-      const r = await get<{ transactions: { consensus_timestamp: string; result: string }[] }>(
+      const r = await get<{ transactions: { consensus_timestamp: string; result: string; staking_reward_transfers?: { account: string; amount: number }[] }[] }>(
         `/api/v1/transactions/${mirrorId}`,
       );
       if (r.transactions?.[0]) return r.transactions[0];
