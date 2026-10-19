@@ -75,13 +75,6 @@ async function tokenMeta(tid: string) {
   return m;
 }
 
-async function hbarUsd(): Promise<number> {
-  const r = await fetch("https://mainnet-public.mirrornode.hedera.com/api/v1/network/exchangerate");
-  if (!r.ok) throw new Error("Mirror node: exchange rate unavailable");
-  const j = await r.json();
-  return j.current_rate.cent_equivalent / j.current_rate.hbar_equivalent / 100;
-}
-
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 1 ? 4 : 2 });
 
 function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" | "fees" }) {
