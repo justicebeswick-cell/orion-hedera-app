@@ -55,8 +55,8 @@
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
-  --card: oklch(0.14 0.014 300);            /* ink #0C0A12 */
-  --graphite: oklch(0.2 0.018 295);         /* #16141E */
+  --card: oklch(0.16 0.028 300);            /* purple ink */
+  --graphite: oklch(0.22 0.032 295);        /* raised violet-grey */
   --foreground: oklch(0.96 0.012 310);      /* porcelain */
   --card-foreground: var(--foreground);
   --popover: var(--card);
@@ -121,6 +121,42 @@
   border-radius: var(--radius-md);
   padding: 0.8rem 1.1rem; font-weight: 500; font-size: 0.9rem;
   border: 1px solid var(--color-border); color: var(--color-foreground);
+}
+@utility hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid oklch(0.72 0.18 306 / 20%);
+  background:
+    radial-gradient(130% 95% at 12% 0%, oklch(0.42 0.15 305 / 55%) 0%, transparent 62%),
+    radial-gradient(110% 110% at 92% 100%, oklch(0.32 0.1 300 / 38%) 0%, transparent 55%),
+    var(--color-card);
+  box-shadow: var(--shadow-deck);
+}
+@utility stat-tile {
+  border-radius: 1rem;
+  background: oklch(0.96 0.01 310 / 7%);
+  border: 1px solid oklch(0.96 0.01 310 / 9%);
+  padding: 0.85rem 0.9rem;
+}
+@utility chip {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-primary);
+  background: oklch(0.63 0.25 304 / 14%);
+  padding: 0.55rem 1rem;
+  font-family: var(--font-mono); font-size: 0.8rem;
+  color: var(--color-foreground);
+}
+@utility chip-ghost {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--color-foreground);
+  transition: border-color .15s, background .15s;
+  &:hover { border-color: var(--color-primary); background: oklch(0.63 0.25 304 / 10%); }
 }
 
 .launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; }
