@@ -113,7 +113,7 @@ function AgentEditor({ agent, onClose }: { agent: Agent; onClose: () => void }) 
             <Button type="button" variant="outline" disabled={!task.trim() || a.tasks.length >= 8} onClick={() => { setA({ ...a, tasks: [...a.tasks, task.trim()] }); setTask(""); }}>Add</Button>
           </div>
         </div>
-        <div className="space-y-2 rounded-xl border border-border p-3 text-sm">
+        <div className="card-surface space-y-2 p-3 text-sm">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">What it may do</p>
           <label className="flex items-center justify-between gap-3">Read my balance and activity<input type="checkbox" checked={a.perms.readWallet} onChange={(e) => perm("readWallet", e.target.checked)} /></label>
           <label className="flex items-center justify-between gap-3">Prepare HBAR sends for me to sign<input type="checkbox" checked={a.perms.draftSends} onChange={(e) => perm("draftSends", e.target.checked)} /></label>

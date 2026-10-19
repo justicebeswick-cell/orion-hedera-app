@@ -189,7 +189,7 @@ function TokenSend({ id, tok, balance, onSent }: { id: string; tok: SwapToken; b
   const over = units > balance;
   const ok = ACCOUNT_RE.test(to.trim()) && to.trim() !== id && units > 0n && !over;
   return (
-    <div className="mt-3 space-y-3 rounded-xl border border-border bg-secondary/40 p-3">
+    <div className="card-surface mt-3 space-y-3 p-3">
       <RecipientField value={to} onChange={setTo} self={id} />
       <div className="relative">
         <input className="field tnum pr-20" inputMode="decimal" placeholder={`Amount ${tok.symbol}`} value={amt} onChange={(e) => setAmt(e.target.value.replace(",", "."))} />
@@ -321,7 +321,7 @@ function SchedulePanel({ id }: { id: string }) {
       {due.map((s) => {
         const dates = datesFrom(new Date(s.next), s.freq);
         return (
-          <div key={s.id} className="mt-4 rounded-xl border border-primary/40 p-3">
+          <div key={s.id} className="card-surface mt-4 p-3">
             <p className="text-sm">Your {s.freq} {s.amount} ℏ to <span className="font-mono">{s.to}</span> has {dates.length} more payment{dates.length === 1 ? "" : "s"} ready to schedule.</p>
             <div className="mt-2"><SignButton accountId={id} verb="Schedule the next ones" run={async (pass) => {
               const made = await scheduleAll(dates, s.to, s.amount, s.memo, pass, s.id);
@@ -427,7 +427,7 @@ function TokenPick({ tokens, value, onPick, exclude }: { tokens: SwapToken[]; va
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 backdrop-blur-sm sm:items-center" onClick={() => setOpen(false)}>
-          <div className="flex max-h-[80vh] w-full max-w-md flex-col rounded-t-2xl border border-border bg-card p-4 sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="card-surface flex max-h-[80vh] w-full max-w-md flex-col p-4" onClick={(e) => e.stopPropagation()}>
             <input autoFocus className="field mb-3" placeholder={`Search ${tokens.length} tokens by name or 0.0.…`} value={q} onChange={(e) => setQ(e.target.value)} />
             <ul className="-mx-2 overflow-y-auto">
               {list.map((t) => (
@@ -481,7 +481,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
   return (
     <Panel className="mt-4">
       <Label>Swap</Label>
-      <div className="rounded-xl border border-border bg-secondary/40 p-3">
+      <div className="card-surface p-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground"><span>You pay</span>
           <span className="flex items-center gap-2"><span className="tnum">Balance {balIn.data != null ? fmtUnits(balIn.data, tIn.decimals) : "0"}</span>
             <button type="button" className="rounded-full border border-primary/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-signal hover:bg-primary/15" onClick={() => {
@@ -498,7 +498,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
       <div className="relative z-10 -my-3 flex justify-center">
         <button type="button" aria-label="Flip" onClick={flip} className="rounded-full border border-border bg-card px-3 py-1 text-signal transition-transform hover:rotate-180">⇅</button>
       </div>
-      <div className="rounded-xl border border-border bg-secondary/40 p-3">
+      <div className="card-surface p-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground"><span>You get</span><span className="tnum">Balance {out && balOut.data != null ? fmtUnits(balOut.data, out.decimals) : "0"}</span></div>
         <div className="mt-1 flex items-center gap-2">
           <p className={`w-full min-w-0 truncate text-2xl font-semibold tnum ${live ? "" : "text-muted-foreground"}`}>{live && out ? fmtUnits(live.out, out.decimals) : units > 0n ? (q.isError ? "—" : "…") : "0"}</p>
@@ -509,7 +509,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
       {q.isError && units > 0n && <p className="mt-3 text-xs text-destructive">{(q.error as Error).message}</p>}
       {over && <p className="mt-3 text-xs text-destructive">Not enough {tIn.symbol}.</p>}
       {live && out && (
-        <dl className="mt-3 space-y-1.5 rounded-xl border border-border p-3 text-xs tnum">
+        <dl className="card-surface mt-3 space-y-1.5 p-3 text-xs tnum">
           <Row k="Rate" v={`1 ${tIn.symbol} ≈ ${fmtUnits((live.out * 10n ** BigInt(tIn.decimals)) / live.amountIn, out.decimals)} ${out.symbol}`} />
           <Row k="Price impact" v={`${(live.impact * 100).toFixed(2)}%`} warn={live.impact > 0.03} />
           <Row k={`Pool fee (${(LP_FEE * 100).toFixed(1)}% × ${live.hops})`} v="included in rate" />

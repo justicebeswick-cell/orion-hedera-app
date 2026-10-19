@@ -57,7 +57,7 @@ const TOOL_TITLES: Record<string, string> = { get_wallet_overview: "Reading your
 
 function AgentBadge({ agent, status }: { agent: Agent; status: AgentStatus }) {
   return (
-    <div className="mb-3 flex items-center gap-3 rounded-xl border border-border bg-secondary/40 p-3">
+    <div className="card-surface mb-3 flex items-center gap-3 p-3">
       <Bot className="text-signal" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{agent.name}</p>
@@ -151,7 +151,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
 
 function DraftCard({ draft, agent }: { draft: { from: string; to: string; amount_hbar: number; memo: string; contact_name: string }; agent: Agent | null }) {
   return (
-    <div className="mt-3 rounded-xl border border-primary/50 bg-secondary/40 p-4">
+    <div className="card-surface mt-3 p-4">
       <p className="text-xs uppercase tracking-widest text-muted-foreground">Ready to sign</p>
       <p className="mt-1 text-2xl font-semibold tnum">{draft.amount_hbar} ℏ</p>
       <p className="mt-1 text-sm">To {draft.contact_name ? <b>{draft.contact_name} </b> : null}<span className="font-mono text-muted-foreground">{draft.to}</span></p>
