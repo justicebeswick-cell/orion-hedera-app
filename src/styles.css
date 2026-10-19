@@ -170,6 +170,8 @@
   &:hover { border-color: var(--color-primary); background: oklch(0.63 0.25 304 / 10%); }
 }
 
+/* Card corners stay consistent when a control's base variant sets a radius. */
+.panel, .card-surface, .stat-tile { border-radius: var(--card-radius); }
 .launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; }
 .launch-leaving { animation: launch-exit .35s ease both; }
 .launch-brand { text-align: center; display: flex; flex-direction: column; align-items: center; animation: launch-enter .5s ease both; }
