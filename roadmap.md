@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] OS-style design overhaul matching the Primio reference: purple-glow hero balance card with stat tiles, account pill chips, icon-led activity rows, pill Vault tabs
+
+
 - [x] Audit AURION architecture and prepare a safe Primio/Flutter handoff document and inspected source ZIP
 - [ ] Connect GitHub export — requires the owner to connect Git in Lovable settings
 

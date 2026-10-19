@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
-import { getAccount, hbar, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
+import { getAccount, hbar, hbarUsd, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
@@ -73,13 +73,6 @@ async function tokenMeta(tid: string) {
   const m = { symbol: j.symbol ?? tid, name: j.name ?? "", decimals: Number(j.decimals ?? 0) };
   metaCache.set(tid, m);
   return m;
-}
-
-async function hbarUsd(): Promise<number> {
-  const r = await fetch("https://mainnet-public.mirrornode.hedera.com/api/v1/network/exchangerate");
-  if (!r.ok) throw new Error("Mirror node: exchange rate unavailable");
-  const j = await r.json();
-  return j.current_rate.cent_equivalent / j.current_rate.hbar_equivalent / 100;
 }
 
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 1 ? 4 : 2 });

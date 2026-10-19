@@ -55,8 +55,8 @@
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
-  --card: oklch(0.14 0.014 300);            /* ink #0C0A12 */
-  --graphite: oklch(0.2 0.018 295);         /* #16141E */
+  --card: oklch(0.16 0.028 300);            /* purple ink */
+  --graphite: oklch(0.22 0.032 295);        /* raised violet-grey */
   --foreground: oklch(0.96 0.012 310);      /* porcelain */
   --card-foreground: var(--foreground);
   --popover: var(--card);
@@ -122,19 +122,55 @@
   padding: 0.8rem 1.1rem; font-weight: 500; font-size: 0.9rem;
   border: 1px solid var(--color-border); color: var(--color-foreground);
 }
+@utility hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  border: 1px solid oklch(0.72 0.18 306 / 20%);
+  background:
+    radial-gradient(130% 95% at 12% 0%, oklch(0.42 0.15 305 / 55%) 0%, transparent 62%),
+    radial-gradient(110% 110% at 92% 100%, oklch(0.32 0.1 300 / 38%) 0%, transparent 55%),
+    var(--color-card);
+  box-shadow: var(--shadow-deck);
+}
+@utility stat-tile {
+  border-radius: 1rem;
+  background: oklch(0.96 0.01 310 / 7%);
+  border: 1px solid oklch(0.96 0.01 310 / 9%);
+  padding: 0.85rem 0.9rem;
+}
+@utility chip {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-primary);
+  background: oklch(0.63 0.25 304 / 14%);
+  padding: 0.55rem 1rem;
+  font-family: var(--font-mono); font-size: 0.8rem;
+  color: var(--color-foreground);
+}
+@utility chip-ghost {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--color-foreground);
+  transition: border-color .15s, background .15s;
+  &:hover { border-color: var(--color-primary); background: oklch(0.63 0.25 304 / 10%); }
+}
 
 .launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; }
 .launch-leaving { animation: launch-exit .35s ease both; }
 .launch-brand { text-align: center; display: flex; flex-direction: column; align-items: center; animation: launch-enter .5s ease both; }
 @keyframes launch-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes launch-exit { to { opacity: 0; visibility: hidden; } }
-.deck-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.deck-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
 .deck-tabs::-webkit-scrollbar { display: none; }
-.deck-tab { flex-shrink: 0; color: var(--muted-foreground); }
-.deck-tab-active { color: var(--signal); background: var(--graphite); }
+.deck-tab { flex-shrink: 0; color: var(--muted-foreground); border-radius: 999px; border: 1px solid transparent; transition: color .2s, background .2s, border-color .2s; }
+.deck-tab-active { color: var(--signal); background: oklch(0.63 0.25 304 / 14%); border-color: oklch(0.72 0.18 306 / 30%); }
 .deck-viewport { overflow: hidden; transition: height .3s ease; }
 .deck-slide { flex: 0 0 100%; min-width: 0; padding: 0 1px 4px; }
-.deck-surface { min-height: 390px; border: 1px solid var(--border); background: var(--card); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-deck); }
+.deck-surface { min-height: 390px; border: 1px solid var(--border); background: var(--card); border-radius: 1.5rem; overflow: hidden; box-shadow: var(--shadow-deck); }
 .deck-surface .panel { border: 0; border-radius: 0; background: transparent; margin-top: 0; box-shadow: none; }
 .deck-dot { height: 4px; width: 4px; border-radius: 4px; background: var(--input); transition: width .25s ease, background .25s ease; }
 .deck-dot-active { width: 20px; background: var(--primary); }
