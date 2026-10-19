@@ -7,6 +7,7 @@ import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
 import { ClaimRewards } from "@/components/claim-rewards";
+import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsd, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
 
@@ -52,11 +53,11 @@ function Home() {
   if (!id)
     return (
       <Shell title="Home">
-        <div className="relative mb-10 flex h-56 items-center justify-center">
+        <div className="relative mb-10 flex min-h-[18rem] items-center justify-center">
           <div className="relative text-center">
-            <AurionLogo className="mx-auto mb-4 h-28 w-28" />
-            <h1 className="text-4xl font-semibold tracking-[0.3em]">AURION</h1>
-            <p className="mt-4 text-sm text-muted-foreground">Prove it. Agree it. Hold it. On Hedera.</p>
+            <AurionLogo className="mx-auto mb-8 h-28 w-28" />
+            <HelloGreeting />
+            <p className="mt-5 text-sm text-muted-foreground">Prove it. Agree it. Hold it. On Hedera.</p>
           </div>
         </div>
         <div className="space-y-3">
