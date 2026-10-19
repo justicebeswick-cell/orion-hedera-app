@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Home reward claim button with accurate tinybar amounts, biometric/passphrase signing and verified payout status
+
 - [x] Sign out moved out of the address pill to a button at the bottom of Home
 
 

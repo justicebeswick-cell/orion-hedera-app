@@ -30,14 +30,14 @@ export async function getAccount(id: string) {
     account: string;
     balance: { balance: number; timestamp: string };
     staked_node_id: number | null;
-    pending_reward: { amount: number } | null;
+    pending_reward: number | null;
   }>(`/api/v1/accounts/${id}?limit=1`);
   return {
     id: a.account,
     tinybar: a.balance.balance,
     asOf: a.balance.timestamp,
     stakedNode: a.staked_node_id ?? null,
-    pendingReward: a.pending_reward?.amount ?? 0,
+    pendingReward: a.pending_reward ?? 0,
   };
 }
 
