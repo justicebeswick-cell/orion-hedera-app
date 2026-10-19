@@ -48,7 +48,7 @@ describe("Reward claim signing", () => {
     expect(mock.key).toHaveBeenCalledWith("0.0.123", "device-passphrase");
     expect(mock.operator).toHaveBeenCalledWith("0.0.123", "unlocked-key");
     expect(mock.payer).toHaveBeenCalledWith("0.0.123");
-    expect(mock.fee.mock.calls[0][0].amount).toBe(2);
+    expect(mock.fee).toHaveBeenCalledWith(expect.objectContaining({ amount: 2 }));
     expect(result.paidTinybar).toBe(12345678);
     expect(mock.close).toHaveBeenCalledOnce();
   });
