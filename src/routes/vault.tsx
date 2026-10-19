@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
-import { getAccount, hbar, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
+import { getAccount, hbar, hbarUsd, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";

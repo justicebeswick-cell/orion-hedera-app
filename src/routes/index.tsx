@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Shell, Panel, Label, AurionLogo } from "@/components/aurion";
+import { useEffect, useState } from "react";
+import { ArrowDownLeft, ArrowUpRight, Eye, Plus, RefreshCw, Sparkles, Coins, Network, X } from "lucide-react";
+import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
 import { useAccount } from "@/lib/account";
-import { getAccount, getTransactions, getLag, hbar, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
+import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsd, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,11 +23,29 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const usd = (n: number) =>
+  n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 1 ? 4 : 2 });
+
 function Home() {
   const { id, ready, bind } = useAccount();
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => getAccount(id!), enabled: !!id, retry: false });
   const txs = useQuery({ queryKey: ["txs", id], queryFn: () => getTransactions(id!), enabled: !!id });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
+  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsd, refetchInterval: 60000 });
+  const tokenCount = useQuery({
+    queryKey: ["tok-count", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const r = await fetch(`${MIRROR}/api/v1/accounts/${id}/tokens?limit=100`);
+      if (!r.ok) throw new Error(`Mirror node returned ${r.status}`);
+      const j = await r.json();
+      return ((j.tokens ?? []) as { balance: number }[]).filter((t) => t.balance > 0).length;
+    },
+  });
+  const [watchOnly, setWatchOnly] = useState(false);
+  useEffect(() => {
+    import("@/lib/signer").then((m) => setWatchOnly(m.signMode(id).kind === "none"));
+  }, [id]);
 
   if (!ready) return <Shell title="Home"><div /></Shell>;
   if (!id)
@@ -45,6 +65,10 @@ function Home() {
       </Shell>
     );
 
+  const signOut = () => {
+    if (confirm("Sign out of this account on this device? Your saved key stays, so you can sign back in.")) bind(null);
+  };
+
   return (
     <Shell title="Home">
       {lag.data !== undefined && lag.data > 120 && (
@@ -53,47 +77,92 @@ function Home() {
         </p>
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
-      <Panel>
-        <p className="font-mono text-xs text-muted-foreground tnum">{id}</p>
+
+      <div className="mb-5 flex flex-wrap items-center gap-2.5">
+        <span className="chip tnum">
+          {id}
+          <button onClick={signOut} aria-label="Sign out" className="text-muted-foreground transition-colors hover:text-foreground">
+            <X size={14} />
+          </button>
+        </span>
+        <Link to="/wallet" className="chip-ghost"><Plus size={14} /> Watch</Link>
+      </div>
+
+      <section className="hero-card p-6">
+        <div className="flex items-start justify-between">
+          <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Balance</p>
+          {watchOnly && (
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Eye size={13} /> Watch-only</p>
+          )}
+        </div>
         {acct.isError ? (
-          <p className="mt-3 text-sm text-destructive">{(acct.error as Error).message}</p>
+          <p className="mt-4 text-sm text-destructive">{(acct.error as Error).message}</p>
         ) : (
-          <p className="mt-3 flex items-center gap-2 text-4xl font-semibold tnum">
-            {acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={22} />
+          <p className="mt-3 flex items-baseline gap-2.5 text-5xl font-semibold tracking-tight tnum">
+            {acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={26} className="self-center text-signal" />
           </p>
         )}
-        <div className="mt-5 space-y-2 border-t pt-4 text-sm text-muted-foreground">
-          <Link to="/legacy" className="block">Switch not armed.</Link>
-          <Link to="/stake" className="block">View staking.</Link>
-          <Link to="/pact" className="block">No pact waiting on you.</Link>
+        <p className="mt-2 text-sm text-muted-foreground tnum">
+          {acct.data && rate.data ? `≈ ${usd((acct.data.tinybar / 1e8) * rate.data)} · network rate` : "Fetching network rate…"}
+        </p>
+        <div className="mt-6 grid grid-cols-3 gap-2.5">
+          <div className="stat-tile">
+            <Network size={16} className="text-signal" />
+            <p className="mt-2 truncate text-sm font-semibold tnum">{acct.data?.stakedNode != null ? `Node ${acct.data.stakedNode}` : "—"}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Staked to</p>
+          </div>
+          <div className="stat-tile">
+            <Sparkles size={16} className="text-signal" />
+            <p className="mt-2 truncate text-sm font-semibold tnum">{acct.data ? `${hbar(acct.data.pendingReward)} ℏ` : "—"}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Pending reward</p>
+          </div>
+          <div className="stat-tile">
+            <Coins size={16} className="text-signal" />
+            <p className="mt-2 truncate text-sm font-semibold tnum">{tokenCount.data ?? "—"}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Tokens</p>
+          </div>
         </div>
-      </Panel>
+      </section>
 
       <AskActivity accountId={id} />
 
-      <Label><span className="mt-8 block">Receipts</span></Label>
-      <div className="panel divide-y overflow-hidden">
+      <div className="mt-9 mb-3 flex items-center justify-between">
+        <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</p>
+        <button
+          onClick={() => txs.refetch()}
+          aria-label="Refresh activity"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
+        </button>
+      </div>
+      <div className="panel divide-y overflow-hidden rounded-3xl">
         {txs.data?.length === 0 && (
-          <p className="px-4 py-5 font-display text-lg text-muted-foreground">No receipts yet.</p>
+          <p className="px-5 py-5 font-display text-lg text-muted-foreground">No receipts yet.</p>
         )}
         {txs.data?.map((t) => {
           const n = netAmount(t, id);
+          const received = n > 0;
           return (
             <a key={t.transaction_id + t.consensus_timestamp} href={`${HASHSCAN}/transaction/${t.consensus_timestamp}`}
               target="_blank" rel="noreferrer"
-              className="flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-secondary/40">
-              <div className="min-w-0">
-                <p className="font-receipt receipt-label text-xl leading-tight text-foreground">{txLabel(t.name)}</p>
-                <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
+              className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-secondary/40">
+              <span className={`shrink-0 ${received ? "text-signal" : "text-muted-foreground"}`}>
+                {received ? <ArrowDownLeft size={20} strokeWidth={1.8} /> : <ArrowUpRight size={20} strokeWidth={1.8} />}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-receipt receipt-label text-xl leading-tight text-foreground">
+                  {received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}
+                </p>
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
-              <span className={`font-sans text-lg font-medium tnum tracking-tight ${n > 0 ? "text-flare" : "text-muted-foreground"}`}>
-                {n > 0 ? "+" : ""}{hbar(n)}
+              <span className={`shrink-0 font-sans text-lg font-medium tracking-tight tnum ${received ? "text-success" : "text-muted-foreground"}`}>
+                {received ? "+" : ""}{hbar(n)} ℏ
               </span>
             </a>
           );
         })}
       </div>
-      <button onClick={() => { if (confirm("Sign out of this account on this device? Your saved key stays, so you can sign back in.")) bind(null); }} className="mt-6 text-xs text-muted-foreground">Sign out</button>
     </Shell>
   );
 }
