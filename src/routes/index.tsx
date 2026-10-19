@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Sparkles, Coins, Network } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Coins, Network } from "lucide-react";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
+import { ClaimRewards } from "@/components/claim-rewards";
 import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsd, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
 
@@ -28,8 +29,8 @@ const usd = (n: number) =>
 
 function Home() {
   const { id, ready, bind } = useAccount();
-  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => getAccount(id!), enabled: !!id, retry: false });
-  const txs = useQuery({ queryKey: ["txs", id], queryFn: () => getTransactions(id!), enabled: !!id });
+  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: 15_000 });
+  const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsd, refetchInterval: 60000 });
   const tokenCount = useQuery({
@@ -105,11 +106,7 @@ function Home() {
             <p className="mt-2 truncate text-sm font-semibold tnum">{acct.data?.stakedNode != null ? `Node ${acct.data.stakedNode}` : "—"}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">Staked to</p>
           </div>
-          <div className="stat-tile">
-            <Sparkles size={16} className="text-signal" />
-            <p className="mt-2 truncate text-sm font-semibold tnum">{acct.data ? `${hbar(acct.data.pendingReward)} ℏ` : "—"}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Pending reward</p>
-          </div>
+          <ClaimRewards key={id} accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
           <div className="stat-tile">
             <Coins size={16} className="text-signal" />
             <p className="mt-2 truncate text-sm font-semibold tnum">{tokenCount.data ?? "—"}</p>
