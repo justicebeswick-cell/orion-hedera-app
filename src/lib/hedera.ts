@@ -26,10 +26,27 @@ async function get<T>(path: string): Promise<T> {
 }
 
 export async function getAccount(id: string) {
-  const a = await get<{ account: string; balance: { balance: number; timestamp: string } }>(
-    `/api/v1/accounts/${id}?limit=1`,
-  );
-  return { id: a.account, tinybar: a.balance.balance, asOf: a.balance.timestamp };
+  const a = await get<{
+    account: string;
+    balance: { balance: number; timestamp: string };
+    staked_node_id: number | null;
+    pending_reward: { amount: number } | null;
+  }>(`/api/v1/accounts/${id}?limit=1`);
+  return {
+    id: a.account,
+    tinybar: a.balance.balance,
+    asOf: a.balance.timestamp,
+    stakedNode: a.staked_node_id ?? null,
+    pendingReward: a.pending_reward?.amount ?? 0,
+  };
+}
+
+/** Current HBAR price in USD from the network's own exchange rate. */
+export async function hbarUsd(): Promise<number> {
+  const r = await fetch(`${MIRROR}/api/v1/network/exchangerate`);
+  if (!r.ok) throw new Error("Mirror node: exchange rate unavailable");
+  const j = await r.json();
+  return j.current_rate.cent_equivalent / j.current_rate.hbar_equivalent / 100;
 }
 
 export async function getTransactions(id: string) {
