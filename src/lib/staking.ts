@@ -64,6 +64,7 @@ export async function claimStakingRewards(accountId: string, passphrase: string)
   const info = await getStakeInfo(accountId);
   if (!canClaimReward(info.pendingReward)) throw new Error("Reward claim: no pending rewards available");
   if (info.declineReward) throw new Error("Reward claim: this account declines staking rewards");
+  if (info.stakedNodeId === null) throw new Error("Reward claim: this account is not staked directly to a node");
   const { signMode, deviceKey } = await import("./signer");
   const mode = signMode(accountId);
   if (mode.kind === "none") throw new Error("Reward claim: connect this account's wallet or key");
@@ -75,7 +76,7 @@ export async function claimStakingRewards(accountId: string, passphrase: string)
     const sdk = await import("@hiero-ledger/sdk");
     const tx = await new sdk.AccountUpdateTransaction()
       .setAccountId(accountId)
-      .setDeclineStakingReward(info.declineReward)
+      .setTransactionId(sdk.TransactionId.generate(accountId))
       .setTransactionMemo("aurion:v1 claim rewards")
       .setMaxTransactionFee(new sdk.Hbar(MAX_FEE_HBAR))
       .freezeWithSigner(signer);
@@ -90,7 +91,7 @@ export async function claimStakingRewards(accountId: string, passphrase: string)
     try {
       const response = await new sdk.AccountUpdateTransaction()
         .setAccountId(accountId)
-        .setDeclineStakingReward(info.declineReward)
+        .setTransactionId(sdk.TransactionId.generate(accountId))
         .setTransactionMemo("aurion:v1 claim rewards")
         .setMaxTransactionFee(new sdk.Hbar(MAX_FEE_HBAR))
         .execute(client);
