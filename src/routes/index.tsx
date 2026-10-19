@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Eye, Plus, RefreshCw, Sparkles, Coins, Network, X } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Sparkles, Coins, Network, X } from "lucide-react";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
@@ -85,7 +85,6 @@ function Home() {
             <X size={14} />
           </button>
         </span>
-        <Link to="/wallet" className="chip-ghost"><Plus size={14} /> Watch</Link>
       </div>
 
       <section className="hero-card p-6">
