@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Audit AURION architecture and prepare a safe Primio/Flutter handoff document
+- [x] Audit AURION architecture and prepare a safe Primio/Flutter handoff document and inspected source ZIP
 - [ ] Connect GitHub export — requires the owner to connect Git in Lovable settings
 
 - [x] Replace low-quality company logos with authentic detailed artwork and verify every staking logo on black
