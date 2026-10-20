@@ -14,25 +14,40 @@ export const HBAR: SwapToken = { id: "HBAR", symbol: "HBAR", name: "Hedera", dec
 const isH = (t: SwapToken) => t.id === "HBAR";
 
 type PoolSide = { id: string; icon?: string; name: string; decimals: number; symbol: string; dueDiligenceComplete: boolean; isFeeOnTransferToken: boolean };
-type Pool = { tokenA: PoolSide; tokenB: PoolSide; tokenReserveA: string; tokenReserveB: string };
+type Pool = { tokenA: PoolSide; tokenB: PoolSide; tokenReserveA: string; tokenReserveB: string; lpTokenReserve?: string; lpToken?: { priceUsd?: string } };
 
-/** Every HTS token with an HBAR pool on SaucerSwap, deepest pools first. */
+// Hub tokens used to route between any two tokens: WHBAR, USDC, SAUCE, HBARX.
+const HUBS = [WHBAR, "0.0.456858", "0.0.731861", "0.0.834116"];
+const MIN_TVL_USD = 20;
+let graph: Map<string, Set<string>> | null = null;
+let meta = new Map<string, { symbol: string }>();
+
+/** Every HTS token that has a live SaucerSwap pool — directly or through a hub — deepest first. */
 export async function listTokens(): Promise<SwapToken[]> {
   let r: Response;
   try { r = await fetch("https://api.saucerswap.finance/pools"); } catch { throw new Error("SaucerSwap unreachable"); }
   if (!r.ok) throw new Error(`SaucerSwap returned ${r.status}`);
   const pools: Pool[] = await r.json();
+  const g = new Map<string, Set<string>>();
   const out = new Map<string, SwapToken>();
+  const m = new Map<string, { symbol: string }>([["HBAR", { symbol: "HBAR" }], [WHBAR, { symbol: "HBAR" }]]);
   for (const p of pools) {
-    const aW = p.tokenA.id === WHBAR, bW = p.tokenB.id === WHBAR;
-    if (aW === bW) continue;
-    const t = aW ? p.tokenB : p.tokenA;
-    const hbarRes = Number(aW ? p.tokenReserveA : p.tokenReserveB) / 1e8;
-    if (t.isFeeOnTransferToken || hbarRes < 100) continue;
-    const prev = out.get(t.id);
-    if (prev && (prev.liquidity ?? 0) >= hbarRes) continue;
-    out.set(t.id, { id: t.id, symbol: t.symbol, name: t.name, decimals: t.decimals, icon: t.icon, verified: t.dueDiligenceComplete, liquidity: hbarRes });
+    if (p.tokenA.isFeeOnTransferToken || p.tokenB.isFeeOnTransferToken) continue;
+    if (p.tokenReserveA === "0" || p.tokenReserveB === "0") continue;
+    const tvl = (Number(p.lpTokenReserve ?? 0) / 1e8) * Number(p.lpToken?.priceUsd ?? 0);
+    if (!(tvl >= MIN_TVL_USD)) continue;
+    const [a, b] = [p.tokenA.id, p.tokenB.id];
+    if (!g.has(a)) g.set(a, new Set()); if (!g.has(b)) g.set(b, new Set());
+    g.get(a)!.add(b); g.get(b)!.add(a);
+    for (const t of [p.tokenA, p.tokenB]) {
+      if (t.id === WHBAR) continue;
+      m.set(t.id, { symbol: t.symbol });
+      const prev = out.get(t.id);
+      if (prev && (prev.liquidity ?? 0) >= tvl) continue;
+      out.set(t.id, { id: t.id, symbol: t.symbol, name: t.name, decimals: t.decimals, icon: t.icon, verified: !!t.dueDiligenceComplete, liquidity: tvl });
+    }
   }
+  graph = g; meta = m;
   return [HBAR, ...[...out.values()].sort((a, b) => (b.liquidity ?? 0) - (a.liquidity ?? 0))];
 }
 
@@ -40,10 +55,19 @@ const num = (id: string) => BigInt(id.split(".")[2] ?? "0");
 const word = (n: bigint) => n.toString(16).padStart(64, "0");
 const bytes = (hex: string) => Uint8Array.from(hex.match(/../g)!.map((b) => parseInt(b, 16)));
 
-export function pathOf(from: SwapToken, to: SwapToken): string[] {
-  if (isH(from)) return [WHBAR, to.id];
-  if (isH(to)) return [from.id, WHBAR];
-  return [from.id, WHBAR, to.id];
+const pid = (t: SwapToken) => (isH(t) ? WHBAR : t.id);
+
+/** Candidate routes: direct, through one hub, or through two hubs. */
+export async function routesOf(from: SwapToken, to: SwapToken): Promise<string[][]> {
+  if (!graph) await listTokens();
+  const g = graph!, A = pid(from), B = pid(to);
+  const has = (x: string, y: string) => !!g.get(x)?.has(y);
+  const out: string[][] = [];
+  if (has(A, B)) out.push([A, B]);
+  for (const h of HUBS) if (h !== A && h !== B && has(A, h) && has(h, B)) out.push([A, h, B]);
+  if (out.length < 2) for (const h1 of HUBS) for (const h2 of HUBS)
+    if (h1 !== h2 && ![A, B].includes(h1) && ![A, B].includes(h2) && has(A, h1) && has(h1, h2) && has(h2, B)) out.push([A, h1, h2, B]);
+  return out.slice(0, 8);
 }
 const pathWords = (p: string[]) => word(BigInt(p.length)) + p.map((id) => word(num(id))).join("");
 
@@ -67,25 +91,41 @@ async function amountsOut(amountIn: bigint, path: string[]): Promise<bigint[]> {
     });
   } catch { throw new Error("Hedera unreachable"); }
   const j = await r.json();
-  if (!j.result) throw new Error("Price quote failed: not enough liquidity for this pair");
+  if (!j.result) throw new Error("Price quote failed: not enough liquidity for this amount");
   const h: string = j.result.slice(2);
   const n = Number(BigInt("0x" + h.slice(64, 128)));
   return Array.from({ length: n }, (_, i) => BigInt("0x" + h.slice(128 + i * 64, 192 + i * 64)));
 }
 
-export type Quote = { amountIn: bigint; out: bigint; hbarValue: bigint; fee: bigint; impact: number; hops: number };
+export type Quote = { amountIn: bigint; out: bigint; hbarValue: bigint; fee: bigint; impact: number; hops: number; path: string[]; route: string[] };
 
-/** Live quote with price impact and the HBAR service fee. */
+async function best(amountIn: bigint, routes: string[][]) {
+  const res = await Promise.all(routes.map((p) => amountsOut(amountIn, p).then((a) => ({ p, a })).catch(() => null)));
+  let top: { p: string[]; a: bigint[] } | null = null;
+  for (const r of res) if (r && r.a.length && (!top || r.a[r.a.length - 1]! > top.a[top.a.length - 1]!)) top = r;
+  return top;
+}
+
+/** Live quote over the best route, with price impact and the HBAR service fee. */
 export async function quote(from: SwapToken, to: SwapToken, amountIn: bigint): Promise<Quote> {
-  const path = pathOf(from, to);
-  const small = amountIn / 1000n > 0n ? amountIn / 1000n : 1n;
-  const [a, s] = await Promise.all([amountsOut(amountIn, path), amountsOut(small, path)]);
+  const routes = await routesOf(from, to);
+  if (!routes.length) throw new Error(`Price quote failed: no SaucerSwap route between ${from.symbol} and ${to.symbol}`);
+  const top = await best(amountIn, routes);
+  if (!top) throw new Error("Price quote failed: not enough liquidity for this amount");
+  const path = top.p, a = top.a;
   const out = a[a.length - 1]!;
-  const spot = Number(s[s.length - 1]!) / Number(small);
+  const small = amountIn / 1000n > 0n ? amountIn / 1000n : 1n;
+  const s = await amountsOut(small, path).catch(() => null);
+  const spot = s ? Number(s[s.length - 1]!) / Number(small) : 0;
   const impact = spot > 0 ? Math.max(0, 1 - Number(out) / Number(amountIn) / spot) : 0;
-  const hbarValue = isH(from) ? amountIn : a[1]!;
+  let hbarValue = 0n;
+  const wi = path.indexOf(WHBAR);
+  if (isH(from)) hbarValue = amountIn;
+  else if (wi >= 0) hbarValue = a[wi]!;
+  else { const h = await best(amountIn, await routesOf(from, HBAR)).catch(() => null); hbarValue = h ? h.a[h.a.length - 1]! : 0n; }
   const fee = (hbarValue * BigInt(Math.round(SERVICE_FEE * 10000))) / 10000n;
-  return { amountIn, out, hbarValue, fee, impact, hops: path.length - 1 };
+  const route = path.map((id) => meta.get(id)?.symbol ?? id);
+  return { amountIn, out, hbarValue, fee, impact, hops: path.length - 1, path, route };
 }
 
 /** Balance in smallest units; null means the account has not added the token. */
@@ -120,7 +160,7 @@ export async function executeSwap(
   from: string, tIn: SwapToken, tOut: SwapToken, q: Quote, slippage: number, passphrase: string,
   onStep: (s: Step) => void = () => {},
 ) {
-  const path = pathOf(tIn, tOut);
+  const path = q.path;
   const minOut = (q.out * BigInt(Math.round((1 - slippage) * 10000))) / 10000n;
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
   // ECDSA accounts with an EVM alias must receive at that alias; the long-zero address fails with INVALID_ALIAS_KEY.
@@ -141,7 +181,7 @@ export async function executeSwap(
   const params = bytes(fn);
   // Token-in swaps call the HTS system contract (transferFrom, WHBAR unwrap), which costs far more gas on Hedera;
   // 600k ran out mid-swap ("Safe approve failed"). Unused gas is mostly refunded, so err high.
-  const gas = q.hops > 1 ? 2_000_000 : isH(tIn) ? 400_000 : 1_500_000;
+  const gas = (isH(tIn) ? 400_000 : 1_500_000) + (q.hops - 1) * 700_000;
   const needsAssoc = !isH(tOut) && (await tokenBalance(from, tOut)) === null;
   let hasAllowance = false;
   if (!isH(tIn)) {
