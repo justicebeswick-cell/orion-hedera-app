@@ -439,7 +439,7 @@ function TokenPick({ tokens, value, onPick, exclude }: { tokens: SwapToken[]; va
                   </button>
                 </li>
               ))}
-              {list.length === 0 && <li className="p-3 text-sm text-muted-foreground">No token with an HBAR pool matches.</li>}
+              {list.length === 0 && <li className="p-3 text-sm text-muted-foreground">No token on SaucerSwap matches.</li>}
             </ul>
           </div>
         </div>
@@ -516,7 +516,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
           <Row k={`AURION fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
           <Row k="Network fee" v={tIn.id === "HBAR" ? "≈ 0.3–0.5 ℏ" : "≈ 1–1.5 ℏ (plus ≈ 0.5 ℏ the first time you allow a token)"} />
           {tIn.id !== "HBAR" && Number(live.hbarValue) / 1e8 < 3 && <p className="text-destructive">This swap is worth less than the network fee to make it. Swapping a bigger amount is cheaper per HBAR.</p>}
-          <p className="pt-1 text-muted-foreground">Route: {tIn.symbol} → {live.hops > 1 ? "HBAR → " : ""}{out.symbol} on SaucerSwap. Price refreshes every 10 seconds.</p>
+          <p className="pt-1 text-muted-foreground">Route: {live.route.join(" → ")} on SaucerSwap. Price refreshes every 10 seconds.</p>
         </dl>
       )}
       {step && step !== "done" && <p className="mt-3 animate-pulse text-xs text-signal">{STEP_LABEL[step]}</p>}
