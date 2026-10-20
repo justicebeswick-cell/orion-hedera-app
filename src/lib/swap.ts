@@ -48,6 +48,10 @@ export async function listTokens(): Promise<SwapToken[]> {
     }
   }
   graph = g; meta = m;
+  // Keep only tokens that can actually be reached from HBAR.
+  const reach = new Set<string>([WHBAR]); let f = [WHBAR];
+  for (let d = 0; d < 4 && f.length; d++) { const n: string[] = []; for (const x of f) for (const y of g.get(x) ?? []) if (!reach.has(y)) { reach.add(y); n.push(y); } f = n; }
+  for (const k of [...out.keys()]) if (!reach.has(k)) out.delete(k);
   return [HBAR, ...[...out.values()].sort((a, b) => (b.liquidity ?? 0) - (a.liquidity ?? 0))];
 }
 
@@ -67,7 +71,25 @@ export async function routesOf(from: SwapToken, to: SwapToken): Promise<string[]
   for (const h of HUBS) if (h !== A && h !== B && has(A, h) && has(h, B)) out.push([A, h, B]);
   if (out.length < 2) for (const h1 of HUBS) for (const h2 of HUBS)
     if (h1 !== h2 && ![A, B].includes(h1) && ![A, B].includes(h2) && has(A, h1) && has(h1, h2) && has(h2, B)) out.push([A, h1, h2, B]);
+  if (!out.length) { const p = bfs(g, A, B); if (p) out.push(p); }
   return out.slice(0, 8);
+}
+
+/** Shortest pool route (up to 4 hops) for tokens that don't touch a hub. */
+function bfs(g: Map<string, Set<string>>, A: string, B: string): string[] | null {
+  const prev = new Map<string, string>([[A, ""]]);
+  let front = [A];
+  for (let d = 0; d < 4 && front.length; d++) {
+    const next: string[] = [];
+    for (const x of front) for (const y of g.get(x) ?? []) {
+      if (prev.has(y)) continue;
+      prev.set(y, x);
+      if (y === B) { const p = [B]; let c = x; while (c) { p.unshift(c); c = prev.get(c)!; } return p; }
+      next.push(y);
+    }
+    front = next;
+  }
+  return null;
 }
 const pathWords = (p: string[]) => word(BigInt(p.length)) + p.map((id) => word(num(id))).join("");
 
