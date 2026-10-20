@@ -66,3 +66,5 @@
 - [x] Saved accounts list for signing back in
 - [ ] Compare exchange rates, authorize each user's exchange account, buy HBAR and withdraw to their connected AURION wallet — blocked on exchange-approved application access with trading and withdrawal permissions; Coinbase OAuth client creation is limited to approved partners. Do not substitute MoonPay for this requested flow.
 - [x] "Powered by Hedera" restored to the original Hedera mark (white H in a black circle); the purple ℏ stays everywhere else
+- [x] Match the app icon purple to the in-app violet and drop the icon from the opening screen so it shows only AURION and Powered by Hedera
+- [x] Request publishing of the matched icon colour and the icon-free opening screen (v11)
