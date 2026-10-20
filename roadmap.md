@@ -69,3 +69,4 @@
 - [x] Match the app icon purple to the in-app violet and drop the icon from the opening screen so it shows only AURION and Powered by Hedera
 - [x] Request publishing of the matched icon colour and the icon-free opening screen (v11)
 - [x] Opening screen shows the logo beside AURION and Powered by Hedera, recoloured to the cards' violet with a matching purple glow
+- [x] Request publishing of the opening-screen logo and card-violet recolour
