@@ -1,5 +1,9 @@
 # Roadmap
 
+- [ ] Add public company website, Privacy Policy and User Agreement drafts with clear self-custody warnings
+- [ ] Finalize legal operator, policy disclosures and public contact — waiting for owner details and legal review
+- [ ] Connect company domain and domain-matching email — waiting for domain choice and mailbox provider setup
+
 - [x] Enlarge the approved A artwork across homescreen icons with fresh icon filenames
 - [x] Add the pre-login "Hello" welcome screen cycling World, Future, Hedera with a fixed Hello, and use the Hedera H mark as the H in Hello
 - [x] Request publishing of the welcome screen and enlarged icons

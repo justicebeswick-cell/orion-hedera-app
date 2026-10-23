@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## AURION decisions
+- Public company and legal pages use a shared browser-safe PublicSite shell and route-specific metadata; keep the wallet first screen unchanged and unapproved legal disclosures explicitly in draft state.
 - Card surfaces share the global card-finish, card-border, card-radius and shadow tokens through panel/card-surface/hero-card/stat-tile and the Vault deck; this keeps the app-wide card design consistent without changing layouts or interactions.
 - Native reward claims use a signed account update preserving staking settings; report payout from mirror staking_reward_transfers, never a successful receipt or net balance alone, because fees and unrelated transfers can obscure rewards.
 - Hedera mainnet only; reads go through the public mirror node from the browser (no server needed for public chain data).
