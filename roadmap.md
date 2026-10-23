@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Add public company website, Privacy Policy and User Agreement drafts with clear self-custody warnings
+- [x] Add public company website, Privacy Policy and User Agreement drafts with clear self-custody warnings
 - [ ] Finalize legal operator, policy disclosures and public contact — waiting for owner details and legal review
 - [ ] Connect company domain and domain-matching email — waiting for domain choice and mailbox provider setup
 
