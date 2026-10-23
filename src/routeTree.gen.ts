@@ -11,11 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CompanyRouteImport } from './routes/company'
 import { Route as FontsRouteImport } from './routes/fonts'
 import { Route as LegacyRouteImport } from './routes/legacy'
 import { Route as PactRouteImport } from './routes/pact'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StakeRouteImport } from './routes/stake'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
@@ -36,6 +39,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompanyRoute = CompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FontsRoute = FontsRouteImport.update({
   id: '/fonts',
   path: '/fonts',
@@ -51,6 +59,11 @@ const PactRoute = PactRouteImport.update({
   path: '/pact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -59,6 +72,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const StakeRoute = StakeRouteImport.update({
   id: '/stake',
   path: '/stake',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VaultRoute = VaultRouteImport.update({
@@ -110,11 +128,14 @@ const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/company': typeof CompanyRoute
   '/fonts': typeof FontsRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
+  '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/stake': typeof StakeRoute
+  '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
@@ -128,11 +149,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/company': typeof CompanyRoute
   '/fonts': typeof FontsRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
+  '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/stake': typeof StakeRoute
+  '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
@@ -147,11 +171,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/company': typeof CompanyRoute
   '/fonts': typeof FontsRoute
   '/legacy': typeof LegacyRoute
   '/pact': typeof PactRoute
+  '/privacy': typeof PrivacyRoute
   '/settings': typeof SettingsRoute
   '/stake': typeof StakeRoute
+  '/terms': typeof TermsRoute
   '/vault': typeof VaultRoute
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
@@ -167,11 +194,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/company'
     | '/fonts'
     | '/legacy'
     | '/pact'
+    | '/privacy'
     | '/settings'
     | '/stake'
+    | '/terms'
     | '/vault'
     | '/wallet'
     | '/api/ask'
@@ -185,11 +215,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/company'
     | '/fonts'
     | '/legacy'
     | '/pact'
+    | '/privacy'
     | '/settings'
     | '/stake'
+    | '/terms'
     | '/vault'
     | '/wallet'
     | '/api/ask'
@@ -203,11 +236,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/company'
     | '/fonts'
     | '/legacy'
     | '/pact'
+    | '/privacy'
     | '/settings'
     | '/stake'
+    | '/terms'
     | '/vault'
     | '/wallet'
     | '/api/ask'
@@ -222,11 +258,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CompanyRoute: typeof CompanyRoute
   FontsRoute: typeof FontsRoute
   LegacyRoute: typeof LegacyRoute
   PactRoute: typeof PactRoute
+  PrivacyRoute: typeof PrivacyRoute
   SettingsRoute: typeof SettingsRoute
   StakeRoute: typeof StakeRoute
+  TermsRoute: typeof TermsRoute
   VaultRoute: typeof VaultRoute
   WalletRoute: typeof WalletRoute
   ApiAskRoute: typeof ApiAskRoute
@@ -254,6 +293,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/company': {
+      id: '/company'
+      path: '/company'
+      fullPath: '/company'
+      preLoaderRoute: typeof CompanyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fonts': {
       id: '/fonts'
       path: '/fonts'
@@ -275,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -287,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/stake'
       fullPath: '/stake'
       preLoaderRoute: typeof StakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vault': {
@@ -358,11 +418,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CompanyRoute: CompanyRoute,
   FontsRoute: FontsRoute,
   LegacyRoute: LegacyRoute,
   PactRoute: PactRoute,
+  PrivacyRoute: PrivacyRoute,
   SettingsRoute: SettingsRoute,
   StakeRoute: StakeRoute,
+  TermsRoute: TermsRoute,
   VaultRoute: VaultRoute,
   WalletRoute: WalletRoute,
   ApiAskRoute: ApiAskRoute,

@@ -29,6 +29,9 @@ const palette = [
   { to: "/wallet", label: "Wallet" },
   { to: "/settings", label: "Settings" },
   { to: "/about", label: "About" },
+  { to: "/company", label: "Company" },
+  { to: "/privacy", label: "Privacy Policy" },
+  { to: "/terms", label: "User Agreement" },
 ] as const;
 
 export function Shell({ title, children }: { title: string; children: ReactNode }) {
@@ -62,6 +65,11 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
         </div>
       </header>
       <main key={title} className="shell-content">{children}</main>
+      <footer className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
+        <Link to="/company" className="hover:text-foreground">Company</Link>
+        <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+        <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
+      </footer>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
         <div className="mx-auto grid max-w-xl grid-cols-5">
           {dock.map((d) => (
