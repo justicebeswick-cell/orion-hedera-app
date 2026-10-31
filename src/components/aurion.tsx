@@ -19,19 +19,11 @@ const dock = [
   { to: "/pact", label: "Pact", icon: Handshake },
 ] as const;
 
-const palette = [
-  { to: "/", label: "Home" },
-  { to: "/vault", label: "Vault" },
-  { to: "/stake", label: "Stake" },
-  { to: "/studio", label: "AI Studio" },
-  { to: "/pact", label: "Pact" },
-  { to: "/legacy", label: "Legacy" },
-  { to: "/wallet", label: "Wallet" },
-  { to: "/settings", label: "Settings" },
-  { to: "/about", label: "About" },
-  { to: "/company", label: "Company" },
-  { to: "/privacy", label: "Privacy Policy" },
-  { to: "/terms", label: "User Agreement" },
+const groups = [
+  { name: "Money", items: [{ to: "/", label: "Home" }, { to: "/vault", label: "Vault" }, { to: "/stake", label: "Stake" }] },
+  { name: "Tools", items: [{ to: "/studio", label: "AI Studio" }, { to: "/pact", label: "Pact" }, { to: "/legacy", label: "Legacy" }] },
+  { name: "Account", items: [{ to: "/wallet", label: "Wallet" }, { to: "/settings", label: "Settings" }] },
+  { name: "About", items: [{ to: "/about", label: "About" }, { to: "/company", label: "Company" }, { to: "/privacy", label: "Privacy Policy" }, { to: "/terms", label: "User Agreement" }] },
 ] as const;
 
 export function Shell({ title, children }: { title: string; children: ReactNode }) {
@@ -50,7 +42,8 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onPointerLeave={() => clearTimeout(timer.current)}
             onContextMenu={(e) => e.preventDefault()}
             className="h-auto select-none p-0 text-sm font-semibold tracking-[0.4em] text-signal hover:bg-transparent"
-            aria-label="AURION — hold for commands"
+            onClick={() => setOpen(true)}
+            aria-label="AURION — open menu"
           >
             AURION
           </Button>
@@ -95,14 +88,20 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">AURION</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
-            {palette.map((p) => (
-              <Button variant="ghost"
-                key={p.to}
-                onClick={() => { setOpen(false); nav({ to: p.to }); }}
-                className="h-auto w-full justify-start rounded-md px-4 py-3 text-left text-sm hover:bg-graphite"
-              >
-                {p.label}
-              </Button>
+            {groups.map((g) => (
+              <div key={g.name} className="mt-1 border-t border-border/60 px-1 pt-2 first:mt-0 first:border-t-0 first:pt-0">
+                <p className="px-3 pb-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{g.name}</p>
+                <div className="grid grid-cols-2 gap-1 pb-2">
+                  {g.items.map((p) => (
+                    <Button variant="ghost" key={p.to}
+                      onClick={() => { setOpen(false); nav({ to: p.to }); }}
+                      className="h-auto min-h-11 w-full justify-start rounded-md px-3 py-2.5 text-left text-sm hover:bg-graphite"
+                    >
+                      {p.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
             ))}
           </motion.div>
         </div>
