@@ -62,7 +62,7 @@
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
   --card: oklch(0.16 0.028 286);            /* purple ink */
-  --graphite: oklch(0.22 0.032 295);        /* raised violet-grey */
+  --graphite: oklch(0.22 0.032 286);        /* raised violet-grey */
   --foreground: oklch(0.96 0.012 310);      /* porcelain */
   --card-foreground: var(--foreground);
   --popover: var(--card);
