@@ -85,3 +85,4 @@
 - [x] Biometric needs-a-device-key note in connect flow; surface Legacy
 - [x] Demo account on first screen; grouped All apps menu; tap AURION opens menu
 - [x] Recolor app purple to match user's YouTube screenshot, then publish
+- [x] Deeper purple
