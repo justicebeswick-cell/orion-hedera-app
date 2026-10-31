@@ -10,6 +10,7 @@ import { ClaimRewards } from "@/components/claim-rewards";
 import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsd, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
+import { HbarMarket } from "@/components/hbar-market";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -115,6 +116,8 @@ function Home() {
           </div>
         </div>
       </section>
+
+      <HbarMarket />
 
       <AskActivity accountId={id} />
 
