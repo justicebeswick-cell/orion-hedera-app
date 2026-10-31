@@ -65,6 +65,10 @@ function Home() {
         <div className="space-y-3">
           <SignBackIn onIn={bind} />
           <Link to="/wallet" className="btn w-full">Create or connect a wallet</Link>
+          <button type="button" className="btn-ghost w-full text-sm" onClick={() => { bind("0.0.800"); toast("Demo: watching Hedera's public reward account. Read-only.") }}>
+            Try a demo first
+          </button>
+          <p className="text-center text-xs text-muted-foreground">The demo shows a real public mainnet account. Nothing can be sent.</p>
         </div>
       </Shell>
     );
