@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shell, Panel, Label, SignButton } from "@/components/aurion";
@@ -93,7 +94,7 @@ function Pact() {
       <Panel className="mt-4">
         <Label>The deal text — share this</Label>
         <pre className="whitespace-pre-wrap rounded-md bg-graphite p-3 font-mono text-xs text-muted-foreground">{md}</pre>
-        <button className="btn-ghost mt-3 w-full py-2 text-xs" onClick={() => navigator.clipboard.writeText(md)}>Copy deal text</button>
+        <button className="btn-ghost mt-3 w-full py-2 text-xs" onClick={() => navigator.clipboard.writeText(md).then(() => toast.success("Deal text copied"))}>Copy deal text</button>
         <p className="mt-3 text-xs text-muted-foreground">Fingerprint</p>
         <p className="break-all font-mono text-xs text-signal">{hash}</p>
       </Panel>
