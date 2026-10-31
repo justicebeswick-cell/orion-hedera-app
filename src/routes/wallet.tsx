@@ -56,6 +56,11 @@ function Wallet() {
           </button>
         ))}
       </div>
+      <p className="mb-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
+        {mode === "watch"
+          ? "Watch only reads balances. To send, stake or use Face ID / fingerprint, create a wallet or import one here."
+          : "Face ID / fingerprint signing works once the wallet's key is saved on this device. Wallets connected through HashPack sign in HashPack instead."}
+      </p>
       {mode === "create" && <Create onPending={setPending} />}
       {mode === "import" && <><ExternalWallets onDone={done} /><Import onDone={done} /></>}
       {mode === "watch" && <BindAccount onBind={done} />}

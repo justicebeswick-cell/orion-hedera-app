@@ -193,16 +193,31 @@ export function BioOffer({ pass, onDone }: { pass: string; onDone: () => void })
 
 export function BindAccount({ onBind }: { onBind: (id: string) => void }) {
   const [v, setV] = useState("");
-  const ok = ACCOUNT_RE.test(v.trim());
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const t = v.trim();
+  const ok = ACCOUNT_RE.test(t);
+  const go = async () => {
+    setErr(""); setBusy(true);
+    try {
+      const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${t}`);
+      if (r.status === 404) { setErr(`No account ${t} exists on Hedera mainnet. Check the number.`); return; }
+      if (!r.ok) { setErr(`Hedera mirror node returned ${r.status}. Try again.`); return; }
+      onBind(t);
+    } catch { setErr("Hedera mirror node unreachable. Check your connection."); }
+    finally { setBusy(false); }
+  };
   return (
     <Panel>
       <Label>Watch a mainnet account</Label>
       <p className="mb-4 text-sm text-muted-foreground">
         Reads need no signature. Enter a Hedera account id.
       </p>
-      <input className="field tnum font-mono" placeholder="0.0.123456" value={v} onChange={(e) => setV(e.target.value)} />
-      <button className="btn mt-3 w-full" disabled={!ok} onClick={() => onBind(v.trim())}>
-        Read from mainnet
+      <input className="field tnum font-mono" placeholder="0.0.123456" value={v} onChange={(e) => { setV(e.target.value); setErr(""); }} />
+      {t && !ok && <p className="mt-2 text-xs text-destructive">Account ids look like 0.0.123456.</p>}
+      {err && <p className="mt-2 text-xs text-destructive">{err}</p>}
+      <button className="btn mt-3 w-full" disabled={!ok || busy} onClick={go}>
+        {busy ? "Checking mainnet…" : "Read from mainnet"}
       </button>
     </Panel>
   );
