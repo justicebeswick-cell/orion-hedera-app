@@ -84,3 +84,4 @@
 - [x] Floating AI entry, "updated X ago" on prices, nicer invalid-ID errors
 - [x] Biometric needs-a-device-key note in connect flow; surface Legacy
 - [x] Demo account on first screen; grouped All apps menu; tap AURION opens menu
+- [x] Recolor app purple to match user's YouTube screenshot, then publish
