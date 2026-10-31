@@ -220,6 +220,13 @@ export function SealRing({ children }: { children: ReactNode }) {
           animate={reduce ? { opacity: 1 } : { pathLength: 1 }}
           transition={{ duration: reduce ? 0.16 : 0.42 }}
         />
+        <motion.path
+          d="M29 45.5 L39.5 56 L60 34" fill="none" stroke="var(--color-primary)" strokeWidth="3.5"
+          strokeLinecap="round" strokeLinejoin="round"
+          initial={reduce ? { opacity: 0 } : { pathLength: 0, opacity: 0 }}
+          animate={reduce ? { opacity: 1 } : { pathLength: 1, opacity: 1 }}
+          transition={{ delay: reduce ? 0 : 0.38, duration: reduce ? 0.16 : 0.32, ease: [0.65, 0, 0.35, 1] }}
+        />
       </svg>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: reduce ? 0 : 0.42, duration: 0.25 }}>
         {children}
