@@ -57,7 +57,7 @@ export function HbarMarket() {
     const min = Math.min(...ps);
     const max = Math.max(...ps);
     const span = max - min || 1;
-    const xy = pts.map((x, i) => [
+    const xy: [number, number][] = pts.map((x, i) => [
       (i / (pts.length - 1)) * W,
       H - 8 - ((x.p - min) / span) * (H - 16),
     ]);
