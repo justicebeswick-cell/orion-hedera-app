@@ -74,3 +74,12 @@
 - [x] Request publishing of the matched icon colour and the icon-free opening screen (v11)
 - [x] Opening screen shows the logo beside AURION and Powered by Hedera, recoloured to the cards' violet with a matching purple glow
 - [x] Request publishing of the opening-screen logo and card-violet recolour
+
+## UX polish list (Oct 31)
+- [x] Checkmark inside the success ring
+- [ ] Hide "Edit with Lovable" badge — blocked: needs Pro plan
+- [ ] Account mode switcher + gentler onboarding
+- [ ] Vault: primary actions first, collapse secondary tools
+- [ ] Loading/empty states, copy/claim confirmations
+- [ ] Floating AI entry, "updated X ago" on prices, nicer invalid-ID errors
+- [ ] Biometric needs-a-device-key note in connect flow; surface Legacy
