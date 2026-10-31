@@ -86,3 +86,4 @@
 - [x] Demo account on first screen; grouped All apps menu; tap AURION opens menu
 - [x] Recolor app purple to match user's YouTube screenshot, then publish
 - [x] Deeper purple
+- [x] Less blue, more purple
