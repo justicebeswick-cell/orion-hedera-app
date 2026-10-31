@@ -134,7 +134,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
               )}
             </Message>
           ))}
-          {status === "submitted" && <Shimmer className="text-sm">Thinking…</Shimmer>}
+          {status === "submitted" && <div className="flex items-center gap-3"><span className="relative flex h-6 w-6 items-center justify-center"><span className="absolute inset-0 animate-ping rounded-full bg-primary/30" /><span className="h-2.5 w-2.5 rounded-full bg-primary" /></span><Shimmer className="text-sm">Reading Hedera and thinking…</Shimmer></div>}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>

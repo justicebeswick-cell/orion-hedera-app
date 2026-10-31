@@ -78,8 +78,8 @@
 ## UX polish list (Oct 31)
 - [x] Checkmark inside the success ring
 - [ ] Hide "Edit with Lovable" badge — blocked: needs Pro plan
-- [ ] Account mode switcher + gentler onboarding
-- [ ] Vault: primary actions first, collapse secondary tools
-- [ ] Loading/empty states, copy/claim confirmations
-- [ ] Floating AI entry, "updated X ago" on prices, nicer invalid-ID errors
-- [ ] Biometric needs-a-device-key note in connect flow; surface Legacy
+- [x] Account mode switcher + gentler onboarding
+- [x] Vault: primary actions first, collapse secondary tools
+- [x] Loading/empty states, copy/claim confirmations
+- [x] Floating AI entry, "updated X ago" on prices, nicer invalid-ID errors
+- [x] Biometric needs-a-device-key note in connect flow; surface Legacy

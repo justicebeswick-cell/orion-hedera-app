@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Coins, Network } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Coins, Network, PenLine, Handshake, HeartHandshake } from "lucide-react";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { AskActivity } from "@/components/ask";
@@ -81,16 +82,20 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      <div className="mb-5 flex flex-wrap items-center gap-2.5">
-        <span className="chip tnum">{id}</span>
+      <div className="mb-5 flex flex-wrap items-center gap-2.5 animate-in fade-in duration-500">
+        <button type="button" className="chip tnum" aria-label="Copy account ID"
+          onClick={async () => { try { await navigator.clipboard.writeText(id); toast.success("Account ID copied"); } catch { toast.error("Copy failed"); } }}>
+          {id}
+        </button>
+        <span className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${watchOnly ? "border-border text-muted-foreground" : "border-primary/50 text-signal"}`}>
+          {watchOnly ? <><Eye size={12} /> Watch-only</> : <><PenLine size={12} /> Can sign</>}
+        </span>
+        <Link to="/wallet" className="ml-auto text-xs text-signal hover:underline">{watchOnly ? "Connect to sign" : "Switch account"}</Link>
       </div>
 
       <section className="hero-card p-6">
         <div className="flex items-start justify-between">
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Balance</p>
-          {watchOnly && (
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Eye size={13} /> Watch-only</p>
-          )}
         </div>
         {acct.isError ? (
           <p className="mt-4 text-sm text-destructive">{(acct.error as Error).message}</p>
@@ -102,6 +107,7 @@ function Home() {
         <p className="mt-2 text-sm text-muted-foreground tnum">
           {acct.data && rate.data ? `≈ ${usd((acct.data.tinybar / 1e8) * rate.data)} · network rate` : "Fetching network rate…"}
         </p>
+        <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
         <div className="mt-6 grid grid-cols-3 gap-2.5">
           <div className="stat-tile">
             <Network size={16} className="text-signal" />
@@ -132,8 +138,14 @@ function Home() {
         </button>
       </div>
       <div className="panel divide-y overflow-hidden">
+        {txs.isLoading && [0, 1, 2].map((i) => (
+          <div key={i} className="flex items-center gap-4 px-5 py-4"><div className="h-5 w-5 animate-pulse rounded-full bg-muted/40" /><div className="flex-1 space-y-2"><div className="h-4 w-24 animate-pulse rounded bg-muted/40" /><div className="h-2.5 w-32 animate-pulse rounded bg-muted/30" /></div></div>
+        ))}
         {txs.data?.length === 0 && (
-          <p className="px-5 py-5 font-display text-lg text-muted-foreground">No receipts yet.</p>
+          <div className="px-5 py-6">
+            <p className="font-display text-lg text-muted-foreground">No receipts yet.</p>
+            <p className="mt-1 text-xs text-muted-foreground">Sends, swaps and rewards appear here once Hedera records them. Share your account ID to receive HBAR.</p>
+          </div>
         )}
         {txs.data?.map((t) => {
           const n = netAmount(t, id);
@@ -159,9 +171,35 @@ function Home() {
         })}
       </div>
 
+      <div className="mt-9 grid grid-cols-2 gap-2.5">
+        <Link to="/pact" className="stat-tile transition-colors hover:border-primary">
+          <Handshake size={16} className="text-signal" />
+          <p className="mt-2 text-sm font-semibold">Pact</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Agree a deal, fingerprinted on Hedera</p>
+        </Link>
+        <Link to="/legacy" className="stat-tile transition-colors hover:border-primary">
+          <HeartHandshake size={16} className="text-signal" />
+          <p className="mt-2 text-sm font-semibold">Legacy</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Pass HBAR to one heir if you go quiet</p>
+        </Link>
+      </div>
+
       <button onClick={signOut} className="btn-ghost mt-9 w-full text-muted-foreground">
         Sign out
       </button>
     </Shell>
+  );
+}
+
+function Updated({ at, fetching }: { at: number; fetching: boolean }) {
+  const [, tick] = useState(0);
+  useEffect(() => { const t = setInterval(() => tick((n) => n + 1), 1000); return () => clearInterval(t); }, []);
+  if (!at) return null;
+  const s = Math.max(0, Math.round((Date.now() - at) / 1000));
+  return (
+    <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground tnum">
+      <span className={`h-1.5 w-1.5 rounded-full bg-success ${fetching ? "animate-ping" : ""}`} />
+      {s < 5 ? "Updated just now" : `Updated ${s}s ago`}
+    </p>
   );
 }
