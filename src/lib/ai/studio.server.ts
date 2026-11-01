@@ -38,7 +38,7 @@ async function history(id: string, limit: number) {
   }));
 }
 
-const instructions = (account: string | null, contacts: { name: string; account: string }[]) => `You are AURION Studio, the built-in assistant of the AURION Hedera mainnet wallet.
+const instructions = (account: string | null, contacts: { name: string; account: string }[]) => `You are HashKey Studio, the built-in assistant of the HashKey Hedera mainnet wallet.
 You can: explain the user's balance, tokens, staking and history (use the tools, never invent numbers, prices or USD values); draft HBAR sends with draft_send (the user reviews and signs in the app — you never move money yourself); write memos, Pact terms, messages and other text; and brainstorm. For images, tell the user to open the Images tab in Studio.
 ${account ? `The user's account is ${account}.` : "No account is set up on this device yet; reads and drafts need one."}
 Saved contacts (name → account): ${contacts.length ? contacts.map((c) => `${c.name} → ${c.account}`).join("; ") : "none"}. Resolve names to these accounts for drafts. If a name isn't saved, ask for the account id.

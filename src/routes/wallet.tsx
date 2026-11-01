@@ -12,10 +12,10 @@ import {
 export const Route = createFileRoute("/wallet")({
   head: () => ({
     meta: [
-      { title: "Wallet — AURION" },
+      { title: "Wallet — HashKey" },
       { name: "description", content: "Create a new Hedera mainnet wallet on this device or connect an existing one." },
-      { property: "og:title", content: "Wallet — AURION" },
-      { property: "og:description", content: "Your key is made on your device. AURION never sees it." },
+      { property: "og:title", content: "Wallet — HashKey" },
+      { property: "og:description", content: "Your key is made on your device. HashKey never sees it." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -107,7 +107,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
           <li key={i} className="rounded-md bg-graphite px-2 py-1.5"><span className="text-muted-foreground">{i + 1}.</span> {word}</li>
         ))}
       </ol>
-      <p className="mt-3 text-xs text-destructive">Write it down. AURION cannot restore it. Anyone with it can move your HBAR.</p>
+      <p className="mt-3 text-xs text-destructive">Write it down. HashKey cannot restore it. Anyone with it can move your HBAR.</p>
       <label className="mt-4 flex items-center gap-2 text-sm">
         <input type="checkbox" checked={wrote} onChange={(e) => setWrote(e.target.checked)} /> I wrote it down.
       </label>

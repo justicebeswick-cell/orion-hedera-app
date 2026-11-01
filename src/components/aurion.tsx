@@ -3,12 +3,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import aurionLogo from "@/assets/aurion-official-logo.png.asset.json";
+import aurionLogo from "@/assets/hashkey-logo-sphere.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
-  return <img src={aurionLogo.url} alt="AURION logo" width={690} height={690} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
+  return <img src={aurionLogo.url} alt="HashKey logo" width={1024} height={1024} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [
@@ -43,9 +43,9 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onContextMenu={(e) => e.preventDefault()}
             className="h-auto select-none p-0 text-sm font-semibold tracking-[0.4em] text-signal hover:bg-transparent"
             onClick={() => setOpen(true)}
-            aria-label="AURION — open menu"
+            aria-label="HashKey — open menu"
           >
-            AURION
+            HashKey
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             <HederaMark size={12} /> Powered by Hedera
@@ -87,7 +87,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             className="panel mx-auto mt-24 max-w-md p-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">AURION</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
+            <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">HashKey</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
             {groups.map((g) => (
               <div key={g.name} className="mt-1 border-t border-border/60 px-1 pt-2 first:mt-0 first:border-t-0 first:pt-0">
                 <p className="px-3 pb-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{g.name}</p>

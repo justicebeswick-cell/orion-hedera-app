@@ -92,3 +92,4 @@
 - [x] Deeper purple
 - [x] Less blue, more purple
 - [x] Show the rebranded Hashgraph name and official logo on the staking screen instead of Swirlds
+- [x] Rebrand AURION → HashKey with purple hash-sphere logo + app icon

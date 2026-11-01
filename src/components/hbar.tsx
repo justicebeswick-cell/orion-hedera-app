@@ -1,4 +1,4 @@
-/** The ℏ symbol in AURION's brand purple (#7a3fd6), sampled from the app artwork. */
+/** The ℏ symbol in HashKey's brand purple (#7a3fd6), sampled from the app artwork. */
 export function HbarLogo({ size = 20, className = "" }: { size?: number; className?: string }) {
   return (
     <span

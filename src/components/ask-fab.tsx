@@ -8,7 +8,7 @@ export function AskFab() {
   return (
     <Link
       to="/studio"
-      aria-label="Ask AURION AI"
+      aria-label="Ask HashKey AI"
       className="fixed right-4 bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-primary/50 bg-card text-signal shadow-[0_8px_30px_-8px_var(--color-primary)] transition-transform active:scale-95 hover:scale-105"
     >
       <Sparkles size={20} />
