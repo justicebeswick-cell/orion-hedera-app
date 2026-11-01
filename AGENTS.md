@@ -18,7 +18,7 @@
 - WalletConnect signing uses @hiero-ledger/sdk classes (the version hedera-wallet-connect depends on); local-key signing uses @hashgraph/sdk. Mixing them fails type checks.
 - AI activity answers: server route /api/ask fetches mirror-node data itself (never trusts client-supplied history) and streams via the Responses API.
 - Biometric unlock uses WebAuthn PRF to encrypt the device passphrase locally (aurion.bio); the private key is still only decrypted by the passphrase, so biometrics never weaken the keystore.
-- App branding uses one shared AurionLogo component backed by a CDN asset pointer; the favicon is a small local derivative of the same artwork so branding stays consistent.
+- App branding including LaunchScreen uses one shared AurionLogo component backed by a CDN asset pointer; installed icons and the small local favicon derive from its source artwork, with versioned filenames to refresh browser caches.
 - Initial document loads show the shared LaunchScreen; client-side navigation does not remount it, avoiding repeated startup interruptions.
 - Vault uses an Embla deck with all sections mounted and inactive sections inert, preserving form state while making swipe navigation accessible.
 - Staking company images use the shared NodeLogo with first-party council artwork and verified brand assets stored as project CDN pointers; preserve SVG detail and native aspect ratios, with legacy assets/initials as fallback, avoiding third-party image requests in the wallet.
