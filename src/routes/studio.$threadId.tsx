@@ -19,9 +19,9 @@ export const Route = createFileRoute("/studio/$threadId")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined, agent: typeof s["agent"] === "string" ? (s["agent"] as string) : undefined }),
   head: () => ({
     meta: [
-      { title: "Studio chat — AURION" },
-      { name: "description", content: "Chat with AURION's AI about your Hedera wallet." },
-      { property: "og:title", content: "AURION Studio chat" },
+      { title: "Studio chat — HashKey" },
+      { name: "description", content: "Chat with HashKey's AI about your Hedera wallet." },
+      { property: "og:title", content: "HashKey Studio chat" },
       { property: "og:description", content: "Ask, draft, write and create." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -100,7 +100,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
       <Conversation className="flex-1">
         <ConversationContent>
           {messages.length === 0 && (
-            <ConversationEmptyState icon={<AurionLogo className="h-16 w-16" />} title="AURION Studio" description={account ? "Ask about your wallet, draft a send, or have me write something." : "Set up a wallet to ask about balances. Writing works now."} />
+            <ConversationEmptyState icon={<AurionLogo className="h-16 w-16" />} title="HashKey Studio" description={account ? "Ask about your wallet, draft a send, or have me write something." : "Set up a wallet to ask about balances. Writing works now."} />
           )}
           {messages.map((m) => (
             <Message key={m.id} from={m.role}>
@@ -140,7 +140,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
       </Conversation>
       {err && <p className="mb-2 text-sm text-destructive">{err}</p>}
       <PromptInput className="mt-3" onSubmit={(msg) => { const t = msg.text?.trim(); if (!t || busy) return; setErr(""); sendMessage({ text: t }); }}>
-        <PromptInputTextarea autoFocus placeholder="Ask AURION anything…" />
+        <PromptInputTextarea autoFocus placeholder="Ask HashKey anything…" />
         <PromptInputFooter className="justify-end">
           <PromptInputSubmit status={status} onStop={stop} />
         </PromptInputFooter>

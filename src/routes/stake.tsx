@@ -14,9 +14,9 @@ import { getStakeInfo, getRewards, getNodes, apr, redelegate, waitForConsensus, 
 export const Route = createFileRoute("/stake")({
   head: () => ({
     meta: [
-      { title: "Stake — AURION" },
+      { title: "Stake — HashKey" },
       { name: "description", content: "See which Hedera node you stake to, track rewards, and redelegate on mainnet." },
-      { property: "og:title", content: "Stake — AURION" },
+      { property: "og:title", content: "Stake — HashKey" },
       { property: "og:description", content: "Stake HBAR to a mainnet node. Your HBAR never leaves your account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

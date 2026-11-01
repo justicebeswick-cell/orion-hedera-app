@@ -1,7 +1,7 @@
 {
   "id": "/?app=aurion",
-  "name": "AURION",
-  "short_name": "AURION",
+  "name": "HashKey",
+  "short_name": "HashKey",
   "description": "Prove it. Agree it. Hold it. On Hedera.",
   "start_url": "/",
   "display": "standalone",

@@ -11,9 +11,9 @@ import { HbarLogo } from "@/components/hbar";
 export const Route = createFileRoute("/pact")({
   head: () => ({
     meta: [
-      { title: "Pact — AURION" },
+      { title: "Pact — HashKey" },
       { name: "description", content: "Write a simple deal with someone, fingerprint it, and pay them in HBAR with the fingerprint attached." },
-      { property: "og:title", content: "Pact — AURION" },
+      { property: "og:title", content: "Pact — HashKey" },
       { property: "og:description", content: "Agree it on Hedera mainnet." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -34,7 +34,7 @@ function Pact() {
   const [f, setF] = useState({ counterparty: "", scope: "", amount: "", deliverable: "", revisions: "" });
   const [hash, setHash] = useState("");
   const md = [
-    "# AURION Pact v1",
+    "# HashKey Pact v1",
     `Payer: ${id ?? ""}`,
     `Paid to: ${f.counterparty.trim()}`,
     `Price: ${f.amount.trim()} HBAR`,

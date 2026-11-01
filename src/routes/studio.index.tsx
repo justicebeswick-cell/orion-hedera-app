@@ -11,9 +11,9 @@ import { GenerationCanvas, saveToPhone } from "@/components/generation-canvas";
 export const Route = createFileRoute("/studio/")({
   head: () => ({
     meta: [
-      { title: "AI Studio — AURION" },
-      { name: "description", content: "Ask about your wallet, draft sends, write memos and create images with AURION's built-in AI." },
-      { property: "og:title", content: "AURION AI Studio" },
+      { title: "AI Studio — HashKey" },
+      { name: "description", content: "Ask about your wallet, draft sends, write memos and create images with HashKey's built-in AI." },
+      { property: "og:title", content: "HashKey AI Studio" },
       { property: "og:description", content: "Your Hedera wallet assistant, writer and image creator." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -41,7 +41,7 @@ function Studio() {
       <div className="mb-6 flex items-center gap-4">
         <AurionLogo className="h-14 w-14" />
         <div>
-          <p className="text-xs text-signal">AURION / STUDIO</p>
+          <p className="text-xs text-signal">HashKey / STUDIO</p>
           <h1 className="text-2xl font-semibold">AI Studio</h1>
           <p className="text-sm text-muted-foreground">Ask, draft, write and create.</p>
         </div>
