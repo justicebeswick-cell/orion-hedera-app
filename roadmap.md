@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Apply the November 1 official artwork to all AURION logos and app icons
+- [x] Apply the November 1 official artwork to all AURION logos and app icons
 
 - [x] Add public company website, Privacy Policy and User Agreement drafts with clear self-custody warnings
 - [ ] Finalize legal operator, policy disclosures and public contact — waiting for owner details and legal review
