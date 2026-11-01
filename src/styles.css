@@ -55,9 +55,10 @@
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --card-radius: 1.75rem;
   --card-border: oklch(0.64 0.17 296 / 20%);
+  /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:
-    radial-gradient(130% 95% at 12% 0%, oklch(0.42 0.15 296 / 55%) 0%, transparent 62%),
-    radial-gradient(110% 110% at 92% 100%, oklch(0.32 0.1 296 / 38%) 0%, transparent 55%),
+    radial-gradient(120% 90% at 6% 0%, oklch(0.45 0.19 335 / 50%) 0%, transparent 60%),
+    radial-gradient(110% 110% at 94% 100%, oklch(0.3 0.15 275 / 55%) 0%, transparent 58%),
     var(--card);
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
