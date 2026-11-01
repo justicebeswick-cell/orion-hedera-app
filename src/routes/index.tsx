@@ -97,7 +97,7 @@ function Home() {
         <Link to="/wallet" className="ml-auto text-xs text-signal hover:underline">{watchOnly ? "Connect to sign" : "Switch account"}</Link>
       </div>
 
-      <section className="hero-card p-6">
+      <section className="hero-card hash-mark overflow-hidden p-6">
         <div className="flex items-start justify-between">
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Balance</p>
         </div>
