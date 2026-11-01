@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Explain Home’s network rate: Hedera’s USD conversion, not a fee or exchange quote
+
 - [x] Apply the November 1 official artwork to all AURION logos and app icons
 
 - [x] Add public company website, Privacy Policy and User Agreement drafts with clear self-custody warnings
