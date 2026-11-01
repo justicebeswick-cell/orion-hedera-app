@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 /** Company that hosts each mainnet node → its website, used for the logo. */
 const DOMAINS: [RegExp, string][] = [
-  [/\bLG\b/, "lg.com"], [/Swirlds/, "swirlds.com"], [/Nomura/, "nomura.com"], [/Google/, "google.com"],
+  [/\bLG\b/, "lg.com"], [/Swirlds|Hashgraph/i, "hashgraph.com"], [/Nomura/, "nomura.com"], [/Google/, "google.com"],
   [/Zain/, "zain.com"], [/Magalu/, "magazineluiza.com.br"], [/DLA Piper/, "dlapiper.com"],
   [/Tata Comm/, "tatacommunications.com"], [/IBM/, "ibm.com"], [/Deutsche Telekom/, "telekom.com"],
   [/Dentons/, "dentons.com"], [/Australian Payments/, "auspayplus.com.au"], [/EDF/, "edf.fr"],
@@ -14,7 +14,11 @@ const DOMAINS: [RegExp, string][] = [
   [/Boeing/, "boeing.com"], [/Wipro/, "wipro.com"], [/Ubs|UBS/, "ubs.com"], [/Hitachi/, "hitachi.com"],
 ];
 
-export const nodeCompany = (desc?: string) => desc?.match(/Hosted by ([^|]+)/)?.[1]?.trim() ?? "";
+/** Chain node records still carry older brand names; show the company's current one. */
+const RENAMES: [RegExp, string][] = [[/Swirlds/i, "Hashgraph"]];
+const renamed = (name: string) => RENAMES.find(([re]) => re.test(name))?.[1] ?? name;
+
+export const nodeCompany = (desc?: string) => renamed(desc?.match(/Hosted by ([^|]+)/)?.[1]?.trim() ?? "");
 
 const logoAssets = import.meta.glob<{ default: { url: string } }>("../assets/company-logos/*.asset.json", { eager: true });
 const legacyAssets = import.meta.glob<{ default: { url: string } }>("../assets/nodes/*.asset.json", { eager: true });
