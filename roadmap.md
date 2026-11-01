@@ -91,3 +91,4 @@
 - [x] Recolor app purple to match user's YouTube screenshot, then publish
 - [x] Deeper purple
 - [x] Less blue, more purple
+- [x] Show the rebranded Hashgraph name and official logo on the staking screen instead of Swirlds
