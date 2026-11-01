@@ -3,12 +3,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import aurionLogo from "@/assets/aurion-official-logo.png.asset.json";
+import aurionLogo from "@/assets/hashkey-logo.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
-  return <img src={aurionLogo.url} alt="HashKey logo" width={690} height={690} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
+  return <img src={aurionLogo.url} alt="HashKey logo" width={1024} height={1024} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [
