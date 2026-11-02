@@ -54,35 +54,35 @@
   --logo-surface: oklch(0.97 0 0);
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --card-radius: 1.75rem;
-  --card-border: oklch(0.7 0.22 325 / 20%);
+  --card-border: oklch(0.64 0.17 296 / 20%);
   /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:
-    radial-gradient(120% 90% at 6% 0%, oklch(0.45 0.19 335 / 50%) 0%, transparent 60%),
-    radial-gradient(110% 110% at 94% 100%, oklch(0.3 0.15 275 / 55%) 0%, transparent 58%),
+    radial-gradient(120% 90% at 6% 0%, oklch(0.42 0.15 296 / 55%) 0%, transparent 60%),
+    radial-gradient(110% 110% at 94% 100%, oklch(0.32 0.1 296 / 38%) 0%, transparent 58%),
     var(--card);
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
-  --card: oklch(0.16 0.04 295);            /* purple ink */
-  --graphite: oklch(0.22 0.045 295);        /* raised violet-grey */
+  --card: oklch(0.16 0.028 296);            /* purple ink */
+  --graphite: oklch(0.22 0.032 296);        /* raised violet-grey */
   --foreground: oklch(0.96 0.012 310);      /* porcelain */
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.55 0.26 293);          /* logo violet */
+  --primary: oklch(0.52 0.23 296);          /* Hedera violet #7A3FD6 */
   --primary-foreground: oklch(0.98 0.01 310);
-  --signal: oklch(0.74 0.2 335);            /* logo pink glow */
-  --flare: oklch(0.7 0.25 330);             /* logo magenta */
+  --signal: oklch(0.64 0.17 296);           /* #A07AEE */
+  --flare: oklch(0.75 0.2 322);             /* #E879F9 */
   --success: oklch(0.78 0.15 163);          /* #34D399 */
   --secondary: var(--graphite);
   --secondary-foreground: var(--foreground);
   --muted: var(--graphite);
-  --muted-foreground: oklch(0.7 0.05 300);  /* mist */
+  --muted-foreground: oklch(0.7 0.04 296);  /* mist */
   --accent: var(--graphite);
   --accent-foreground: var(--foreground);
   --destructive: oklch(0.64 0.22 15);       /* #F43F5E */
   --destructive-foreground: var(--foreground);
-  --border: oklch(0.7 0.22 325 / 16%);
-  --input: oklch(0.7 0.22 325 / 22%);
+  --border: oklch(0.64 0.17 296 / 16%);
+  --input: oklch(0.64 0.17 296 / 22%);
   --ring: var(--primary);
 }
 
@@ -98,7 +98,7 @@
 
 @utility tnum { font-variant-numeric: tabular-nums; }
 @utility bloom {
-  background: radial-gradient(circle, oklch(0.55 0.26 293 / 28%) 0%, transparent 65%);
+  background: radial-gradient(circle, oklch(0.52 0.23 296 / 28%) 0%, transparent 65%);
 }
 @utility panel {
   background: var(--card-finish);
@@ -155,7 +155,7 @@
   display: inline-flex; align-items: center; gap: 0.5rem;
   border-radius: 999px;
   border: 1px solid var(--color-primary);
-  background: oklch(0.55 0.26 293 / 14%);
+  background: oklch(0.52 0.23 296 / 14%);
   padding: 0.55rem 1rem;
   font-family: var(--font-mono); font-size: 0.8rem;
   color: var(--color-foreground);
@@ -168,7 +168,7 @@
   font-size: 0.85rem; font-weight: 600;
   color: var(--color-foreground);
   transition: border-color .15s, background .15s;
-  &:hover { border-color: var(--color-primary); background: oklch(0.55 0.26 293 / 10%); }
+  &:hover { border-color: var(--color-primary); background: oklch(0.52 0.23 296 / 10%); }
 }
 
 /* Card corners stay consistent when a control's base variant sets a radius. */
@@ -200,7 +200,7 @@
 .deck-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
 .deck-tabs::-webkit-scrollbar { display: none; }
 .deck-tab { flex-shrink: 0; color: var(--muted-foreground); border-radius: 999px; border: 1px solid transparent; transition: color .2s, background .2s, border-color .2s; }
-.deck-tab-active { color: var(--signal); background: oklch(0.55 0.26 293 / 14%); border-color: oklch(0.7 0.22 325 / 30%); }
+.deck-tab-active { color: var(--signal); background: oklch(0.52 0.23 296 / 14%); border-color: oklch(0.64 0.17 296 / 30%); }
 .deck-viewport { overflow: hidden; transition: height .3s ease; }
 .deck-slide { flex: 0 0 100%; min-width: 0; padding: 0 1px 4px; }
 .deck-surface { min-height: 390px; border: 1px solid var(--card-border); background: var(--card-finish); border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow-deck); }
