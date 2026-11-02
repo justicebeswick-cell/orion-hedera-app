@@ -54,7 +54,7 @@
   --logo-surface: oklch(0.97 0 0);
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
   --card-radius: 1.75rem;
-  --card-border: oklch(0.62 0.24 316 / 20%);
+  --card-border: oklch(1 0 0 / 20%);
   /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:
     radial-gradient(120% 90% at 6% 0%, oklch(0.42 0.21 300 / 55%) 0%, transparent 60%),
@@ -63,26 +63,26 @@
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
   --card: oklch(0.16 0.028 296);            /* purple ink */
-  --graphite: oklch(0.22 0.032 296);        /* raised violet-grey */
-  --foreground: oklch(0.96 0.012 310);      /* porcelain */
+  --graphite: oklch(0.22 0 0);             /* neutral raised surface */
+  --foreground: oklch(0.98 0 0);           /* clean white */
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
   --primary: oklch(0.5 0.25 298);           /* picture violet #7428D8 */
-  --primary-foreground: oklch(0.98 0.01 310);
-  --signal: oklch(0.62 0.24 316);           /* picture orchid #AC36D2 */
-  --flare: oklch(0.75 0.2 322);             /* #E879F9 */
+  --primary-foreground: var(--foreground);
+  --signal: var(--foreground);            /* secondary accents are white */
+  --flare: var(--foreground);
   --success: oklch(0.78 0.15 163);          /* #34D399 */
   --secondary: var(--graphite);
   --secondary-foreground: var(--foreground);
   --muted: var(--graphite);
-  --muted-foreground: oklch(0.7 0.04 296);  /* mist */
+  --muted-foreground: oklch(0.7 0 0);       /* neutral silver */
   --accent: var(--graphite);
   --accent-foreground: var(--foreground);
   --destructive: oklch(0.64 0.22 15);       /* #F43F5E */
   --destructive-foreground: var(--foreground);
-  --border: oklch(0.62 0.24 316 / 16%);
-  --input: oklch(0.62 0.24 316 / 22%);
+  --border: oklch(1 0 0 / 16%);
+  --input: oklch(1 0 0 / 22%);
   --ring: var(--primary);
 }
 
@@ -186,7 +186,7 @@
 .launch-name { font-size: 1.75rem; font-weight: 300; letter-spacing: .42em; padding-left: .42em;
   animation: launch-name-in 1.2s cubic-bezier(.2,.7,.2,1) .35s both; }
 .launch-rule { width: 56px; height: 1px; margin: 18px auto 16px;
-  background: linear-gradient(90deg, transparent, oklch(0.72 0.18 320 / 80%), transparent);
+  background: linear-gradient(90deg, transparent, var(--signal), transparent);
   transform-origin: center; animation: launch-rule-in .9s ease .8s both; }
 .launch-tag { font-size: 10px; letter-spacing: .32em; text-transform: uppercase; animation: launch-fade 1s ease 1.05s both; }
 @media (max-width: 420px) { .launch-logo { width: 120px; height: 120px; } .launch-name { font-size: 1.5rem; } }
@@ -200,7 +200,7 @@
 .deck-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
 .deck-tabs::-webkit-scrollbar { display: none; }
 .deck-tab { flex-shrink: 0; color: var(--muted-foreground); border-radius: 999px; border: 1px solid transparent; transition: color .2s, background .2s, border-color .2s; }
-.deck-tab-active { color: var(--signal); background: oklch(0.5 0.25 298 / 14%); border-color: oklch(0.62 0.24 316 / 30%); }
+.deck-tab-active { color: var(--signal); background: oklch(0.5 0.25 298 / 14%); border-color: var(--card-border); }
 .deck-viewport { overflow: hidden; transition: height .3s ease; }
 .deck-slide { flex: 0 0 100%; min-width: 0; padding: 0 1px 4px; }
 .deck-surface { min-height: 390px; border: 1px solid var(--card-border); background: var(--card-finish); border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow-deck); }
