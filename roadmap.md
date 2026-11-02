@@ -2,6 +2,7 @@
 
 - [ ] Refine AI Studio with elegant layout and smooth transitions
 - [ ] Diagnose and repair non-HBAR HTS swaps, verify live quotes and regression tests
+- [ ] Match hashtag artwork and app icons to the wallet’s primary purple
 
 - [x] Explain Home’s network rate: Hedera’s USD conversion, not a fee or exchange quote
 
