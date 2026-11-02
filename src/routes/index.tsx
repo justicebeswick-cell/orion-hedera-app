@@ -16,10 +16,18 @@ import { HbarMarket } from "@/components/hbar-market";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HashKey — Prove it. Agree it. Hold it." },
-      { name: "description", content: "A mainnet HBAR vault with staking, pacts and one heir transfer. On Hedera." },
-      { property: "og:title", content: "HashKey — On Hedera" },
-      { property: "og:description", content: "Prove it. Agree it. Hold it. On Hedera." },
+      { title: "HashKey — A future proof HBAR wallet on Hedera" },
+      {
+        name: "description",
+        content:
+          "A future proof HBAR wallet native to the Hedera network where you can safely store, stake, swap and agree on secure transactions. Keys stay on your device; every move needs your approval.",
+      },
+      { property: "og:title", content: "HashKey — A future proof HBAR wallet on Hedera" },
+      {
+        property: "og:description",
+        content:
+          "A future proof HBAR wallet native to the Hedera network where you can safely store, stake, swap and agree on secure transactions. Your keys never leave your device. Stake with any node and claim rewards on demand, swap across Hedera tokens, schedule payments up to 60 days ahead, and sign every move with a fingerprint or passphrase. No company holds your funds — you do.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
