@@ -6,8 +6,8 @@ export function LaunchScreen() {
   const [visible, setVisible] = useState(true);
   const [leaving, setLeaving] = useState(false);
   useEffect(() => {
-    const fade = window.setTimeout(() => setLeaving(true), 1800);
-    const timer = window.setTimeout(() => setVisible(false), 2150);
+    const fade = window.setTimeout(() => setLeaving(true), 2300);
+    const timer = window.setTimeout(() => setVisible(false), 2900);
     return () => { window.clearTimeout(fade); window.clearTimeout(timer); };
   }, []);
   if (!visible) return null;
@@ -16,9 +16,10 @@ export function LaunchScreen() {
       <div className="launch-brand">
         <AurionLogo className="launch-logo" />
         <div className="launch-wordmark">
-          <p className="text-3xl font-semibold tracking-wide">HashKey</p>
-          <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-            <HederaMark size={16} /> Powered by Hedera
+          <p className="launch-name">HashKey</p>
+          <div className="launch-rule" />
+          <p className="launch-tag flex items-center justify-center gap-2 text-muted-foreground">
+            <HederaMark size={13} /> Powered by Hedera
           </p>
         </div>
       </div>
