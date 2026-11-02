@@ -18,7 +18,6 @@ type Pool = { tokenA: PoolSide; tokenB: PoolSide; tokenReserveA: string; tokenRe
 
 // Hub tokens used to route between any two tokens: WHBAR, USDC, SAUCE, HBARX.
 const HUBS = [WHBAR, "0.0.456858", "0.0.731861", "0.0.834116"];
-const MIN_TVL_USD = 20;
 let graph: Map<string, Set<string>> | null = null;
 let meta = new Map<string, { symbol: string }>();
 
@@ -35,10 +34,9 @@ export async function listTokens(): Promise<SwapToken[]> {
     if (p.tokenA.isFeeOnTransferToken || p.tokenB.isFeeOnTransferToken) continue;
     if (p.tokenReserveA === "0" || p.tokenReserveB === "0") continue;
     const tvl = (Number(p.lpTokenReserve ?? 0) / 1e8) * Number(p.lpToken?.priceUsd ?? 0);
-    if (!(tvl >= MIN_TVL_USD)) continue;
     const [a, b] = [p.tokenA.id, p.tokenB.id];
     if (!g.has(a)) g.set(a, new Set()); if (!g.has(b)) g.set(b, new Set());
-    g.get(a)!.add(b); g.get(b)!.add(a);
+    g.get(a)?.add(b); g.get(b)?.add(a);
     for (const t of [p.tokenA, p.tokenB]) {
       if (t.id === WHBAR) continue;
       m.set(t.id, { symbol: t.symbol });
@@ -48,31 +46,49 @@ export async function listTokens(): Promise<SwapToken[]> {
     }
   }
   graph = g; meta = m;
-  // Keep only tokens that can actually be reached from HBAR.
-  const reach = new Set<string>([WHBAR]); let f = [WHBAR];
-  for (let d = 0; d < 4 && f.length; d++) { const n: string[] = []; for (const x of f) for (const y of g.get(x) ?? []) if (!reach.has(y)) { reach.add(y); n.push(y); } f = n; }
-  for (const k of [...out.keys()]) if (!reach.has(k)) out.delete(k);
+  // Keep isolated active markets too: two HTS tokens can trade without an HBAR route.
   return [HBAR, ...[...out.values()].sort((a, b) => (b.liquidity ?? 0) - (a.liquidity ?? 0))];
 }
 
 const num = (id: string) => BigInt(id.split(".")[2] ?? "0");
 const word = (n: bigint) => n.toString(16).padStart(64, "0");
-const bytes = (hex: string) => Uint8Array.from(hex.match(/../g)!.map((b) => parseInt(b, 16)));
+const bytes = (hex: string) => Uint8Array.from((hex.match(/../g) ?? []).map((b) => parseInt(b, 16)));
 
 const pid = (t: SwapToken) => (isH(t) ? WHBAR : t.id);
 
 /** Candidate routes: direct, through one hub, or through two hubs. */
 export async function routesOf(from: SwapToken, to: SwapToken): Promise<string[][]> {
   if (!graph) await listTokens();
-  const g = graph!, A = pid(from), B = pid(to);
+  const g = graph;
+  if (!g) throw new Error("Token markets unavailable. Refresh and try again.");
+  const A = pid(from), B = pid(to);
+  if (A === B) return [];
   const has = (x: string, y: string) => !!g.get(x)?.has(y);
   const out: string[][] = [];
   if (has(A, B)) out.push([A, B]);
   for (const h of HUBS) if (h !== A && h !== B && has(A, h) && has(h, B)) out.push([A, h, B]);
   if (out.length < 2) for (const h1 of HUBS) for (const h2 of HUBS)
     if (h1 !== h2 && ![A, B].includes(h1) && ![A, B].includes(h2) && has(A, h1) && has(h1, h2) && has(h2, B)) out.push([A, h1, h2, B]);
-  if (!out.length) { const p = bfs(g, A, B); if (p) out.push(p); }
-  return out.slice(0, 8);
+  const p = bfs(g, A, B);
+  if (p && !out.some((r) => r.join() === p.join())) out.unshift(p);
+  // Include non-hub alternatives even when a hub market exists.
+  let frontier = [[A]];
+  for (let depth = 0; depth < 4 && frontier.length && out.length < 16; depth++) {
+    const next: string[][] = [];
+    for (const route of frontier) {
+      const last = route[route.length - 1];
+      if (!last) continue;
+      for (const neighbor of g.get(last) ?? []) {
+        if (route.includes(neighbor)) continue;
+        const candidate = [...route, neighbor];
+        if (neighbor === B) {
+          if (!out.some((r) => r.join() === candidate.join())) out.push(candidate);
+        } else if (next.length < 1000) next.push(candidate);
+      }
+    }
+    frontier = next;
+  }
+  return out.slice(0, 16);
 }
 
 /** Shortest pool route (up to 4 hops) for tokens that don't touch a hub. */
@@ -84,7 +100,7 @@ function bfs(g: Map<string, Set<string>>, A: string, B: string): string[] | null
     for (const x of front) for (const y of g.get(x) ?? []) {
       if (prev.has(y)) continue;
       prev.set(y, x);
-      if (y === B) { const p = [B]; let c = x; while (c) { p.unshift(c); c = prev.get(c)!; } return p; }
+      if (y === B) { const p = [B]; let c = x; while (c) { p.unshift(c); c = prev.get(c) ?? ""; } return p; }
       next.push(y);
     }
     front = next;
@@ -124,27 +140,32 @@ export type Quote = { amountIn: bigint; out: bigint; hbarValue: bigint; fee: big
 async function best(amountIn: bigint, routes: string[][]) {
   const res = await Promise.all(routes.map((p) => amountsOut(amountIn, p).then((a) => ({ p, a })).catch(() => null)));
   let top: { p: string[]; a: bigint[] } | null = null;
-  for (const r of res) if (r && r.a.length && (!top || r.a[r.a.length - 1]! > top.a[top.a.length - 1]!)) top = r;
+  for (const r of res) {
+    const value = r?.a.at(-1);
+    if (r && value !== undefined && value > 0n && (!top || value > (top.a.at(-1) ?? 0n))) top = r;
+  }
   return top;
 }
 
 /** Live quote over the best route, with price impact and the HBAR service fee. */
 export async function quote(from: SwapToken, to: SwapToken, amountIn: bigint): Promise<Quote> {
+  if (amountIn <= 0n) throw new Error("Enter an amount greater than zero.");
   const routes = await routesOf(from, to);
   if (!routes.length) throw new Error(`Price quote failed: no SaucerSwap route between ${from.symbol} and ${to.symbol}`);
   const top = await best(amountIn, routes);
   if (!top) throw new Error("Price quote failed: not enough liquidity for this amount");
   const path = top.p, a = top.a;
-  const out = a[a.length - 1]!;
+  const out = a.at(-1);
+  if (out === undefined || out <= 0n) throw new Error("Price quote failed: this amount is too small for the market.");
   const small = amountIn / 1000n > 0n ? amountIn / 1000n : 1n;
   const s = await amountsOut(small, path).catch(() => null);
-  const spot = s ? Number(s[s.length - 1]!) / Number(small) : 0;
+  const spot = s ? Number(s.at(-1) ?? 0n) / Number(small) : 0;
   const impact = spot > 0 ? Math.max(0, 1 - Number(out) / Number(amountIn) / spot) : 0;
   let hbarValue = 0n;
   const wi = path.indexOf(WHBAR);
   if (isH(from)) hbarValue = amountIn;
-  else if (wi >= 0) hbarValue = a[wi]!;
-  else { const h = await best(amountIn, await routesOf(from, HBAR)).catch(() => null); hbarValue = h ? h.a[h.a.length - 1]! : 0n; }
+  else if (wi >= 0) hbarValue = a[wi] ?? 0n;
+  else { const h = await best(amountIn, await routesOf(from, HBAR)).catch(() => null); hbarValue = h?.a.at(-1) ?? 0n; }
   const fee = (hbarValue * BigInt(Math.round(SERVICE_FEE * 10000))) / 10000n;
   const route = path.map((id) => meta.get(id)?.symbol ?? id);
   return { amountIn, out, hbarValue, fee, impact, hops: path.length - 1, path, route };
@@ -154,10 +175,11 @@ export async function quote(from: SwapToken, to: SwapToken, amountIn: bigint): P
 export async function tokenBalance(account: string, token: SwapToken): Promise<bigint | null> {
   if (isH(token)) {
     const r = await fetch(`${MIRROR}/api/v1/accounts/${account}?limit=1`).catch(() => { throw new Error("Hedera unreachable"); });
-    return r.ok ? BigInt((await r.json()).balance.balance) : 0n;
+    if (!r.ok) throw new Error(`Balance lookup failed: Hedera returned ${r.status}. Try again.`);
+    return BigInt((await r.json()).balance.balance);
   }
   const r = await fetch(`${MIRROR}/api/v1/accounts/${account}/tokens?token.id=${token.id}`).catch(() => { throw new Error("Hedera unreachable"); });
-  if (!r.ok) return null;
+  if (!r.ok) throw new Error(`Token lookup failed: Hedera returned ${r.status}. Try again.`);
   const t = (await r.json()).tokens?.[0];
   return t ? BigInt(t.balance) : null;
 }
@@ -172,7 +194,7 @@ function wrap(primitive: string, e: unknown): Error {
   return new Error(`${primitive} on mainnet failed: ${msg || "rejected in wallet"}`);
 }
 
-export type Step = "approve" | "associate" | "swap" | "fee" | "done";
+export type Step = "approve" | "associate" | "quote" | "swap" | "fee" | "done";
 
 /**
  * Run a swap: approve (token in), associate (token out), swap, then pay the HBAR service fee.
@@ -182,9 +204,10 @@ export async function executeSwap(
   from: string, tIn: SwapToken, tOut: SwapToken, q: Quote, slippage: number, passphrase: string,
   onStep: (s: Step) => void = () => {},
 ) {
-  const path = q.path;
   const minOut = (q.out * BigInt(Math.round((1 - slippage) * 10000))) / 10000n;
-  const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
+  const inputBalance = await tokenBalance(from, tIn);
+  if (inputBalance === null) throw new Error(`Token lookup failed: your account has not added ${tIn.symbol}.`);
+  if (inputBalance < q.amountIn) throw new Error(`Swap failed: not enough ${tIn.symbol}. Nothing was spent.`);
   // ECDSA accounts with an EVM alias must receive at that alias; the long-zero address fails with INVALID_ALIAS_KEY.
   // Note: the mirror rejects `?limit=0` on this endpoint, so use `transactions=false` and fail loudly if the lookup breaks.
   let recipient = num(from);
@@ -196,29 +219,26 @@ export async function executeSwap(
   if (!acct) throw new Error("Account lookup failed: Hedera unreachable. Nothing was spent.");
   if (acct.evm_address && !/^0x0{24}/.test(acct.evm_address)) recipient = BigInt(acct.evm_address);
   const to = word(recipient);
-  let fn: string, payable = 0n;
-  if (isH(tIn)) { fn = "7ff36ab5" + word(minOut) + word(128n) + to + word(deadline) + pathWords(path); payable = q.amountIn; }
-  else if (isH(tOut)) fn = "18cbafe5" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
-  else fn = "38ed1739" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
-  const params = bytes(fn);
+  let params = new Uint8Array();
+  const payable = isH(tIn) ? q.amountIn : 0n;
   // Token-in swaps call the HTS system contract (transferFrom, WHBAR unwrap), which costs far more gas on Hedera;
   // 600k ran out mid-swap ("Safe approve failed"). Unused gas is mostly refunded, so err high.
-  const gas = (isH(tIn) ? 400_000 : 1_500_000) + (q.hops - 1) * 700_000;
+  let gas = (isH(tIn) ? 400_000 : 1_500_000) + (q.hops - 1) * 700_000;
   const needsAssoc = !isH(tOut) && (await tokenBalance(from, tOut)) === null;
   let hasAllowance = false;
   if (!isH(tIn)) {
-    try {
-      const r = await fetch(`${MIRROR}/api/v1/accounts/${from}/allowances/tokens?token.id=${tIn.id}&spender.id=${ROUTER}`);
-      const a = r.ok ? (await r.json()).allowances?.[0] : null;
-      hasAllowance = !!a && BigInt(a.amount) >= q.amountIn;
-    } catch { /* approve again */ }
+    const r = await fetch(`${MIRROR}/api/v1/accounts/${from}/allowances/tokens?token.id=${tIn.id}&spender.id=${ROUTER}`)
+      .catch(() => { throw new Error("Token allowance lookup failed: Hedera unreachable. Nothing was spent."); });
+    if (!r.ok) throw new Error(`Token allowance lookup failed: Hedera returned ${r.status}. Nothing was spent.`);
+    const allowances = (await r.json()).allowances ?? [];
+    hasAllowance = allowances.some((a: { token_id: string; spender: string; amount: number | string }) => a.token_id === tIn.id && a.spender === ROUTER && BigInt(a.amount) >= q.amountIn);
   }
   const chargeFee = from !== TREASURY && q.fee > 0n;
 
   // Same steps for both SDKs; `s` is either @hiero-ledger/sdk (wallet) or @hashgraph/sdk (device key).
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const steps = (s: any) => ({
-    approve: () => new s.AccountAllowanceApproveTransaction().approveTokenAllowance(tIn.id, from, ROUTER, q.amountIn.toString()).setMaxTransactionFee(new s.Hbar(2)),
+    approve: () => new s.AccountAllowanceApproveTransaction().approveTokenAllowance(tIn.id, from, ROUTER, q.amountIn).setMaxTransactionFee(new s.Hbar(2)),
     associate: () => new s.TokenAssociateTransaction().setAccountId(from).setTokenIds([tOut.id]).setMaxTransactionFee(new s.Hbar(2)),
     swap: () => new s.ContractExecuteTransaction().setContractId(ROUTER).setGas(gas)
       .setPayableAmount(s.Hbar.fromTinybars(payable.toString())).setFunctionParameters(params).setMaxTransactionFee(new s.Hbar(10)),
@@ -261,6 +281,19 @@ export async function executeSwap(
   try {
     if (!isH(tIn) && !hasAllowance) { onStep("approve"); try { await run(b.approve()); } catch (e) { throw wrap("Token allowance", e); } }
     if (needsAssoc) { onStep("associate"); try { await run(b.associate()); } catch (e) { throw wrap("Token associate", e); } }
+    // Approval/association and biometric prompts can take time. Requote after prerequisites,
+    // preserving the user's original minimum; never silently loosen their protection.
+    onStep("quote");
+    const fresh = await quote(tIn, tOut, q.amountIn);
+    if (fresh.out < minOut) throw new Error("Price changed beyond the 3% limit. Review the new price and try again. The swap was not sent.");
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
+    const path = fresh.path;
+    let fn: string;
+    if (isH(tIn)) fn = "7ff36ab5" + word(minOut) + word(128n) + to + word(deadline) + pathWords(path);
+    else if (isH(tOut)) fn = "18cbafe5" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
+    else fn = "38ed1739" + word(q.amountIn) + word(minOut) + word(160n) + to + word(deadline) + pathWords(path);
+    params = bytes(fn);
+    gas = (isH(tIn) ? 400_000 : 1_500_000) + (fresh.hops - 1) * 700_000;
     onStep("swap");
     let swapTx: string;
     try { swapTx = await run(b.swap()); } catch (e) { throw wrap("Swap", e); }
