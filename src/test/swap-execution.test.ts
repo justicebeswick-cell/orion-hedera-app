@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { executeSwap, HBAR, listTokens, type Quote } from "@/lib/swap";
+import { executeSwap, listTokens, type Quote } from "@/lib/swap";
 
 const state = vi.hoisted(() => ({ kinds: [] as string[], parameters: new Uint8Array(), closed: false }));
 vi.mock("@/lib/signer", () => ({ signMode: () => ({ kind: "device" }), deviceKey: async () => ({}) }));
@@ -13,7 +13,7 @@ vi.mock("@hashgraph/sdk", () => {
     setContractId() { this.kind = "swap"; return this; }
     setGas() { return this; }
     setPayableAmount() { return this; }
-    setFunctionParameters(p: Uint8Array) { state.parameters = p; return this; }
+    setFunctionParameters(p: Uint8Array) { state.parameters = new Uint8Array(p); return this; }
     async execute() { state.kinds.push(this.kind); return { transactionId: { toString: () => "0.0.123@1.1" }, getReceipt: async () => ({ status: { toString: () => "SUCCESS" } }) }; }
   }
   class Hbar { static fromTinybars() { return new Hbar(); } }
