@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import aurionLogo from "@/assets/hashkey-hash.png.asset.json";
+import aurionLogo from "@/assets/hashkey-hash-violet.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
