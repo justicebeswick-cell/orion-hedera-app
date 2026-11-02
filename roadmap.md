@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Refine AI Studio with elegant layout and smooth transitions
+- [x] Improve non-HBAR HTS market coverage, preflight and fresh quotes; live quotes and nine regression checks verified
+- [x] Match hashtag artwork and app icons to the wallet’s primary purple
+
 - [x] Explain Home’s network rate: Hedera’s USD conversion, not a fee or exchange quote
 
 - [x] Apply the November 1 official artwork to all AURION logos and app icons
