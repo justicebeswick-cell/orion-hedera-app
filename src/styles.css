@@ -178,7 +178,7 @@
   background: radial-gradient(62% 46% at 50% 50%, oklch(0.42 0.15 296 / 55%) 0%, transparent 72%); }
 .launch-leaving { animation: launch-exit .35s ease both; }
 .launch-brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 26px; animation: launch-enter .5s ease both; }
-.launch-logo { width: 104px; height: 104px; object-fit: contain; filter: drop-shadow(0 0 28px oklch(0.52 0.23 296 / 45%)); }
+.launch-logo { width: 104px; height: 104px; object-fit: contain; filter: drop-shadow(0 0 22px oklch(0.55 0.25 310 / 55%)) drop-shadow(0 0 48px oklch(0.45 0.22 290 / 35%)); }
 .launch-wordmark { text-align: left; }
 @media (max-width: 420px) { .launch-brand { gap: 18px; } .launch-logo { width: 84px; height: 84px; } }
 @keyframes launch-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
