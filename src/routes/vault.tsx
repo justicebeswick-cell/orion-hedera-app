@@ -456,7 +456,7 @@ function TokIcon({ t, size = 20 }: { t: SwapToken; size?: number }) {
   return <img src={t.icon} alt="" width={size} height={size} onError={() => setBad(true)} className="shrink-0 rounded-full" style={{ width: size, height: size }} />;
 }
 
-const STEP_LABEL: Record<Step, string> = { approve: "Allowing the exchange to use your tokens…", associate: "Adding the token to your account…", swap: "Swapping…", fee: "Paying the service fee…", done: "Done" };
+const STEP_LABEL: Record<Step, string> = { approve: "Allowing the exchange to use your tokens…", associate: "Adding the token to your account…", quote: "Checking the latest price…", swap: "Swapping…", fee: "Paying the service fee…", done: "Done" };
 
 function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
   const tokens = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
@@ -470,19 +470,19 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
   const [debounced, setDebounced] = useState("");
   useEffect(() => { const t = setTimeout(() => setDebounced(amt), 350); return () => clearTimeout(t); }, [amt]);
   const units = toUnits(debounced, tIn.decimals);
-  const q = useQuery({ queryKey: ["quote", tIn.id, out?.id, units.toString()], queryFn: () => quote(tIn, out!, units), enabled: !!out && units > 0n, refetchInterval: 10_000, retry: false });
+  const q = useQuery({ queryKey: ["quote", tIn.id, out?.id, units.toString()], queryFn: () => { if (!out) throw new Error("Choose a token."); return quote(tIn, out, units); }, enabled: !!out && units > 0n, refetchInterval: 10_000, retry: false });
   const balIn = useQuery({ queryKey: ["tokbal", id, tIn.id], queryFn: () => tokenBalance(id, tIn), refetchInterval: 15_000 });
   const balOut = useQuery({ queryKey: ["tokbal", id, out?.id], queryFn: () => tokenBalance(id, out!), enabled: !!out, refetchInterval: 15_000 });
   const live = debounced === amt && q.data && q.data.amountIn === units ? q.data : null;
   const minOut = live ? (live.out * BigInt(Math.round((1 - slip) * 10000))) / 10000n : 0n;
   const over = balIn.data != null && units > balIn.data;
-  const ok = !!live && !over;
+  const ok = !!live && !over && balIn.isSuccess && balIn.data !== null && !step;
   const flip = () => { if (!out) return; setIn(out); setOut(tIn); setAmt(""); };
 
   return (
     <Panel className="mt-4">
       <Label>Swap</Label>
-      <div className="card-surface p-3">
+      <div className="rounded-lg border border-border bg-background/40 p-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground"><span>You pay</span>
           <span className="flex items-center gap-2"><span className="tnum">Balance {balIn.data != null ? fmtUnits(balIn.data, tIn.decimals) : "0"}</span>
             <button type="button" className="rounded-full border border-primary/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-signal hover:bg-primary/15" onClick={() => {
@@ -499,7 +499,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
       <div className="relative z-10 -my-3 flex justify-center">
         <button type="button" aria-label="Flip" onClick={flip} className="rounded-full border border-border bg-card px-3 py-1 text-signal transition-transform hover:rotate-180">⇅</button>
       </div>
-      <div className="card-surface p-3">
+      <div className="rounded-lg border border-border bg-background/40 p-3">
         <div className="flex items-center justify-between text-xs text-muted-foreground"><span>You get</span><span className="tnum">Balance {out && balOut.data != null ? fmtUnits(balOut.data, out.decimals) : "0"}</span></div>
         <div className="mt-1 flex items-center gap-2">
           <p className={`w-full min-w-0 truncate text-2xl font-semibold tnum ${live ? "" : "text-muted-foreground"}`}>{live && out ? fmtUnits(live.out, out.decimals) : units > 0n ? (q.isError ? "—" : "…") : "0"}</p>
@@ -509,10 +509,12 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
 
       {q.isError && units > 0n && <p className="mt-3 text-xs text-destructive">{(q.error as Error).message}</p>}
       {over && <p className="mt-3 text-xs text-destructive">Not enough {tIn.symbol}.</p>}
+      {balIn.isError && <p className="mt-3 text-xs text-destructive">{balIn.error.message}</p>}
       {live && out && (
-        <dl className="card-surface mt-3 space-y-1.5 p-3 text-xs tnum">
+        <dl className="mt-4 space-y-2 border-t border-border pt-4 text-xs tnum">
           <Row k="Rate" v={`1 ${tIn.symbol} ≈ ${fmtUnits((live.out * 10n ** BigInt(tIn.decimals)) / live.amountIn, out.decimals)} ${out.symbol}`} />
           <Row k="Price impact" v={`${(live.impact * 100).toFixed(2)}%`} warn={live.impact > 0.03} />
+          <Row k="Minimum received" v={`${fmtUnits(minOut, out.decimals)} ${out.symbol}`} />
           <Row k={`Pool fee (${(LP_FEE * 100).toFixed(1)}% × ${live.hops})`} v="included in rate" />
           <Row k={`HashKey fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
           <Row k="Network fee" v={tIn.id === "HBAR" ? "≈ 0.3–0.5 ℏ" : "≈ 1–1.5 ℏ (plus ≈ 0.5 ℏ the first time you allow a token)"} />
@@ -527,6 +529,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
           if (!live || !out) throw new Error("No price yet");
           const detail = `${amt} ${tIn.symbol} → ${fmtUnits(live.out, out.decimals)} ${out.symbol}`;
           try {
+            setStep("quote");
             const r = await executeSwap(id, tIn, out, live, slip, pass, setStep);
             audit({ action: "swap", detail, ok: true, txId: r.swapTx });
             if (r.feeTx) audit({ action: "swap fee", detail: `${fmtUnits(live.fee, 8)} ℏ → ${TREASURY}`, ok: true, txId: r.feeTx });
@@ -543,6 +546,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
         )} />
       </div>
       {tokens.isError && <p className="mt-2 text-xs text-destructive">{(tokens.error as Error).message}. Token list unavailable.</p>}
+      <p className="mt-3 text-xs text-muted-foreground">HTS tokens need an active SaucerSwap V1 market. Tokens with transfer taxes are not supported.</p>
     </Panel>
   );
 }
