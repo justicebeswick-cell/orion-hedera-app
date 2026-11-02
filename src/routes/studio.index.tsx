@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Download, Bot } from "lucide-react";
+import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Download, Bot, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
 import { Shell, Panel, Label, AurionLogo } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
 import { clearStudio, deleteThread, readImages, readThreads, saveImage, type SavedImage, type Thread } from "@/lib/studio-threads";
@@ -33,39 +33,46 @@ function Studio() {
   const nav = useNavigate();
   const [tab, setTab] = useState<"chat" | "images" | "agents">("chat");
   const [threads, setThreads] = useState<Thread[]>([]);
+  const [prompt, setPrompt] = useState("");
   useEffect(() => setThreads(readThreads()), []);
   const start = (prompt?: string) => nav({ to: "/studio/$threadId", params: { threadId: crypto.randomUUID() }, search: { q: prompt, agent: undefined } });
 
   return (
     <Shell title="Studio">
-      <div className="mb-6 flex items-center gap-4">
-        <AurionLogo className="h-14 w-14" />
+      <div className="studio-heading mb-7 flex items-center gap-4 py-3">
+        <AurionLogo className="h-16 w-16 shrink-0" />
         <div>
-          <p className="text-xs text-signal">HashKey / STUDIO</p>
-          <h1 className="text-2xl font-semibold">AI Studio</h1>
-          <p className="text-sm text-muted-foreground">Ask, draft, write and create.</p>
+          <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">HashKey</p>
+          <h1 className="text-3xl font-light">AI Studio</h1>
         </div>
       </div>
-      <div className="mb-5 grid grid-cols-3 gap-1 rounded-full border border-border p-1" role="tablist">
+      <div className="studio-tabs mb-6 grid grid-cols-3 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
         <Button role="tab" aria-selected={tab === "chat"} variant={tab === "chat" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("chat")}><MessagesSquare /> Chat</Button>
         <Button role="tab" aria-selected={tab === "images"} variant={tab === "images" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("images")}><ImageIcon /> Images</Button>
         <Button role="tab" aria-selected={tab === "agents"} variant={tab === "agents" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("agents")}><Bot /> Agents</Button>
       </div>
 
-      {tab === "chat" ? (
-        <>
-          <Button className="mb-4 w-full" onClick={() => start()}><MessageSquarePlus /> New chat</Button>
-          <div className="mb-6 grid grid-cols-2 gap-2">
+      <div hidden={tab !== "chat"} role="tabpanel" aria-label="Chat" className="studio-view">
+          <form className="studio-composer mb-5 rounded-lg border border-border bg-card p-4" onSubmit={(e) => { e.preventDefault(); if (prompt.trim()) start(prompt.trim()); }}>
+            <Sparkles size={18} className="mb-3 text-signal" />
+            <textarea aria-label="Message to HashKey" className="min-h-20 w-full resize-none bg-transparent text-base outline-none placeholder:text-muted-foreground" placeholder="What’s on your mind?" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+            <div className="mt-2 flex items-center justify-between border-t border-border pt-3">
+              <Button variant="ghost" size="sm" onClick={() => start()}><MessageSquarePlus /> New chat</Button>
+              <Button type="submit" size="icon" aria-label="Start conversation" disabled={!prompt.trim()} className="rounded-full"><ArrowUp /></Button>
+            </div>
+          </form>
+          <div className="mb-7 grid grid-cols-2 gap-3">
             {starters.map((s) => (
-              <button key={s} onClick={() => start(s)} className="panel p-3 text-left text-sm transition-colors hover:border-primary">{s}</button>
+              <Button key={s} variant="ghost" onClick={() => start(s)} className="studio-starter panel h-auto min-h-24 flex-col items-start justify-between gap-3 whitespace-normal p-4 text-left text-xs font-normal"><span>{s}</span><ArrowUpRight className="self-end text-muted-foreground" /></Button>
             ))}
           </div>
-          <Panel>
-            <Label>Past chats</Label>
+          <section className="border-t border-border pt-5">
+            <div className="mb-3 flex items-center justify-between"><Label>Recent conversations</Label><span className="text-xs text-muted-foreground">{threads.length}</span></div>
             {threads.length === 0 ? <p className="text-sm text-muted-foreground">No chats yet.</p> : (
               <ul className="divide-y divide-border">
                 {threads.map((t) => (
-                  <li key={t.id} className="flex items-center gap-2 py-2">
+                  <li key={t.id} className="flex items-center gap-3 py-3 transition-colors hover:bg-secondary/40">
+                    <MessagesSquare size={16} className="shrink-0 text-muted-foreground" />
                     <Link to="/studio/$threadId" params={{ threadId: t.id }} search={{ q: undefined, agent: t.agentId }} className="min-w-0 flex-1 py-1">
                       <p className="truncate text-sm">{t.title}</p>
                       <p className="text-xs text-muted-foreground">{new Date(t.updatedAt).toLocaleString()}</p>
@@ -75,11 +82,12 @@ function Studio() {
                 ))}
               </ul>
             )}
-          </Panel>
-        </>
-      ) : tab === "images" ? <ImageStudio /> : <AgentsStudio />}
+          </section>
+      </div>
+      <div hidden={tab !== "images"} role="tabpanel" aria-label="Images" className="studio-view"><ImageStudio /></div>
+      <div hidden={tab !== "agents"} role="tabpanel" aria-label="Agents" className="studio-view"><AgentsStudio /></div>
 
-      <Button variant="outline" className="mt-6 w-full text-destructive" onClick={() => {
+      <Button variant="ghost" size="sm" className="mx-auto mt-8 flex text-muted-foreground hover:text-destructive" onClick={() => {
         if (confirm("Delete all Studio chats and images on this device?")) { clearStudio(); setThreads([]); location.reload(); }
       }}><Trash2 /> Clear all Studio data</Button>
       <p className="mt-3 text-center text-xs text-muted-foreground">AI-powered. Chats and images are saved on this device only. Not financial advice.</p>
@@ -118,7 +126,7 @@ function ImageStudio() {
     <>
       <Panel>
         <Label>Create an image</Label>
-        <textarea className="field min-h-24 resize-none text-sm" maxLength={2000} placeholder="A neon purple vault door floating in space, cinematic" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+        <textarea aria-label="Image description" className="field min-h-36 resize-none text-sm" maxLength={2000} placeholder="Describe your image…" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
         {busy
           ? <Button variant="outline" className="mt-3 w-full" onClick={() => abort.current?.abort()}>Stop</Button>
           : <Button className="mt-3 w-full" disabled={!prompt.trim()} onClick={go}><ImageIcon /> Create</Button>}

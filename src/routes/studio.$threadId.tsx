@@ -96,14 +96,14 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
   }, [q, initial.length, sendMessage, threadId]);
 
   return (
-    <div className="flex h-[calc(100dvh-15rem)] min-h-[420px] flex-col">
+    <div className="studio-chat flex h-[calc(100dvh-15rem)] min-h-[360px] flex-col">
       <Conversation className="flex-1">
         <ConversationContent>
           {messages.length === 0 && (
-            <ConversationEmptyState icon={<AurionLogo className="h-16 w-16" />} title="HashKey Studio" description={account ? "Ask about your wallet, draft a send, or have me write something." : "Set up a wallet to ask about balances. Writing works now."} />
+            <ConversationEmptyState icon={<AurionLogo className="h-20 w-20" />} title="What’s on your mind?" description={account ? "Your wallet. Your ideas." : "A little inspiration starts here."} />
           )}
           {messages.map((m) => (
-            <Message key={m.id} from={m.role}>
+            <Message key={m.id} from={m.role} className="studio-message">
               <MessageContent className={m.role === "user" ? "bg-primary text-primary-foreground" : "bg-transparent"}>
                 {m.parts.map((p, i) => {
                   if (p.type === "text") return m.role === "assistant" ? <MessageResponse key={i}>{p.text}</MessageResponse> : <p key={i} className="whitespace-pre-wrap">{p.text}</p>;
@@ -139,7 +139,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
         <ConversationScrollButton />
       </Conversation>
       {err && <p className="mb-2 text-sm text-destructive">{err}</p>}
-      <PromptInput className="mt-3" onSubmit={(msg) => { const t = msg.text?.trim(); if (!t || busy) return; setErr(""); sendMessage({ text: t }); }}>
+      <PromptInput className="studio-composer mt-4" onSubmit={(msg) => { const t = msg.text?.trim(); if (!t || busy) return; setErr(""); sendMessage({ text: t }); }}>
         <PromptInputTextarea autoFocus placeholder="Ask HashKey anything…" />
         <PromptInputFooter className="justify-end">
           <PromptInputSubmit status={status} onStop={stop} />

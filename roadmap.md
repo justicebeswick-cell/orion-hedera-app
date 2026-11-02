@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Refine AI Studio with elegant layout and smooth transitions
+- [ ] Diagnose and repair non-HBAR HTS swaps, verify live quotes and regression tests
+
 - [x] Explain Home’s network rate: Hedera’s USD conversion, not a fee or exchange quote
 
 - [x] Apply the November 1 official artwork to all AURION logos and app icons
