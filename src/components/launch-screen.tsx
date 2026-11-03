@@ -16,7 +16,7 @@ export function LaunchScreen() {
       <div className="launch-brand">
         <AurionLogo className="launch-logo" />
         <div className="launch-wordmark">
-          <p className="launch-name">Hash<span className="brand-b">B</span>ase</p>
+          <p className="launch-name">HashBase</p>
           <div className="launch-rule" />
           <p className="launch-tag flex items-center justify-center gap-2 text-muted-foreground">
             <HederaMark size={13} /> Powered by Hedera
