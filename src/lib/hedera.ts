@@ -82,8 +82,7 @@ export async function findHashInTopic(topicId: string, hash: string) {
   return null;
 }
 
-export const hbar = (tinybar: number) =>
-  (tinybar / 1e8).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 8 });
+export const hbar = (tinybar: number) => fmtAmount(tinybar / 1e8);
 
 export const tsToDate = (ts: string) => new Date(Number(ts) * 1000);
 export const fmtTs = (ts: string) => tsToDate(ts).toISOString().replace("T", " ").slice(0, 19) + " UTC";
