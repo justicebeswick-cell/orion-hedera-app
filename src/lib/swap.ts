@@ -1,5 +1,6 @@
 // Swaps on SaucerSwap V1 (Hedera mainnet): HBAR↔token and token↔token, routed through WHBAR.
 import { MIRROR } from "./hedera";
+import { fmtAmount } from "./display";
 import { signMode, deviceKey } from "./signer";
 
 export const ROUTER = "0.0.3045981";
@@ -117,7 +118,7 @@ export function toUnits(v: string, d: number): bigint {
   return BigInt((m[1] || "0") + frac);
 }
 export const fmtUnits = (v: bigint, d: number, max = 6) =>
-  (Number(v) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: Math.min(d, max) });
+  fmtAmount(Number(v) / 10 ** d, { maximumFractionDigits: Math.min(d, max) });
 
 async function amountsOut(amountIn: bigint, path: string[]): Promise<bigint[]> {
   const data = "0xd06ca61f" + word(amountIn) + word(64n) + pathWords(path);
