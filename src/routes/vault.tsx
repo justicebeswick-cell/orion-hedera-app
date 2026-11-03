@@ -76,7 +76,7 @@ async function tokenMeta(tid: string) {
   return m;
 }
 
-const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: n < 1 ? 4 : 2 });
+const usd = (n: number) => fmtUsd(n);
 
 function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" | "fees" }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
