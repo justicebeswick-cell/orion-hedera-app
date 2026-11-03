@@ -139,9 +139,20 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
         <ConversationScrollButton />
       </Conversation>
       {err && <p className="mb-2 text-sm text-destructive">{err}</p>}
-      <PromptInput className="studio-composer mt-4" onSubmit={(msg) => { const t = msg.text?.trim(); if (!t || busy) return; setErr(""); sendMessage({ text: t }); }}>
+      <PromptInput className="studio-composer mt-4" multiple maxFileSize={MAX_FILE_BYTES}
+        onError={(e) => setErr(e.code === "max_file_size" ? "That file is over 20 MB." : e.message)}
+        onSubmit={(msg) => {
+          const t = msg.text?.trim() ?? "";
+          if ((!t && !msg.files.length) || busy) return;
+          const { parts, skipped } = prepareFiles(msg.files);
+          if (msg.files.length && !parts.length) { setErr(`Can't read ${skipped.join(", ")}. Try a photo, PDF or text file.`); return false as never; }
+          setErr(skipped.length ? `Skipped ${skipped.join(", ")} — try a photo, PDF or text file.` : "");
+          sendMessage({ role: "user", parts: [...parts, { type: "text", text: t || "Take a look at this." }] });
+        }}>
+        <AttachmentChips />
         <PromptInputTextarea autoFocus placeholder="Ask HashBase anything…" />
-        <PromptInputFooter className="justify-end">
+        <PromptInputFooter className="justify-between">
+          <AttachButton />
           <PromptInputSubmit status={status} onStop={stop} />
         </PromptInputFooter>
       </PromptInput>

@@ -15,7 +15,9 @@ export function saveThread(id: string, messages: UIMessage[], agentId?: string) 
   const all = readThreads();
   const firstText = messages.find((m) => m.role === "user")?.parts.find((p) => p.type === "text") as { text?: string } | undefined;
   const title = (firstText?.text ?? "New chat").slice(0, 60);
-  const t: Thread = { id, title, updatedAt: Date.now(), messages, agentId };
+  // Attached files are too big for browser storage: keep their names, drop their contents.
+  const slim = messages.map((m) => ({ ...m, parts: m.parts.map((p) => (p.type === "file" ? { type: "text" as const, text: `📎 ${(p as { filename?: string }).filename ?? "Attachment"} (not saved)` } : p.type === "text" && p.text.startsWith("Attached file \"") ? { ...p, text: `📎 ${p.text.slice(15, p.text.indexOf("\":"))} (not saved)` } : p)) }));
+  const t: Thread = { id, title, updatedAt: Date.now(), messages: slim as UIMessage[], agentId };
   const next = [t, ...all.filter((x) => x.id !== id)].slice(0, 50);
   try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage full: keep chatting, skip saving */ }
 }
