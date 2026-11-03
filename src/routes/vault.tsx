@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard } from "lucide-react";
 import { BuyHbar } from "@/components/buy-hbar";
 import { VaultDeck } from "@/components/vault-deck";
@@ -418,33 +419,65 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   );
 }
 
+const POPULAR = ["HBAR", "USDC", "SAUCE", "HBARX", "WBTC", "WETH", "PACK", "HST"];
+
 function TokenPick({ tokens, value, onPick, exclude }: { tokens: SwapToken[]; value: SwapToken; onPick: (t: SwapToken) => void; exclude: string }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const list = tokens.filter((t) => t.id !== exclude && (!q || `${t.symbol} ${t.name} ${t.id}`.toLowerCase().includes(q.toLowerCase()))).slice(0, 80);
+  const close = () => { setOpen(false); setQ(""); };
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [open]);
+  const needle = q.trim().toLowerCase();
+  const list = tokens
+    .filter((t) => t.id !== exclude && (!needle || `${t.symbol} ${t.name} ${t.id}`.toLowerCase().includes(needle)))
+    .sort((a, b) => (needle ? Number(b.symbol.toLowerCase() === needle) - Number(a.symbol.toLowerCase() === needle) : 0) || Number(!!b.verified) - Number(!!a.verified))
+    .slice(0, 120);
+  const chips = POPULAR.map((s) => tokens.find((t) => t.symbol === s)).filter((t): t is SwapToken => !!t && t.id !== exclude);
+  const pick = (t: SwapToken) => { onPick(t); close(); };
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1.5 text-sm font-semibold transition-colors hover:border-primary">
+      <button type="button" onClick={() => setOpen(true)} className="flex shrink-0 items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1.5 text-sm font-semibold transition-all hover:border-primary active:scale-95">
         <TokIcon t={value} /> {value.symbol} <span className="text-muted-foreground">▾</span>
       </button>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 backdrop-blur-sm sm:items-center" onClick={() => setOpen(false)}>
-          <div className="card-surface flex max-h-[80vh] w-full max-w-md flex-col p-4" onClick={(e) => e.stopPropagation()}>
+      {open && typeof document !== "undefined" && createPortal(
+        <div role="dialog" aria-modal="true" aria-label="Choose a token" className="fixed inset-0 z-[100] flex items-end justify-center bg-background/70 backdrop-blur-md animate-in fade-in duration-200 sm:items-center" onClick={close}>
+          <div className="card-surface flex max-h-[85dvh] w-full max-w-md flex-col rounded-b-none p-4 pb-[max(1rem,env(safe-area-inset-bottom))] animate-in slide-in-from-bottom-8 duration-300 sm:rounded-b-[inherit]" onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-foreground/20 sm:hidden" />
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold">Choose a token</p>
+              <button type="button" onClick={close} aria-label="Close" className="rounded-full px-2 text-lg text-muted-foreground hover:text-foreground">×</button>
+            </div>
             <input autoFocus className="field mb-3" placeholder={`Search ${tokens.length} tokens by name or 0.0.…`} value={q} onChange={(e) => setQ(e.target.value)} />
-            <ul className="-mx-2 overflow-y-auto">
+            {!needle && chips.length > 0 && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {chips.map((t) => (
+                  <button key={t.id} type="button" onClick={() => pick(t)} className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs font-semibold transition-all hover:border-primary active:scale-95">
+                    <TokIcon t={t} size={16} /> {t.symbol}
+                  </button>
+                ))}
+              </div>
+            )}
+            <ul className="-mx-2 min-h-0 flex-1 overflow-y-auto overscroll-contain">
               {list.map((t) => (
                 <li key={t.id}>
-                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-secondary" onClick={() => { onPick(t); setOpen(false); setQ(""); }}>
+                  <button type="button" className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-secondary" onClick={() => pick(t)}>
                     <TokIcon t={t} size={28} />
                     <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{t.symbol} {t.verified && <span className="text-xs text-success">✓</span>}</span><span className="block truncate text-xs text-muted-foreground">{t.name}</span></span>
                     <span className="font-mono text-xs text-muted-foreground">{t.id === "HBAR" ? "" : t.id}</span>
                   </button>
                 </li>
               ))}
-              {list.length === 0 && <li className="p-3 text-sm text-muted-foreground">No token on SaucerSwap matches.</li>}
+              {list.length === 0 && <li className="p-3 text-sm text-muted-foreground">No token with a SaucerSwap market matches.</li>}
             </ul>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
