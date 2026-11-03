@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 
 export function publicHead(title: string, description: string) {
   return { meta: [
-    { title: `${title} — HashKey` },
+    { title: `${title} — HashFolio` },
     { name: "description", content: description },
-    { property: "og:title", content: `${title} — HashKey` },
+    { property: "og:title", content: `${title} — HashFolio` },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
@@ -19,9 +19,9 @@ export function publicHead(title: string, description: string) {
 export function PublicSite({ children }: { children: ReactNode }) {
   return <div className="mx-auto min-h-screen max-w-5xl px-5 sm:px-10">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b py-6">
-      <Link to="/company" className="flex items-center gap-3" aria-label="HashKey company website">
+      <Link to="/company" className="flex items-center gap-3" aria-label="HashFolio company website">
         <AurionLogo className="h-12 w-12" />
-        <span className="text-lg font-semibold">HashKey</span>
+        <span className="text-lg font-semibold">HashFolio</span>
       </Link>
       <Button asChild variant="outline"><Link to="/">Open wallet <ArrowUpRight size={16} /></Link></Button>
     </header>

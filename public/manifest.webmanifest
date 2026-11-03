@@ -1,7 +1,7 @@
 {
   "id": "/?app=aurion",
-  "name": "HashKey",
-  "short_name": "HashKey",
+  "name": "HashFolio",
+  "short_name": "HashFolio",
   "description": "Prove it. Agree it. Hold it. On Hedera.",
   "start_url": "/",
   "display": "standalone",

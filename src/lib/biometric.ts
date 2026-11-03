@@ -28,8 +28,8 @@ export async function bioEnroll(passphrase: string) {
   const cred = (await navigator.credentials.create({
     publicKey: {
       challenge: crypto.getRandomValues(new Uint8Array(32)),
-      rp: { name: "HashKey", id: location.hostname },
-      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: "aurion-device", displayName: "HashKey on this device" },
+      rp: { name: "HashFolio", id: location.hostname },
+      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: "aurion-device", displayName: "HashFolio on this device" },
       pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
       authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required", residentKey: "preferred" },
       extensions: { prf: { eval: { first: salt } } } as AuthenticationExtensionsClientInputs,

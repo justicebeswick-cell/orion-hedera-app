@@ -16,13 +16,13 @@ import { HbarMarket } from "@/components/hbar-market";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HashKey — A future proof HBAR wallet on Hedera" },
+      { title: "HashFolio — A future proof HBAR wallet on Hedera" },
       {
         name: "description",
         content:
           "A future proof HBAR wallet native to the Hedera network where you can safely store, stake, swap and agree on secure transactions. Keys stay on your device; every move needs your approval.",
       },
-      { property: "og:title", content: "HashKey — A future proof HBAR wallet on Hedera" },
+      { property: "og:title", content: "HashFolio — A future proof HBAR wallet on Hedera" },
       {
         property: "og:description",
         content:

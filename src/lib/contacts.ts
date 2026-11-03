@@ -1,4 +1,4 @@
-// Address book. Lives only in this browser (localStorage), like the rest of HashKey's wallet data.
+// Address book. Lives only in this browser (localStorage), like the rest of HashFolio's wallet data.
 import { useEffect, useState } from "react";
 
 export type Contact = { id: string; name: string; account: string; note?: string | undefined };

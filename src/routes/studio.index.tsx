@@ -11,9 +11,9 @@ import { GenerationCanvas, saveToPhone } from "@/components/generation-canvas";
 export const Route = createFileRoute("/studio/")({
   head: () => ({
     meta: [
-      { title: "AI Studio — HashKey" },
-      { name: "description", content: "Ask about your wallet, draft sends, write memos and create images with HashKey's built-in AI." },
-      { property: "og:title", content: "HashKey AI Studio" },
+      { title: "AI Studio — HashFolio" },
+      { name: "description", content: "Ask about your wallet, draft sends, write memos and create images with HashFolio's built-in AI." },
+      { property: "og:title", content: "HashFolio AI Studio" },
       { property: "og:description", content: "Your Hedera wallet assistant, writer and image creator." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -42,7 +42,7 @@ function Studio() {
       <div className="studio-heading mb-7 flex items-center gap-4 py-3">
         <AurionLogo className="h-16 w-16 shrink-0" />
         <div>
-          <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">HashKey</p>
+          <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">HashFolio</p>
           <h1 className="text-3xl font-light">AI Studio</h1>
         </div>
       </div>
@@ -55,7 +55,7 @@ function Studio() {
       <div hidden={tab !== "chat"} role="tabpanel" aria-label="Chat" className="studio-view">
           <form className="studio-composer mb-5 rounded-lg border border-border bg-card p-4" onSubmit={(e) => { e.preventDefault(); if (prompt.trim()) start(prompt.trim()); }}>
             <Sparkles size={18} className="mb-3 text-signal" />
-            <textarea aria-label="Message to HashKey" className="min-h-20 w-full resize-none bg-transparent text-base outline-none placeholder:text-muted-foreground" placeholder="What’s on your mind?" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+            <textarea aria-label="Message to HashFolio" className="min-h-20 w-full resize-none bg-transparent text-base outline-none placeholder:text-muted-foreground" placeholder="What’s on your mind?" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
             <div className="mt-2 flex items-center justify-between border-t border-border pt-3">
               <Button variant="ghost" size="sm" onClick={() => start()}><MessageSquarePlus /> New chat</Button>
               <Button type="submit" size="icon" aria-label="Start conversation" disabled={!prompt.trim()} className="rounded-full"><ArrowUp /></Button>
