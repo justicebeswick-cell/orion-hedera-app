@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 /**
  * Display preference: hide long decimal amounts.
  * Stored on this device only, never sent anywhere.
@@ -30,22 +28,6 @@ export function setRound(on: boolean) {
   } catch {
     /* no window */
   }
-}
-
-/** Re-renders a component when the setting changes on this device. */
-export function useRound(): boolean {
-  const [on, setOn] = useState(false);
-  useEffect(() => {
-    const sync = () => setOn(roundOn());
-    sync();
-    window.addEventListener(EVENT, sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener(EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, []);
-  return on;
 }
 
 /**
