@@ -12,6 +12,7 @@ import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurio
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
 import { getAccount, hbar, hbarUsd, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
+import { fmtAmount, fmtUsd } from "@/lib/display";
 import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
@@ -118,7 +119,7 @@ function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; 
       {view === "holdings" && <Panel>
         <Label>Total wallet value</Label>
         <p className="text-4xl font-semibold tnum">{totalHbar != null && px ? usd(totalHbar * px) : "—"}</p>
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground tnum"><span>≈ {totalHbar != null ? totalHbar.toLocaleString("en-US", { maximumFractionDigits: 2 }) : "—"}</span><HbarLogo size={14} /></p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground tnum"><span>≈ {totalHbar != null ? fmtAmount(totalHbar, { maximumFractionDigits: 2 }) : "—"}</span><HbarLogo size={14} /></p>
         <p className="mt-1 text-xs text-muted-foreground">HBAR + your HTS tokens</p>
 
         <ul className="mt-4 divide-y divide-border">
@@ -167,7 +168,7 @@ function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; 
               ))}
             </ul>
           )}
-          <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {feesPaid.toFixed(4)} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>
+          <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {fmtAmount(feesPaid, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>
         </Panel>}
         {view === "fees" && <Panel>
           <Label>Upcoming fees</Label>

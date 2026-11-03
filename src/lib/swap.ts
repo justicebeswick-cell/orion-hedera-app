@@ -1,5 +1,6 @@
 // Swaps on SaucerSwap V1 (Hedera mainnet): HBAR↔token and token↔token, routed through WHBAR.
 import { MIRROR } from "./hedera";
+import { fmtAmount } from "./display";
 import { signMode, deviceKey } from "./signer";
 
 export const ROUTER = "0.0.3045981";
