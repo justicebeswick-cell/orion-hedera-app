@@ -41,7 +41,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onPointerUp={() => clearTimeout(timer.current)}
             onPointerLeave={() => clearTimeout(timer.current)}
             onContextMenu={(e) => e.preventDefault()}
-            className="h-auto select-none p-0 font-display text-lg font-medium italic tracking-[0.22em] text-signal hover:bg-transparent"
+            className="h-auto select-none p-0 font-brand text-base font-light tracking-[0.3em] text-signal hover:bg-transparent"
             onClick={() => setOpen(true)}
             aria-label="HashFolio — open menu"
           >
