@@ -19,9 +19,9 @@ export const Route = createFileRoute("/studio/$threadId")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined, agent: typeof s["agent"] === "string" ? (s["agent"] as string) : undefined }),
   head: () => ({
     meta: [
-      { title: "Studio chat — HashFolio" },
-      { name: "description", content: "Chat with HashFolio's AI about your Hedera wallet." },
-      { property: "og:title", content: "HashFolio Studio chat" },
+      { title: "Studio chat — HashBase" },
+      { name: "description", content: "Chat with HashBase's AI about your Hedera wallet." },
+      { property: "og:title", content: "HashBase Studio chat" },
       { property: "og:description", content: "Ask, draft, write and create." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -140,7 +140,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
       </Conversation>
       {err && <p className="mb-2 text-sm text-destructive">{err}</p>}
       <PromptInput className="studio-composer mt-4" onSubmit={(msg) => { const t = msg.text?.trim(); if (!t || busy) return; setErr(""); sendMessage({ text: t }); }}>
-        <PromptInputTextarea autoFocus placeholder="Ask HashFolio anything…" />
+        <PromptInputTextarea autoFocus placeholder="Ask HashBase anything…" />
         <PromptInputFooter className="justify-end">
           <PromptInputSubmit status={status} onStop={stop} />
         </PromptInputFooter>

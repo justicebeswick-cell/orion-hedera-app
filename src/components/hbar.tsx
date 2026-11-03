@@ -1,4 +1,4 @@
-/** The ℏ symbol in HashFolio's brand purple (#7428d8), sampled from the app artwork. */
+/** The ℏ symbol in HashBase's brand purple (#7428d8), sampled from the app artwork. */
 export function HbarLogo({ size = 20, className = "" }: { size?: number; className?: string }) {
   return (
     <span

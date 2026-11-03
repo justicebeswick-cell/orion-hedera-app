@@ -54,7 +54,7 @@ export function ClaimRewards({ accountId, pendingReward }: { accountId: string; 
           <DialogTitle>Claim staking rewards</DialogTitle>
           <DialogDescription>Hedera pays eligible rewards into your account through a signed account update. Your staking choice stays unchanged.</DialogDescription>
           <p className="break-words text-3xl font-semibold text-signal tnum">{pendingReward === undefined ? "—" : hbar(pendingReward)} ℏ</p>
-          <p className="text-xs text-muted-foreground">Pending estimate · Hedera determines the final payout. Network fee applies, capped at 2 ℏ; it may exceed a small reward. No HashFolio service fee.</p>
+          <p className="text-xs text-muted-foreground">Pending estimate · Hedera determines the final payout. Network fee applies, capped at 2 ℏ; it may exceed a small reward. No HashBase service fee.</p>
           {result ? (
             <div className="space-y-3" role="status">
               <p className="text-success">{result.paidTinybar === null ? "Account update confirmed. Reward payout is awaiting mirror confirmation." : result.paidTinybar > 0 ? `Claimed ${hbar(result.paidTinybar)} ℏ` : "Account update confirmed. Hedera paid no rewards on this transaction."}</p>
