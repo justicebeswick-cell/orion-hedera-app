@@ -21,7 +21,7 @@ export async function saveToPhone(dataUrl: string, prompt: string) {
   try {
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], name, { type: blob.type || "image/png" });
-    if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "HashKey Studio" }); return; }
+    if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "HashFolio Studio" }); return; }
   } catch (e) { if ((e as Error).name === "AbortError") return; }
   const a = document.createElement("a");
   a.href = dataUrl; a.download = name; document.body.appendChild(a); a.click(); a.remove();
