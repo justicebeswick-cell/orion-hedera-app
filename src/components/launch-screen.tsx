@@ -12,11 +12,11 @@ export function LaunchScreen() {
   }, []);
   if (!visible) return null;
   return (
-    <div className={`launch-screen ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening HashFolio">
+    <div className={`launch-screen ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening HashBase">
       <div className="launch-brand">
         <AurionLogo className="launch-logo" />
         <div className="launch-wordmark">
-          <p className="launch-name">HashFolio</p>
+          <p className="launch-name">Hash<span className="brand-b">B</span>ase</p>
           <div className="launch-rule" />
           <p className="launch-tag flex items-center justify-center gap-2 text-muted-foreground">
             <HederaMark size={13} /> Powered by Hedera
