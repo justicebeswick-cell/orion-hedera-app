@@ -7,6 +7,8 @@ import { useAccount } from "@/lib/account";
 import { readKeystoreMeta, unlockKeystore, type StoredKey } from "@/lib/keystore";
 import { bioEnrolled, bioRemove } from "@/lib/biometric";
 import { getLimits, setLimits, DEFAULT_LIMITS, audit } from "@/lib/guard";
+import { roundOn, setRound as saveRound } from "@/lib/display";
+import { Switch } from "@/components/ui/switch";
 import { Eye, EyeOff, Copy, ShieldAlert } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({
@@ -38,7 +40,8 @@ function Settings() {
   const [bio, setBio] = useState(false);
   const [limits, setL] = useState(DEFAULT_LIMITS);
   const [saved, setSaved] = useState(false);
-  useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); }, []);
+  const [round, setRound] = useState(false);
+  useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); setRound(roundOn()); }, []);
 
   return (
     <Shell title="Settings">
@@ -65,6 +68,21 @@ function Settings() {
             <span>Face ID / fingerprint</span>
             {bio ? <Button size="sm" variant="ghost" onClick={() => { bioRemove(); setBio(false); }}>Turn off</Button>
               : meta ? <BioTurnOn onOn={() => setBio(true)} /> : <span className="text-xs text-muted-foreground">Needs a key on this device</span>}
+          </div>
+        </Panel>
+
+        <Panel>
+          <Label>Display</Label>
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <div>
+              <p>Hide decimals</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Show 313,307 instead of 313,307.34563574. Amounts under 1 keep their decimals.</p>
+            </div>
+            <Switch
+              checked={round}
+              aria-label="Hide decimals"
+              onCheckedChange={(v) => { saveRound(v); setRound(v); }}
+            />
           </div>
         </Panel>
 
