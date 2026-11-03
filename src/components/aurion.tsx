@@ -45,7 +45,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onClick={() => setOpen(true)}
             aria-label="HashBase — open menu"
           >
-            Hash<span className="brand-b">B</span>ase
+            HashBase
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             <HederaMark size={12} /> Powered by Hedera
