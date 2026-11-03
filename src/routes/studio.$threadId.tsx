@@ -6,7 +6,9 @@ import { ArrowLeft, Copy } from "lucide-react";
 import { Shell, SignButton, AurionLogo } from "@/components/aurion";
 import { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse, MessageActions, MessageAction } from "@/components/ai-elements/message";
-import { PromptInput, PromptInputTextarea, PromptInputFooter, PromptInputSubmit } from "@/components/ai-elements/prompt-input";
+import { PromptInput, PromptInputTextarea, PromptInputFooter, PromptInputSubmit, usePromptInputAttachments } from "@/components/ai-elements/prompt-input";
+import { MAX_FILE_BYTES, prepareFiles } from "@/lib/studio-files";
+import { Paperclip, X, FileText } from "lucide-react";
 import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { getThread, saveThread } from "@/lib/studio-threads";
@@ -106,7 +108,9 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
             <Message key={m.id} from={m.role} className="studio-message">
               <MessageContent className={m.role === "user" ? "bg-primary text-primary-foreground" : "bg-transparent"}>
                 {m.parts.map((p, i) => {
+                  if (p.type === "text" && m.role === "user" && p.text.startsWith('Attached file "')) return <p key={i} className="mb-2 flex items-center gap-2 text-sm"><FileText className="size-4" />{p.text.slice(15, p.text.indexOf('":'))}</p>;
                   if (p.type === "text") return m.role === "assistant" ? <MessageResponse key={i}>{p.text}</MessageResponse> : <p key={i} className="whitespace-pre-wrap">{p.text}</p>;
+                  if (p.type === "file") return p.mediaType?.startsWith("image/") ? <img key={i} src={p.url} alt={p.filename ?? "Attachment"} className="mb-2 max-h-56 rounded-xl" /> : <p key={i} className="mb-2 flex items-center gap-2 text-sm"><FileText className="size-4" />{p.filename ?? "Attachment"}</p>;
                   if (p.type === "reasoning") return p.text ? <details key={i} className="text-xs text-muted-foreground"><summary className="cursor-pointer">Thinking</summary><p className="mt-1 whitespace-pre-wrap">{p.text}</p></details> : null;
                   if (isToolUIPart(p)) {
                     const name = getToolName(p);
@@ -139,9 +143,20 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
         <ConversationScrollButton />
       </Conversation>
       {err && <p className="mb-2 text-sm text-destructive">{err}</p>}
-      <PromptInput className="studio-composer mt-4" onSubmit={(msg) => { const t = msg.text?.trim(); if (!t || busy) return; setErr(""); sendMessage({ text: t }); }}>
+      <PromptInput className="studio-composer mt-4" multiple maxFileSize={MAX_FILE_BYTES}
+        onError={(e) => setErr(e.code === "max_file_size" ? "That file is over 20 MB." : e.message)}
+        onSubmit={(msg) => {
+          const t = msg.text?.trim() ?? "";
+          if ((!t && !msg.files.length) || busy) return;
+          const { parts, skipped } = prepareFiles(msg.files);
+          if (msg.files.length && !parts.length) { setErr(`Can't read ${skipped.join(", ")}. Try a photo, PDF or text file.`); return; }
+          setErr(skipped.length ? `Skipped ${skipped.join(", ")} — try a photo, PDF or text file.` : "");
+          sendMessage({ role: "user", parts: [...parts, { type: "text", text: t || "Take a look at this." }] });
+        }}>
+        <AttachmentChips />
         <PromptInputTextarea autoFocus placeholder="Ask HashBase anything…" />
-        <PromptInputFooter className="justify-end">
+        <PromptInputFooter className="justify-between">
+          <AttachButton />
           <PromptInputSubmit status={status} onStop={stop} />
         </PromptInputFooter>
       </PromptInput>
@@ -186,6 +201,27 @@ function DraftCard({ draft, agent }: { draft: { from: string; to: string; amount
           <a className="mt-1 block break-all text-xs text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${txId}`}>{txId}</a>
         </>
       )} />
+    </div>
+  );
+}
+
+function AttachButton() {
+  const a = usePromptInputAttachments();
+  return <button type="button" onClick={() => a.openFileDialog()} aria-label="Attach files" className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"><Paperclip className="size-4" /></button>;
+}
+
+function AttachmentChips() {
+  const a = usePromptInputAttachments();
+  if (!a.files.length) return null;
+  return (
+    <div className="flex w-full flex-wrap gap-2 px-3 pt-3">
+      {a.files.map((f) => (
+        <span key={f.id} className="flex max-w-[12rem] items-center gap-2 rounded-xl bg-muted px-2 py-1 text-xs">
+          {f.mediaType?.startsWith("image/") ? <img src={f.url} alt="" className="h-8 w-8 rounded-lg object-cover" /> : <FileText className="size-4 shrink-0" />}
+          <span className="truncate">{f.filename}</span>
+          <button type="button" aria-label={`Remove ${f.filename}`} onClick={() => a.remove(f.id)}><X className="size-3" /></button>
+        </span>
+      ))}
     </div>
   );
 }
