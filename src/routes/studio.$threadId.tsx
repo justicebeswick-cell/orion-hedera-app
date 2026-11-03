@@ -108,9 +108,9 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
             <Message key={m.id} from={m.role} className="studio-message">
               <MessageContent className={m.role === "user" ? "bg-primary text-primary-foreground" : "bg-transparent"}>
                 {m.parts.map((p, i) => {
+                  if (p.type === "text" && m.role === "user" && p.text.startsWith('Attached file "')) return <p key={i} className="mb-2 flex items-center gap-2 text-sm"><FileText className="size-4" />{p.text.slice(15, p.text.indexOf('":'))}</p>;
                   if (p.type === "text") return m.role === "assistant" ? <MessageResponse key={i}>{p.text}</MessageResponse> : <p key={i} className="whitespace-pre-wrap">{p.text}</p>;
                   if (p.type === "file") return p.mediaType?.startsWith("image/") ? <img key={i} src={p.url} alt={p.filename ?? "Attachment"} className="mb-2 max-h-56 rounded-xl" /> : <p key={i} className="mb-2 flex items-center gap-2 text-sm"><FileText className="size-4" />{p.filename ?? "Attachment"}</p>;
-                  if (p.type === "text" && m.role === "user" && p.text.startsWith('Attached file "')) return <p key={i} className="mb-2 flex items-center gap-2 text-sm"><FileText className="size-4" />{p.text.slice(15, p.text.indexOf('":'))}</p>;
                   if (p.type === "reasoning") return p.text ? <details key={i} className="text-xs text-muted-foreground"><summary className="cursor-pointer">Thinking</summary><p className="mt-1 whitespace-pre-wrap">{p.text}</p></details> : null;
                   if (isToolUIPart(p)) {
                     const name = getToolName(p);
