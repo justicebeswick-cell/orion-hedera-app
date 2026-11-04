@@ -51,6 +51,31 @@ export async function hbarUsd(): Promise<number> {
   return j.current_rate.cent_equivalent / j.current_rate.hbar_equivalent / 100;
 }
 
+/**
+ * Live HBAR/USD spot price from the public market feed the price chart uses.
+ * The network's own rate is only retuned about once an hour, so it can't
+ * follow the market tick by tick.
+ */
+export async function hbarUsdSpot(): Promise<number> {
+  const r = await fetch("https://data-api.binance.vision/api/v3/ticker/price?symbol=HBARUSDT", {
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!r.ok) throw new Error("Price feed unavailable");
+  const j = (await r.json()) as { price?: string };
+  const p = Number(j.price);
+  if (!Number.isFinite(p) || p <= 0) throw new Error("Price feed returned no price");
+  return p;
+}
+
+/** HBAR price in USD: live market price, falling back to the network's own rate. */
+export async function hbarUsdLive(): Promise<number> {
+  try {
+    return await hbarUsdSpot();
+  } catch {
+    return hbarUsd();
+  }
+}
+
 export async function getTransactions(id: string) {
   const r = await get<{ transactions: Tx[] }>(
     `/api/v1/transactions?account.id=${id}&limit=25&order=desc`,
