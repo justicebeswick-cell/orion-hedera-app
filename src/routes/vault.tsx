@@ -12,8 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
-import { getAccount, hbar, hbarUsd, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
+import { getAccount, hbar, hbarUsdLive, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { fmtAmount, fmtUsd } from "@/lib/display";
+import { REFRESH_MS } from "@/lib/refresh";
 import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
@@ -82,10 +83,10 @@ const usd = (n: number) => fmtUsd(n);
 
 function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" | "fees" }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
-  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsd, refetchInterval: 60_000 });
+  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
   const held = useQuery({
     queryKey: ["holdings", id],
-    refetchInterval: 15_000,
+    refetchInterval: REFRESH_MS,
     queryFn: async () => {
       const rows = (await getHoldings(id)).filter((h) => h.balance > 0);
       return Promise.all(rows.map(async (h) => {
@@ -505,8 +506,8 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
   useEffect(() => { const t = setTimeout(() => setDebounced(amt), 350); return () => clearTimeout(t); }, [amt]);
   const units = toUnits(debounced, tIn.decimals);
   const q = useQuery({ queryKey: ["quote", tIn.id, out?.id, units.toString()], queryFn: () => { if (!out) throw new Error("Choose a token."); return quote(tIn, out, units); }, enabled: !!out && units > 0n, refetchInterval: 10_000, retry: false });
-  const balIn = useQuery({ queryKey: ["tokbal", id, tIn.id], queryFn: () => tokenBalance(id, tIn), refetchInterval: 15_000 });
-  const balOut = useQuery({ queryKey: ["tokbal", id, out?.id], queryFn: () => tokenBalance(id, out!), enabled: !!out, refetchInterval: 15_000 });
+  const balIn = useQuery({ queryKey: ["tokbal", id, tIn.id], queryFn: () => tokenBalance(id, tIn), refetchInterval: REFRESH_MS });
+  const balOut = useQuery({ queryKey: ["tokbal", id, out?.id], queryFn: () => tokenBalance(id, out!), enabled: !!out, refetchInterval: REFRESH_MS });
   const live = debounced === amt && q.data && q.data.amountIn === units ? q.data : null;
   const minOut = live ? (live.out * BigInt(Math.round((1 - slip) * 10000))) / 10000n : 0n;
   const over = balIn.data != null && units > balIn.data;

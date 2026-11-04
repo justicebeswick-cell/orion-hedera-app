@@ -9,6 +9,7 @@ import { useAccount } from "@/lib/account";
 import { readKeystoreMeta } from "@/lib/keystore";
 import { connectedWallet } from "@/lib/walletconnect";
 import { hbar, fmtTs, HASHSCAN } from "@/lib/hedera";
+import { REFRESH_MS } from "@/lib/refresh";
 import { getStakeInfo, getRewards, getNodes, apr, redelegate, waitForConsensus, MAX_FEE_HBAR, type Node } from "@/lib/staking";
 
 export const Route = createFileRoute("/stake")({
@@ -54,7 +55,7 @@ function Stake() {
     const w = connectedWallet();
     setWallet(w && w.id === id ? w.wallet : null);
   }, [id]);
-  const info = useQuery({ queryKey: ["stake", id], queryFn: () => getStakeInfo(id!), enabled: !!id, refetchInterval: 15_000 });
+  const info = useQuery({ queryKey: ["stake", id], queryFn: () => getStakeInfo(id!), enabled: !!id, refetchInterval: REFRESH_MS });
   const rewards = useQuery({ queryKey: ["rewards", id], queryFn: () => getRewards(id!), enabled: !!id, refetchInterval: 30_000 });
   const nodes = useQuery({ queryKey: ["nodes"], queryFn: getNodes, staleTime: 600_000 });
   const [pick, setPick] = useState<Node | null>(null);
