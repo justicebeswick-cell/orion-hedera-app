@@ -10,8 +10,9 @@ import { SignBackIn } from "@/components/signin";
 import { ClaimRewards } from "@/components/claim-rewards";
 import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
-import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsd, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
+import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsdLive, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
 import { fmtUsd } from "@/lib/display";
+import { REFRESH_MS } from "@/lib/refresh";
 import { HbarMarket } from "@/components/hbar-market";
 
 export const Route = createFileRoute("/")({
@@ -40,10 +41,10 @@ const usd = (n: number) => fmtUsd(n);
 
 function Home() {
   const { id, ready, bind } = useAccount();
-  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: 15_000 });
+  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
   const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
-  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsd, refetchInterval: 60000 });
+  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
   const tokenCount = useQuery({
     queryKey: ["tok-count", id],
     enabled: !!id,
@@ -117,7 +118,7 @@ function Home() {
           </p>
         )}
         <p className="mt-2 text-sm text-muted-foreground tnum">
-          {acct.data && rate.data ? `≈ ${usd((acct.data.tinybar / 1e8) * rate.data)} · network rate` : "Fetching network rate…"}
+          {acct.data && rate.data ? `≈ ${usd((acct.data.tinybar / 1e8) * rate.data)} · live price` : "Fetching price…"}
         </p>
         <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
         <div className="mt-6 grid grid-cols-3 gap-2.5">
