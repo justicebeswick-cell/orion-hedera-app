@@ -10,6 +10,7 @@ import { getLimits, setLimits, DEFAULT_LIMITS, audit } from "@/lib/guard";
 import { roundOn, setRound as saveRound } from "@/lib/display";
 import { Switch } from "@/components/ui/switch";
 import { Eye, EyeOff, Copy, ShieldAlert } from "lucide-react";
+import { SecurityCheck } from "@/components/security-check";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -59,6 +60,8 @@ function Settings() {
             {id && <Button variant="ghost" size="sm" onClick={() => { if (confirm("Sign out on this device? Your saved key stays.")) bind(null); }}>Sign out</Button>}
           </div>
         </Panel>
+
+        <SecurityCheck id={id} />
 
         {meta && <RevealKey />}
 
