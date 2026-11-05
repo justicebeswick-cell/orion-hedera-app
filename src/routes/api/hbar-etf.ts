@@ -11,10 +11,14 @@ async function fetchHoldings() {
   });
   if (!r.ok) return null;
   const t = (await r.text()).replace(/<[^>]+>/g, "|").replace(/\s+/g, " ");
-  const m = t.match(/\|(\d{2}\/\d{2}\/\d{4})\| \|HBR\| \|HEDERA\|(?:[^|]*\|){5}\s*\|([\d,.]+)\|(?:[^|]*\|){7}\s*\|([\d,.]+)\| \|([\d,]+)\|/);
+  const m = t.match(/\|(\d{2}\/\d{2}\/\d{4})\| \|HBR\| \|HEDERA\|([^]{0,400})/);
   if (!m) return null;
-  const n = (s: string) => Number(s.replace(/,/g, ""));
-  return { asOf: m[1], hbar: n(m[2]), netAssets: n(m[3]), shares: n(m[4]) };
+  // Row cells after the name: ticker, ticker, quantity, quantity, price, market value, weight, net assets, shares
+  const cells = m[2].split("|").map((c) => c.trim()).filter(Boolean);
+  const n = (s?: string) => Number((s ?? "").replace(/[,%]/g, ""));
+  const hbar = n(cells[2]);
+  if (!Number.isFinite(hbar) || hbar <= 0) return null;
+  return { asOf: m[1], hbar, netAssets: n(cells[7]), shares: n(cells[8]) };
 }
 
 /** Public daily market data for the Canary HBAR ETF (Nasdaq: HBR). Read-only. */

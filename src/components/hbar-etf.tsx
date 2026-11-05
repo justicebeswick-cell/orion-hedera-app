@@ -30,7 +30,10 @@ export function HbarEtf() {
     queryFn: async () => {
       const r = await fetch("/api/hbar-etf");
       if (!r.ok) throw new Error("ETF feed unreachable");
-      return (await r.json()) as { name: string; price: number; days: Day[] };
+      return (await r.json()) as {
+        name: string; price: number; days: Day[];
+        holdings: { asOf: string; hbar: number; netAssets: number; shares: number } | null;
+      };
     },
     refetchInterval: 60_000,
   });
@@ -51,7 +54,18 @@ export function HbarEtf() {
             <span className={up ? "text-signal" : "text-destructive"}>{up ? "▲" : "▼"} {Math.abs(s.change).toFixed(2)}%</span>{" "}
             past {p.toLowerCase()} · {q.data!.name}
           </p>
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          {q.data!.holdings && (
+            <div className="stat-tile mt-4 p-3">
+              <p className="text-[11px] text-muted-foreground">HBAR locked in the fund</p>
+              <p className="mt-1 text-2xl font-semibold tnum">
+                <span className="text-primary">ℏ</span> {Math.round(q.data!.holdings.hbar).toLocaleString("en-US")}
+              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground tnum">
+                ${compact(q.data!.holdings.netAssets)} net assets · {compact(q.data!.holdings.shares)} shares · as of {q.data!.holdings.asOf}
+              </p>
+            </div>
+          )}
+          <div className="mt-3 grid grid-cols-2 gap-3">
             <div className="stat-tile p-3">
               <p className="text-[11px] text-muted-foreground">Shares traded</p>
               <p className="mt-1 text-lg font-semibold tnum">{compact(s.shares)}</p>
