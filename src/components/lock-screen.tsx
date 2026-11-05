@@ -39,7 +39,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="flex w-full max-w-xs flex-col items-center"
       >
-        <AurionLogo className="h-24 w-24 drop-shadow-[0_0_28px_var(--glow)]" />
+        <AurionLogo className="h-24 w-24 [filter:drop-shadow(0_0_26px_oklch(0.5_0.25_300/55%))_drop-shadow(0_0_60px_oklch(0.45_0.22_290/30%))]" />
         <h1 className="mt-6 font-brand text-xl font-medium tracking-[0.2em] text-foreground">HashBase</h1>
         <p className="mt-2 text-sm text-muted-foreground">Locked while you were away</p>
 
