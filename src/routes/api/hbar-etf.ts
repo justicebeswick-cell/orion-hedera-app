@@ -12,7 +12,7 @@ async function fetchHoldings() {
   if (!r.ok) return null;
   const t = (await r.text()).replace(/<[^>]+>/g, "|").replace(/\s+/g, " ");
   const m = t.match(/\|(\d{2}\/\d{2}\/\d{4})\| \|HBR\| \|HEDERA\|([^]{0,400})/);
-  if (!m) return null;
+  if (!m || !m[1] || !m[2]) return null;
   // Row cells after the name: ticker, ticker, quantity, quantity, price, market value, weight, net assets, shares
   const cells = m[2].split("|").map((c) => c.trim()).filter(Boolean);
   const n = (s?: string) => Number((s ?? "").replace(/[,%]/g, ""));
