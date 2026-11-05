@@ -43,7 +43,8 @@ function Settings() {
   const [limits, setL] = useState(DEFAULT_LIMITS);
   const [saved, setSaved] = useState(false);
   const [round, setRound] = useState(false);
-  useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); setRound(roundOn()); }, []);
+  const [lock, setLock] = useState(true);
+  useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); setRound(roundOn()); setLock(lockOnClose()); }, []);
 
   return (
     <Shell title="Settings">
@@ -72,6 +73,19 @@ function Settings() {
             <span>Face ID / fingerprint</span>
             {bio ? <Button size="sm" variant="ghost" onClick={() => { bioRemove(); setBio(false); }}>Turn off</Button>
               : meta ? <BioTurnOn onOn={() => setBio(true)} /> : <span className="text-xs text-muted-foreground">Needs a key on this device</span>}
+          </div>
+          <div className="mt-4 flex items-center justify-between gap-4 border-t border-border/50 pt-4 text-sm">
+            <div>
+              <p>Lock when app closes</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Reopening asks for {bio ? "Face ID or your passphrase" : "your passphrase"}. Minimizing stays unlocked.
+              </p>
+            </div>
+            <Switch
+              checked={lock}
+              aria-label="Lock when app closes"
+              onCheckedChange={(v) => { setLockOnClose(v); setLock(v); }}
+            />
           </div>
         </Panel>
 
