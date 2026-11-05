@@ -17,6 +17,7 @@ export function periodStats(days: Day[], n: number) {
   const slice = days.slice(-n);
   const base = days[days.length - n - 1] ?? days[0];
   const last = days[days.length - 1];
+  if (!base || !last) return null;
   const shares = slice.reduce((s, d) => s + d.v, 0);
   const dollars = slice.reduce((s, d) => s + d.v * d.c, 0);
   return { last: last.c, change: ((last.c - base.c) / base.c) * 100, shares, dollars, sessions: slice.length };
