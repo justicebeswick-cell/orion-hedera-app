@@ -1,5 +1,6 @@
 // Device keystore. Keys never leave the browser. AES-GCM, key derived with Argon2id.
 import { MIRROR } from "./hedera";
+import { markUnlocked } from "./lock";
 
 const KS = "aurion.keystore";
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
