@@ -14,6 +14,7 @@ import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsdLive, fmtTs, 
 import { fmtUsd } from "@/lib/display";
 import { REFRESH_MS } from "@/lib/refresh";
 import { HbarMarket } from "@/components/hbar-market";
+import { HbarEtf } from "@/components/hbar-etf";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -137,6 +138,7 @@ function Home() {
       </section>
 
       <HbarMarket />
+      <HbarEtf />
 
       <AskActivity accountId={id} />
 
