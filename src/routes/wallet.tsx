@@ -143,7 +143,7 @@ function BackupCheck({ words, onPass }: { words: string[]; onPass: () => void })
   const [vals, setVals] = useState<string[]>(["", "", ""]);
   const [err, setErr] = useState(false);
   const check = () => {
-    const good = pos.every((p, i) => vals[i].trim().toLowerCase() === words[p]);
+    const good = pos.every((p, i) => vals[i]!.trim().toLowerCase() === words[p]);
     if (good) onPass(); else setErr(true);
   };
   return (

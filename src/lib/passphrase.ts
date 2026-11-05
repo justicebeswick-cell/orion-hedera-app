@@ -13,8 +13,8 @@ const COMMON = [
 function sequential(s: string): boolean {
   if (s.length < 3) return false;
   const c = [...s].map((x) => x.toLowerCase().charCodeAt(0));
-  const up = c.every((v, i) => i === 0 || v - c[i - 1] === 1 || (v === 48 && c[i - 1] === 57));
-  const down = c.every((v, i) => i === 0 || c[i - 1] - v === 1 || (v === 57 && c[i - 1] === 48));
+  const up = c.every((v, i) => i === 0 || v - c[i - 1]! === 1 || (v === 48 && c[i - 1] === 57));
+  const down = c.every((v, i) => i === 0 || c[i - 1]! - v === 1 || (v === 57 && c[i - 1] === 48));
   return up || down;
 }
 
@@ -59,6 +59,6 @@ export function checkPassphrase(p: string): Strength {
 export function pickCheckPositions(total: number, n = 3): number[] {
   const out = new Set<number>();
   const buf = new Uint32Array(1);
-  while (out.size < Math.min(n, total)) { crypto.getRandomValues(buf); out.add(buf[0] % total); }
+  while (out.size < Math.min(n, total)) { crypto.getRandomValues(buf); out.add(buf[0]! % total); }
   return [...out].sort((a, b) => a - b);
 }
