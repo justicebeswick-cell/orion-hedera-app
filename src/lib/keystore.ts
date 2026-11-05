@@ -1,5 +1,6 @@
 // Device keystore. Keys never leave the browser. AES-GCM, key derived with Argon2id.
 import { MIRROR } from "./hedera";
+import { markUnlocked } from "./lock";
 
 const KS = "aurion.keystore";
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
@@ -22,6 +23,7 @@ export async function saveKeystore(privHex: string, pass: string, meta: StoredKe
   const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(privHex)));
   localStorage.setItem(KS, JSON.stringify({ v: 1, salt: b64(salt), iv: b64(iv), ct: b64(ct), ...meta }));
   rememberKeystore();
+  markUnlocked(); // just created or imported — no lock screen this session
 }
 
 // Saved accounts: every account used on this device, with its encrypted key blob if it has one.
@@ -80,6 +82,7 @@ export async function unlockKeystore(pass: string): Promise<string> {
   const key = await deriveKey(pass, unb64(s.salt));
   try {
     const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(s.iv) }, key, unb64(s.ct));
+    markUnlocked();
     return new TextDecoder().decode(pt);
   } catch {
     throw new Error("Wrong passphrase");

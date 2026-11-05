@@ -4,15 +4,18 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LaunchScreen } from "@/components/launch-screen";
+import { LockScreen } from "@/components/lock-screen";
+import { needsUnlock } from "@/lib/lock";
 import { Toaster } from "@/components/ui/sonner";
 import { AskFab } from "@/components/ask-fab";
 
@@ -119,6 +122,21 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+// Public pages anyone may read without unlocking the wallet.
+const PUBLIC_PATHS = ["/company", "/privacy", "/terms", "/about", "/fonts"];
+
+function LockGate({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  // null = still checking storage (avoids flashing the wallet before the lock appears)
+  const [locked, setLocked] = useState<boolean | null>(null);
+  useEffect(() => {
+    setLocked(PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ? false : needsUnlock());
+  }, [pathname]);
+  if (locked === null) return null;
+  if (locked) return <LockScreen onUnlock={() => setLocked(false)} />;
+  return <>{children}</>;
+}
+
 function RootComponent() {
   // Ask the browser never to clear this device's saved account and key on its own.
   useEffect(() => { navigator.storage?.persist?.().catch(() => {}); }, []);
@@ -127,7 +145,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <LockGate>
+        <Outlet />
+      </LockGate>
       <AskFab />
       <Toaster theme="dark" position="top-center" />
       <LaunchScreen />

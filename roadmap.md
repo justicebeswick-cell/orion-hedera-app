@@ -98,4 +98,5 @@
 - [x] Show the rebranded Hashgraph name and official logo on the staking screen instead of Swirlds
 - [x] Rebrand AURION → HashKey with purple hash-sphere logo + app icon
 
-- [ ] XRPL connection request — needs scope discussion (app is Hedera-only)
+- [x] Lock when app closes — Face ID or passphrase gate on reopen; minimizing stays unlocked; Settings toggle; five automated checks pass
+- [ ] XRPL integration — user wants it seamless and blended into the existing design; scope: XRP balances and sends first, Hedera features stay Hedera-only
