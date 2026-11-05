@@ -8,6 +8,7 @@ import { readKeystoreMeta, unlockKeystore, type StoredKey } from "@/lib/keystore
 import { bioEnrolled, bioRemove } from "@/lib/biometric";
 import { getLimits, setLimits, DEFAULT_LIMITS, audit } from "@/lib/guard";
 import { roundOn, setRound as saveRound } from "@/lib/display";
+import { lockOnClose, setLockOnClose } from "@/lib/lock";
 import { Switch } from "@/components/ui/switch";
 import { Eye, EyeOff, Copy, ShieldAlert } from "lucide-react";
 import { SecurityCheck } from "@/components/security-check";
