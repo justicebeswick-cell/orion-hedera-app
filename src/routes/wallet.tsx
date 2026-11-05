@@ -8,6 +8,7 @@ import {
   generateWallet, importWallet, saveKeystore, readKeystoreMeta, setKeystoreAccount,
   findAccountByKey, findAccountByEvm, clearKeystore, type StoredKey,
 } from "@/lib/keystore";
+import { checkPassphrase, pickCheckPositions } from "@/lib/passphrase";
 
 export const Route = createFileRoute("/wallet")({
   head: () => ({
@@ -71,13 +72,28 @@ function Wallet() {
 function Passphrase({ onSubmit, busy, cta }: { onSubmit: (p: string) => void; busy: boolean; cta: string }) {
   const [a, setA] = useState("");
   const [b, setB] = useState("");
-  const ok = a.length >= 10 && a === b;
+  const s = checkPassphrase(a);
+  const ok = s.ok && a === b;
+  const bar = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-primary", "bg-success"][s.score];
   return (
     <>
       <Label><span className="mt-5 block">Device passphrase</span></Label>
-      <input type="password" className="field" placeholder="At least 10 characters" value={a} onChange={(e) => setA(e.target.value)} />
-      <input type="password" className="field mt-2" placeholder="Repeat" value={b} onChange={(e) => setB(e.target.value)} />
-      <p className="mt-2 text-xs text-muted-foreground">Unlocks the key on this device. Encrypted with AES-GCM and Argon2id.</p>
+      <input type="password" className="field" placeholder="Any password, or a 6, 8 or 10 digit code" value={a} onChange={(e) => setA(e.target.value)} />
+      {a && (
+        <div className="mt-2" aria-live="polite">
+          <div className="flex gap-1">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= Math.max(1, s.score) ? bar : "bg-muted"}`} />
+            ))}
+          </div>
+          <p className={`mt-1 text-xs ${s.ok ? "text-muted-foreground" : "text-destructive"}`}>
+            {s.label}{s.reason ? ` — ${s.reason}` : s.pin ? " number code" : ""}
+          </p>
+        </div>
+      )}
+      <input type="password" inputMode={s.pin ? "numeric" : undefined} className="field mt-2" placeholder="Repeat" value={b} onChange={(e) => setB(e.target.value)} />
+      {b && a !== b && <p className="mt-1 text-xs text-destructive">Doesn't match.</p>}
+      <p className="mt-2 text-xs text-muted-foreground">Unlocks the key on this device. Encrypted with AES-GCM and Argon2id. Longer is safer.</p>
       <button className="btn mt-4 w-full" disabled={!ok || busy} onClick={() => onSubmit(a)}>{busy ? "Encrypting…" : cta}</button>
     </>
   );
@@ -108,9 +124,8 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
         ))}
       </ol>
       <p className="mt-3 text-xs text-destructive">Write it down. HashBase cannot restore it. Anyone with it can move your HBAR.</p>
-      <label className="mt-4 flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={wrote} onChange={(e) => setWrote(e.target.checked)} /> I wrote it down.
-      </label>
+      {!wrote && <BackupCheck words={w.phrase.split(" ")} onPass={() => setWrote(true)} />}
+      {wrote && <p className="mt-4 text-sm text-success">Backup checked.</p>}
       {wrote && (
         <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
           setBusy(true);
@@ -120,6 +135,31 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
         }} />
       )}
     </Panel>
+  );
+}
+
+function BackupCheck({ words, onPass }: { words: string[]; onPass: () => void }) {
+  const [pos] = useState(() => pickCheckPositions(words.length, 3));
+  const [vals, setVals] = useState<string[]>(["", "", ""]);
+  const [err, setErr] = useState(false);
+  const check = () => {
+    const good = pos.every((p, i) => vals[i].trim().toLowerCase() === words[p]);
+    if (good) onPass(); else setErr(true);
+  };
+  return (
+    <div className="mt-5">
+      <Label>Check your backup</Label>
+      <p className="text-xs text-muted-foreground">Type these words from your written copy.</p>
+      <div className="mt-2 grid grid-cols-3 gap-2">
+        {pos.map((p, i) => (
+          <input key={p} className="field font-mono text-xs" autoCapitalize="none" autoCorrect="off" spellCheck={false}
+            placeholder={`Word ${p + 1}`} value={vals[i]}
+            onChange={(e) => { const v = [...vals]; v[i] = e.target.value; setVals(v); setErr(false); }} />
+        ))}
+      </div>
+      {err && <p className="mt-2 text-xs text-destructive">Those don't match. Check your written copy.</p>}
+      <button className="btn mt-3 w-full" disabled={vals.some((v) => !v.trim())} onClick={check}>Check backup</button>
+    </div>
   );
 }
 
