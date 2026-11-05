@@ -23,6 +23,7 @@ import { Route as VaultRouteImport } from './routes/vault'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ApiAskRouteImport } from './routes/api/ask'
 import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
+import { Route as ApiHbarEtfRouteImport } from './routes/api/hbar-etf'
 import { Route as ApiHbarRatesRouteImport } from './routes/api/hbar-rates'
 import { Route as ApiMoonpaySignRouteImport } from './routes/api/moonpay-sign'
 import { Route as ApiStudioRouteImport } from './routes/api/studio'
@@ -99,6 +100,11 @@ const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
   path: '/api/generate-image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHbarEtfRoute = ApiHbarEtfRouteImport.update({
+  id: '/api/hbar-etf',
+  path: '/api/hbar-etf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiHbarRatesRoute = ApiHbarRatesRouteImport.update({
   id: '/api/hbar-rates',
   path: '/api/hbar-rates',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hbar-etf': typeof ApiHbarEtfRoute
   '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/moonpay-sign': typeof ApiMoonpaySignRoute
   '/api/studio': typeof ApiStudioRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hbar-etf': typeof ApiHbarEtfRoute
   '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/moonpay-sign': typeof ApiMoonpaySignRoute
   '/api/studio': typeof ApiStudioRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/wallet': typeof WalletRoute
   '/api/ask': typeof ApiAskRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/hbar-etf': typeof ApiHbarEtfRoute
   '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/moonpay-sign': typeof ApiMoonpaySignRoute
   '/api/studio': typeof ApiStudioRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/ask'
     | '/api/generate-image'
+    | '/api/hbar-etf'
     | '/api/hbar-rates'
     | '/api/moonpay-sign'
     | '/api/studio'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/ask'
     | '/api/generate-image'
+    | '/api/hbar-etf'
     | '/api/hbar-rates'
     | '/api/moonpay-sign'
     | '/api/studio'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/wallet'
     | '/api/ask'
     | '/api/generate-image'
+    | '/api/hbar-etf'
     | '/api/hbar-rates'
     | '/api/moonpay-sign'
     | '/api/studio'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   WalletRoute: typeof WalletRoute
   ApiAskRoute: typeof ApiAskRoute
   ApiGenerateImageRoute: typeof ApiGenerateImageRoute
+  ApiHbarEtfRoute: typeof ApiHbarEtfRoute
   ApiHbarRatesRoute: typeof ApiHbarRatesRoute
   ApiMoonpaySignRoute: typeof ApiMoonpaySignRoute
   ApiStudioRoute: typeof ApiStudioRoute
@@ -377,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/hbar-etf': {
+      id: '/api/hbar-etf'
+      path: '/api/hbar-etf'
+      fullPath: '/api/hbar-etf'
+      preLoaderRoute: typeof ApiHbarEtfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/hbar-rates': {
       id: '/api/hbar-rates'
       path: '/api/hbar-rates'
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   WalletRoute: WalletRoute,
   ApiAskRoute: ApiAskRoute,
   ApiGenerateImageRoute: ApiGenerateImageRoute,
+  ApiHbarEtfRoute: ApiHbarEtfRoute,
   ApiHbarRatesRoute: ApiHbarRatesRoute,
   ApiMoonpaySignRoute: ApiMoonpaySignRoute,
   ApiStudioRoute: ApiStudioRoute,
