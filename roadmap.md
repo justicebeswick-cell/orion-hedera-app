@@ -99,4 +99,3 @@
 - [x] Rebrand AURION → HashKey with purple hash-sphere logo + app icon
 
 - [x] Lock when app closes — Face ID or passphrase gate on reopen; minimizing stays unlocked; Settings toggle; five automated checks pass
-- [ ] XRPL integration — user wants it seamless and blended into the existing design; scope: XRP balances and sends first, Hedera features stay Hedera-only
