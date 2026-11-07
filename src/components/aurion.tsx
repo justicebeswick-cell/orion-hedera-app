@@ -55,7 +55,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onClick={() => setOpen(true)}
             aria-label="Orion — open menu"
           >
-            <OrionName className="w-32" />
+            <OrionName className={title === "Home" ? "w-28" : "w-32"} />
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             A Hashgraph Wallet
