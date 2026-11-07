@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined, ImageIcon } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined, ImageIcon, Handshake } from "lucide-react";
+import { PactPanel } from "@/components/pact-panel";
 import { NftGallery } from "@/components/nft-gallery";
 import { HbarMarket } from "@/components/hbar-market";
 import { HbarEtf } from "@/components/hbar-etf";
@@ -57,6 +58,7 @@ function Vault() {
         { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },
+        { key: "pact", label: "Pact", icon: Handshake, content: <PactPanel /> },
         { key: "contacts", label: "Contacts", icon: BookUser, content: <ContactsPanel /> },
         { key: "limits", label: "Limits", icon: ShieldCheck, content: <LimitsPanel /> },
         { key: "events", label: "Events", icon: History, content: <EventsPanel /> },

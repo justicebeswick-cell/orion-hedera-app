@@ -36,3 +36,4 @@
 - Optional tap haptics use one root click listener and a browser-safe helper; this covers shared and legacy controls without double vibrations or blocking unsupported browsers.
 - NFTs use paginated mainnet mirror ownership reads and inert HTTPS/IPFS image metadata; transfers recheck ownership and recipient eligibility, sign one serial through the existing signer, and require a SUCCESS receipt before reporting success.
 - Brand-name displays use the shared OrionName artwork to preserve custom lettering across the header, launch, unlock and public shell without changing prose or accessible names.
+- Pact uses one browser-safe PactPanel in Vault and the preserved /pact page, keeping payment checks and signing identical across entry points.

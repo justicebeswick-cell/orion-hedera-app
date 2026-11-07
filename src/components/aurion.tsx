@@ -26,7 +26,7 @@ const dock = [
   { to: "/vault", label: "Vault", icon: Wallet },
   { to: "/stake", label: "Stake", icon: Layers },
   { to: "/studio", label: "Studio", icon: Bot },
-  { to: "/pact", label: "Pact", icon: Handshake },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 const groups = [
@@ -63,7 +63,6 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
           </div>
         </div>
         <div className="flex">
-          <Button asChild variant="ghost" size="icon" title="Settings" aria-label="Settings"><Link to="/settings"><Settings /></Link></Button>
           <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
         </div>
       </header>

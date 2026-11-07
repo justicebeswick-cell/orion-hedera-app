@@ -11,7 +11,7 @@ import { getLimits, setLimits, DEFAULT_LIMITS, audit } from "@/lib/guard";
 import { roundOn, setRound as saveRound } from "@/lib/display";
 import { lockOnClose, setLockOnClose } from "@/lib/lock";
 import { Switch } from "@/components/ui/switch";
-import { Eye, EyeOff, Copy, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ChevronRight, SlidersHorizontal, Wallet, BookUser, Activity, Shield, CircleHelp, Info, FileText, Eye, EyeOff, Copy, ShieldAlert, type LucideIcon } from "lucide-react";
 import { SecurityCheck } from "@/components/security-check";
 
 export const Route = createFileRoute("/settings")({
@@ -37,7 +37,10 @@ function Row({ k, v }: { k: string; v: string }) {
   );
 }
 
+type Category = "General" | "Accounts" | "Advanced" | "Security";
+
 function Settings() {
+  const [category, setCategory] = useState<Category | null>(null);
   const { id, bind } = useAccount();
   const [meta, setMeta] = useState<StoredKey | null>(null);
   const [bio, setBio] = useState(false);
@@ -49,9 +52,27 @@ function Settings() {
 
   return (
     <Shell title="Settings">
-      <h1 className="mb-6 text-2xl font-semibold">Settings</h1>
+      {category && <Button variant="ghost" className="mb-4 -ml-3" onClick={() => setCategory(null)}><ArrowLeft size={18} />Settings</Button>}
+      <h1 className="mb-7 text-3xl font-semibold">{category ?? "Settings"}</h1>
+      {!category && <div className="divide-y divide-border">
+        <div className="pb-3">
+          <SettingsItem icon={SlidersHorizontal} label="General" onClick={() => setCategory("General")} />
+          <SettingsItem icon={Wallet} label="Accounts" onClick={() => setCategory("Accounts")} />
+          <SettingsLink icon={BookUser} label="Address book" to="/vault" section="contacts" />
+        </div>
+        <div className="py-3">
+          <SettingsItem icon={Activity} label="Advanced" onClick={() => setCategory("Advanced")} />
+          <SettingsItem icon={Shield} label="Security" onClick={() => setCategory("Security")} />
+        </div>
+        <div className="pt-3">
+          <SettingsLink icon={CircleHelp} label="About Orion" to="/about" />
+          <SettingsLink icon={Info} label="Company" to="/company" />
+          <SettingsLink icon={Shield} label="Privacy Policy" to="/privacy" />
+          <SettingsLink icon={FileText} label="Terms & Conditions" to="/terms" />
+        </div>
+      </div>}
       <div className="space-y-4">
-        <Panel>
+        {category === "Accounts" && <Panel>
           <Label>Account</Label>
           <Row k="Account" v={id ?? "Not signed in"} />
           <Row k="Signs with" v={meta ? "This device" : id ? "Wallet app or view only" : "—"} />
@@ -62,14 +83,14 @@ function Settings() {
             <Button asChild variant="secondary" size="sm"><Link to="/wallet">Switch wallet</Link></Button>
             {id && <Button variant="ghost" size="sm" onClick={() => { if (confirm("Sign out on this device? Your saved key stays.")) bind(null); }}>Sign out</Button>}
           </div>
-        </Panel>
+        </Panel>}
 
-        <SecurityCheck id={id} />
+        {category === "Security" && <SecurityCheck id={id} />}
 
-        {meta && <RevealKey />}
-        {meta && <ChangeCode onChanged={() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); }} />}
+        {category === "Security" && meta && <RevealKey />}
+        {category === "Security" && meta && <ChangeCode onChanged={() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); }} />}
 
-        <Panel>
+        {category === "Security" && <Panel>
           <Label>Security</Label>
           <div className="flex items-center justify-between text-sm">
             <span>Face ID / fingerprint</span>
@@ -89,9 +110,9 @@ function Settings() {
               onCheckedChange={(v) => { setLockOnClose(v); setLock(v); }}
             />
           </div>
-        </Panel>
+        </Panel>}
 
-        <Panel>
+        {category === "General" && <Panel>
           <Label>Display</Label>
           <div className="flex items-center justify-between gap-4 text-sm">
             <div>
@@ -104,9 +125,9 @@ function Settings() {
               onCheckedChange={(v) => { saveRound(v); setRound(v); }}
             />
           </div>
-        </Panel>
+        </Panel>}
 
-        <Panel>
+        {category === "Advanced" && <Panel>
           <Label>Send limits (HBAR)</Label>
           <div className="grid grid-cols-2 gap-3">
             <label className="text-xs text-muted-foreground">Per send
@@ -117,9 +138,9 @@ function Settings() {
             </label>
           </div>
           <Button className="mt-3" size="sm" onClick={() => { setLimits(limits); setSaved(true); setTimeout(() => setSaved(false), 1500); }}>{saved ? "Saved" : "Save limits"}</Button>
-        </Panel>
+        </Panel>}
 
-        <Panel>
+        {category === "Advanced" && <Panel>
           <Label>App</Label>
           <div className="space-y-2">
             <Button variant="secondary" size="sm" className="w-full" onClick={async () => { const ok = await navigator.storage?.persist?.(); alert(ok ? "Storage is protected on this device." : "Your browser didn't allow it."); }}>Keep my data from being cleared</Button>
@@ -127,10 +148,19 @@ function Settings() {
             <Button variant="ghost" size="sm" className="w-full" onClick={() => { if (confirm("Clear the activity log on this device?")) localStorage.removeItem("aurion.audit"); }}>Clear activity log</Button>
             <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/about">About Orion</Link></Button>
           </div>
-        </Panel>
+        </Panel>}
       </div>
     </Shell>
   );
+}
+
+
+function SettingsItem({ icon: Icon, label, onClick }: { icon: LucideIcon; label: string; onClick: () => void }) {
+  return <Button variant="ghost" onClick={onClick} className="h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Button>;
+}
+
+function SettingsLink({ icon: Icon, label, to, section }: { icon: LucideIcon; label: string; to: "/vault" | "/about" | "/company" | "/privacy" | "/terms"; section?: string }) {
+  return <Button asChild variant="ghost" className="h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Link to={to} search={section ? { section } : {}}><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Link></Button>;
 }
 
 function ChangeCode({ onChanged }: { onChanged: () => void }) {

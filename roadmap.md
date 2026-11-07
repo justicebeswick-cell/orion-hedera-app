@@ -1,5 +1,10 @@
 # Roadmap
 
+## Settings and Pact navigation
+- [x] Move Pact into a Vault card and replace its dock tab with Settings
+- [x] Remove the top Settings button and reorganize Settings into reference-style grouped rows
+- [x] Verify category controls, Pact draft preservation and phone layout
+
 ## NFTs
 - [x] Add NFT gallery and details in Vault with a Home entry
 - [x] Add approved NFT transfers with ownership and recipient checks
