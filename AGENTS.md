@@ -35,3 +35,4 @@
 - Exchange names and official destinations are paired in one browser-safe registry; keep rows in registry order during refresh to prevent moving click targets.
 - Optional tap haptics use one root click listener and a browser-safe helper; this covers shared and legacy controls without double vibrations or blocking unsupported browsers.
 - NFTs use paginated mainnet mirror ownership reads and inert HTTPS/IPFS image metadata; transfers recheck ownership and recipient eligibility, sign one serial through the existing signer, and require a SUCCESS receipt before reporting success.
+- Brand-name displays use the shared OrionName artwork to preserve custom lettering across the header, launch, unlock and public shell without changing prose or accessible names.

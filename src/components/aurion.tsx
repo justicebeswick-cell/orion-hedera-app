@@ -11,6 +11,7 @@ import logo384 from "@/assets/orion-logo/orion-logo-384.webp";
 import logo576 from "@/assets/orion-logo/orion-logo-576.webp";
 import logo768 from "@/assets/orion-logo/orion-logo-768.webp";
 import { Button } from "@/components/ui/button";
+import { OrionName } from "@/components/orion-name";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 // Pre-sized copies keep the fine texture crisp; the browser picks the one matching display size × screen density.
@@ -54,7 +55,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onClick={() => setOpen(true)}
             aria-label="Orion — open menu"
           >
-            Orion
+            <OrionName className="w-32" />
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             A Hashgraph Wallet
@@ -96,7 +97,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             className="panel mx-auto mt-24 max-w-md p-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">Orion</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
+            <div className="flex items-center justify-between px-3 py-2"><OrionName className="w-24" /><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
             {groups.map((g) => (
               <div key={g.name} className="mt-1 border-t border-border/60 px-1 pt-2 first:mt-0 first:border-t-0 first:pt-0">
                 <p className="px-3 pb-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{g.name}</p>

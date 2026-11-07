@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
 import { AurionLogo } from "@/components/aurion";
+import { OrionName } from "@/components/orion-name";
 
 export function LaunchScreen() {
   const [visible, setVisible] = useState(true);
@@ -16,7 +17,7 @@ export function LaunchScreen() {
       <div className="launch-brand">
         <AurionLogo className="launch-logo" sizes="(max-width: 420px) 120px, 148px" />
         <div className="launch-wordmark">
-          <p className="launch-name">Orion</p>
+          <div className="launch-name"><OrionName className="mx-auto w-64" /></div>
           <p className="mt-3 text-xs text-muted-foreground">A Hashgraph Wallet</p>
           <div className="launch-rule" />
           <p className="launch-tag flex items-center justify-center gap-2 text-muted-foreground">

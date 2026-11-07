@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { AurionLogo } from "@/components/aurion";
+import { OrionName } from "@/components/orion-name";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
 
@@ -21,7 +22,7 @@ export function PublicSite({ children }: { children: ReactNode }) {
     <header className="flex flex-wrap items-center justify-between gap-4 border-b py-6">
       <Link to="/company" className="flex items-center gap-3" aria-label="Orion company website">
         <AurionLogo className="h-12 w-12" />
-        <span className="text-lg font-semibold">Orion</span>
+        <OrionName className="w-32" />
       </Link>
       <Button asChild variant="outline"><Link to="/">Open wallet <ArrowUpRight size={16} /></Link></Button>
     </header>
