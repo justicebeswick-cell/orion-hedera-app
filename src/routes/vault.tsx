@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined, ImageIcon } from "lucide-react";
+import { NftGallery } from "@/components/nft-gallery";
 import { HbarMarket } from "@/components/hbar-market";
 import { HbarEtf } from "@/components/hbar-etf";
 import { BuyHbar } from "@/components/buy-hbar";
@@ -52,6 +53,7 @@ function Vault() {
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} /> },
+        { key: "nfts", label: "NFTs", icon: ImageIcon, content: <NftGallery key={id} accountId={id} /> },
         { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },
@@ -71,12 +73,13 @@ async function getHoldings(id: string): Promise<Held[]> {
   const j = await r.json();
   return (j.tokens ?? []) as Held[];
 }
-const metaCache = new Map<string, { symbol: string; name: string; decimals: number }>();
+const metaCache = new Map<string, { symbol: string; name: string; decimals: number; nft: boolean }>();
 async function tokenMeta(tid: string) {
-  if (metaCache.has(tid)) return metaCache.get(tid)!;
+  const cached = metaCache.get(tid);
+  if (cached) return cached;
   const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/tokens/${tid}`);
   const j = r.ok ? await r.json() : {};
-  const m = { symbol: j.symbol ?? tid, name: j.name ?? "", decimals: Number(j.decimals ?? 0) };
+  const m = { symbol: j.symbol ?? tid, name: j.name ?? "", decimals: Number(j.decimals ?? 0), nft: j.type === "NON_FUNGIBLE_UNIQUE" };
   metaCache.set(tid, m);
   return m;
 }
@@ -95,14 +98,14 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
         const meta = await tokenMeta(h.token_id);
         const tok: SwapToken = { id: h.token_id, symbol: meta.symbol, name: meta.name, decimals: meta.decimals };
         let inHbar: number | null = null;
-        try { inHbar = Number((await quote(tok, HBAR, BigInt(h.balance))).out) / 1e8; } catch { /* no pool */ }
+        if (!meta.nft) try { inHbar = Number((await quote(tok, HBAR, BigInt(h.balance))).out) / 1e8; } catch { /* no pool */ }
         return { ...h, meta, inHbar };
       }));
     },
   });
   const [sending, setSending] = useState<string | null>(null);
 
-  const rows = held.data ?? [];
+  const rows = (held.data ?? []).filter((row) => !row.meta.nft);
   const hb = tinybar != null ? tinybar / 1e8 : null;
   const tokHbar = rows.reduce((s, r) => s + (r.inHbar ?? 0), 0);
   const totalHbar = hb != null ? hb + tokHbar : null;

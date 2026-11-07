@@ -1,5 +1,11 @@
 # Roadmap
 
+## NFTs
+- [x] Add NFT gallery and details in Vault with a Home entry
+- [x] Add approved NFT transfers with ownership and recipient checks
+- [x] Verify public mainnet NFT loading, recipient review, mobile layout and 15 transfer safeguards
+- [ ] Verify a signed mainnet NFT transfer — requires the owner to approve from a wallet holding an NFT; no funds or NFTs moved during checks
+
 ## Home refinements
 - [x] Match Send, Swap and Receive to the cards' deep purple finish
 - [x] Let users name their wallet from Home and keep the name on this device

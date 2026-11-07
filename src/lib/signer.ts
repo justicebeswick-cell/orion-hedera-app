@@ -1,5 +1,6 @@
 import { readKeystoreMeta, unlockKeystore } from "./keystore";
 import { connectedWallet } from "./walletconnect";
+import { preflightNft } from "./nfts";
 
 export type SignMode = { kind: "wallet"; name: string } | { kind: "device" } | { kind: "none" };
 
@@ -168,6 +169,41 @@ export async function sendToken(from: string, to: string, tokenId: string, units
     return r.transactionId.toString();
   } catch (e) { throw tokenWrap(e); } finally { client.close(); }
 }
+/** One serial, never an allowance. Check ownership again immediately before signing. */
+export async function sendNft(from: string, to: string, tokenId: string, serial: number, passphrase: string) {
+  if (signMode(from).kind === "none") throw new Error("NFT transfer: connect a signing wallet first.");
+  await preflightNft(from, to, tokenId, serial);
+  try {
+    if (signMode(from).kind === "wallet") {
+      const { getWcSigner } = await import("./walletconnect");
+      const signer = await getWcSigner(from);
+      if (!signer) throw new Error("Wallet session ended. Reconnect your wallet.");
+      const sdk = await import("@hiero-ledger/sdk");
+      const tx = await new sdk.TransferTransaction().addNftTransfer(tokenId, serial, from, to)
+        .setMaxTransactionFee(new sdk.Hbar(2)).freezeWithSigner(signer);
+      const result = await tx.executeWithSigner(signer);
+      const receipt = await result.getReceiptWithSigner(signer);
+      if (receipt.status.toString() !== "SUCCESS") throw new Error(receipt.status.toString());
+      return result.transactionId.toString();
+    }
+    const sdk = await import("@hashgraph/sdk");
+    const key = await deviceKey(from, passphrase);
+    const client = sdk.Client.forMainnet().setOperator(from, key);
+    try {
+      const result = await new sdk.TransferTransaction().addNftTransfer(tokenId, serial, from, to)
+        .setMaxTransactionFee(new sdk.Hbar(2)).execute(client);
+      const receipt = await result.getReceipt(client);
+      if (receipt.status.toString() !== "SUCCESS") throw new Error(receipt.status.toString());
+      return result.transactionId.toString();
+    } finally { client.close(); }
+  } catch (error) {
+    const message = (error as Error)?.message ?? "";
+    if (/TOKEN_NOT_ASSOCIATED_TO_ACCOUNT|NO_REMAINING_AUTOMATIC_ASSOCIATIONS/.test(message)) throw new Error("NFT association: recipient must add this collection first.");
+    if (/SENDER_DOES_NOT_OWN_NFT_SERIAL_NO/.test(message)) throw new Error("NFT ownership: this wallet no longer owns this NFT.");
+    throw wrap("NFT transfer", error);
+  }
+}
+
 function tokenWrap(e: unknown) {
   const m = (e as Error)?.message ?? "";
   if (/TOKEN_NOT_ASSOCIATED_TO_ACCOUNT|NO_REMAINING_AUTOMATIC_ASSOCIATIONS/.test(m)) return new Error("Token transfer failed: the recipient hasn't added this token to their account yet");

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy, Pencil } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy, Pencil, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -137,7 +137,8 @@ function Home() {
         <Button asChild variant="card" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
       <div className="mb-2 flex items-center justify-between">
-        <Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens <span className="tnum text-muted-foreground">{tokenCount.data ?? "—"}</span></Link></Button>
+        <div className="flex gap-1"><Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens <span className="tnum text-muted-foreground">{tokenCount.data ?? "—"}</span></Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}><ImageIcon size={16} />NFTs</Link></Button></div>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
       </div>
       <Link to="/vault" search={{ section: "holdings" }} className="home-asset border-b border-border py-5">
