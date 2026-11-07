@@ -1,0 +1,63 @@
+import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
+
+/** Pull a Hedera account ID (0.0.x) out of a scanned QR payload, e.g. "hedera:0.0.123" or a HashScan URL. */
+export function parseAccountFromQr(text: string): string | null {
+  const m = text.match(/\b0\.0\.\d+(?:-[a-z]{5})?\b/i);
+  return m ? m[0].split("-")[0]! : null;
+}
+
+/** Full-screen camera scanner. Calls onResult with the account ID found. */
+export function QrScanner({ onResult, onClose }: { onResult: (account: string) => void; onClose: () => void }) {
+  const video = useRef<HTMLVideoElement>(null);
+  const [err, setErr] = useState("");
+  const cb = useRef(onResult); cb.current = onResult;
+
+  useEffect(() => {
+    let stream: MediaStream | null = null;
+    let raf = 0;
+    let stopped = false;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    (async () => {
+      try {
+        const jsQR = (await import("jsqr")).default;
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+        const v = video.current;
+        if (!v || stopped) return;
+        v.srcObject = stream;
+        await v.play();
+        const tick = () => {
+          if (stopped) return;
+          if (v.readyState >= 2 && ctx && v.videoWidth) {
+            canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+            ctx.drawImage(v, 0, 0);
+            const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(img.data, img.width, img.height);
+            if (code?.data) {
+              const acct = parseAccountFromQr(code.data);
+              if (acct) { cb.current(acct); return; }
+              setErr("That QR code has no Hedera account ID.");
+            }
+          }
+          raf = requestAnimationFrame(tick);
+        };
+        tick();
+      } catch {
+        setErr("Camera not available. Allow camera access and try again.");
+      }
+    })();
+    return () => { stopped = true; cancelAnimationFrame(raf); stream?.getTracks().forEach((t) => t.stop()); };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 p-6 backdrop-blur">
+      <button type="button" aria-label="Close scanner" onClick={onClose} className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground hover:text-foreground"><X size={22} /></button>
+      <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-3xl border border-primary/60">
+        <video ref={video} playsInline muted className="h-full w-full object-cover" />
+        <div className="pointer-events-none absolute inset-8 rounded-2xl border-2 border-primary/80" />
+      </div>
+      <p className="mt-5 text-center text-sm text-muted-foreground">{err || "Point at a Hedera account QR code."}</p>
+    </div>
+  );
+}

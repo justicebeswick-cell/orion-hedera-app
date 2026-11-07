@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { BookUser, Trash2, Pencil, UserPlus } from "lucide-react";
+import { BookUser, Trash2, Pencil, UserPlus, ScanLine } from "lucide-react";
+import { QrScanner } from "@/components/qr-scanner";
 import { Button } from "@/components/ui/button";
 import { Panel, Label } from "@/components/aurion";
 import { ACCOUNT_RE } from "@/lib/hedera";
@@ -9,13 +10,19 @@ import { removeContact, saveContact, useContacts, type Contact } from "@/lib/con
 export function RecipientField({ value, onChange, self }: { value: string; onChange: (v: string) => void; self?: string }) {
   const contacts = useContacts().filter((c) => c.account !== self);
   const [naming, setNaming] = useState(false);
+  const [scan, setScan] = useState(false);
   const [name, setName] = useState("");
   const v = value.trim();
   const match = contacts.find((c) => c.account === v);
   const canSave = ACCOUNT_RE.test(v) && !match && v !== self;
   return (
     <div className="space-y-2">
-      <input className="field font-mono tnum" placeholder="To 0.0.…" value={value} onChange={(e) => onChange(e.target.value)} />
+      <div className="relative">
+        <input className="field pr-12 font-mono tnum" placeholder="To 0.0.…" value={value} onChange={(e) => onChange(e.target.value)} />
+        <button type="button" aria-label="Scan QR code" onClick={() => setScan(true)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-signal hover:bg-primary/10"><ScanLine size={18} /></button>
+      </div>
+      {scan && <QrScanner onClose={() => setScan(false)} onResult={(a) => { setScan(false); onChange(a); }} />}
       {match && <p className="text-xs text-success">Sending to {match.name}</p>}
       {contacts.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
