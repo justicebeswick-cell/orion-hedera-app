@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Bot, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
-import { Shell, Label, AurionLogo } from "@/components/aurion";
+import { Shell, Label } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
 import { clearStudio, deleteThread, readThreads, readImages, type SavedImage, type Thread } from "@/lib/studio-threads";
 import { saveToPhone } from "@/components/generation-canvas";
@@ -39,12 +39,8 @@ function Studio() {
 
   return (
     <Shell title="Studio">
-      <div className="studio-heading mb-7 flex items-center gap-4 py-3">
-        <AurionLogo className="h-16 w-16 shrink-0" />
-        <div>
-          <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">Orion</p>
-          <h1 className="text-3xl font-light">AI Studio</h1>
-        </div>
+      <div className="studio-heading mb-7 py-3">
+        <h1 className="text-3xl font-light">AI Studio</h1>
       </div>
       <div className="studio-tabs mb-6 grid grid-cols-2 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
         <Button role="tab" aria-selected={tab === "chat"} variant={tab === "chat" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("chat")}><MessagesSquare /> Chat</Button>
