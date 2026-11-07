@@ -70,6 +70,7 @@ export function HbarMarket() {
   const shown = hover != null ? pts[hover] : pts.at(-1);
   const change = last && first ? ((((shown?.p ?? last) - first) / first) * 100) : null;
   const up = (change ?? 0) >= 0;
+  const rangeUp = last && first ? last >= first : true;
 
   const onMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!pts.length) return;
@@ -88,7 +89,7 @@ export function HbarMarket() {
           </p>
           <p className="mt-1 text-xs text-muted-foreground tnum">
             {change != null && (
-              <span className={up ? "text-signal" : "text-destructive"}>
+              <span className={up ? "text-success" : "text-destructive"}>
                 {up ? "▲" : "▼"} {Math.abs(change).toFixed(2)}%
               </span>
             )}{" "}
@@ -97,7 +98,7 @@ export function HbarMarket() {
         </div>
       </div>
 
-      <div className="relative mt-4 h-[120px] text-signal">
+      <div className={`relative mt-4 h-[120px] transition-colors duration-500 ${rangeUp ? "text-success" : "text-destructive"}`}>
         {q.isError ? (
           <p className="pt-10 text-center text-sm text-destructive">Price feed unreachable.</p>
         ) : geo ? (
