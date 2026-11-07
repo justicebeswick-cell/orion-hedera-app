@@ -184,8 +184,7 @@ function AwaitFunding({ k, onFound }: { k: StoredKey; onFound: (id: string) => v
       <p className="mt-4 break-all font-mono text-sm">{k.evm}</p>
       <button className="btn-ghost mt-2 w-full py-2 text-xs" onClick={() => navigator.clipboard.writeText(k.evm)}>Copy address</button>
       <p className="mt-4 text-xs text-muted-foreground">
-        Send HBAR to this address from an exchange or wallet that supports Hedera EVM addresses. Hedera creates the account
-        on arrival. The account id appears here automatically.
+        In another Orion wallet, open Send and paste this address or scan this QR code. Send HBAR on Hedera mainnet to open this account. Other wallets and exchanges must support Hedera 0x addresses; many exchanges only accept 0.0 account IDs. The account ID appears here automatically after funding.
       </p>
       <p className="mt-3 text-sm text-signal">{err || "Watching mainnet…"}</p>
     </Panel>

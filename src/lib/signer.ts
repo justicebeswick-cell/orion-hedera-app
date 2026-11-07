@@ -46,6 +46,8 @@ export async function sendHbar(from: string, to: string, amountHbar: number, mem
         .setMaxTransactionFee(new h.Hbar(2))
         .freezeWithSigner(signer);
       const r = await tx.executeWithSigner(signer);
+      const rc = await r.getReceiptWithSigner(signer);
+      if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
       return r.transactionId.toString();
     } catch (e) { throw wrap("Transfer", e); }
   }

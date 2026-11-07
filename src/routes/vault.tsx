@@ -20,6 +20,7 @@ import { useAccount } from "@/lib/account";
 import { getAccount, hbar, hbarUsdLive, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { fmtAmount, fmtUsd } from "@/lib/display";
 import { REFRESH_MS } from "@/lib/refresh";
+import { EVM_RE, isHbarRecipient } from "@/lib/recipient";
 import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
@@ -364,15 +365,16 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const [amt, setAmt] = useState("");
   const [memo, setMemo] = useState("");
   const n = Number(amt);
-  const ok = ACCOUNT_RE.test(to.trim()) && n > 0;
+  const ok = isHbarRecipient(to) && Number.isFinite(n) && n > 0;
   return (
     <div className="space-y-3">
-      <RecipientField value={to} onChange={setTo} self={id} />
+      <RecipientField value={to} onChange={setTo} self={id} allowEvm />
+      {EVM_RE.test(to.trim()) && <p className="text-xs text-muted-foreground">Hedera mainnet only. If this is a new wallet address, this HBAR transfer creates its account. Network fees apply.</p>}
       <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
       <input className="field" maxLength={100} placeholder="Note (public, optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
       <SignButton accountId={id} disabled={!ok} verb={ok ? `Send ${n} ℏ` : "Send"} run={async (pass) => {
-        const dest = to.trim();
-        const block = await checkSend(id, dest, n);
+        const dest = EVM_RE.test(to.trim()) ? to.trim().toLowerCase() : to.trim();
+        const block = await checkSend(id, dest, n, { allowNewAccount: true });
         if (block) { audit({ action: "blocked", detail: `${id} → ${dest} ${n} ℏ · ${block}`, ok: false }); throw new Error(block); }
         try {
           const txId = await sendHbar(id, dest, n, memo, pass);
@@ -573,7 +575,7 @@ function LimitsPanel() {
       </div>
       <button className="btn-ghost mt-3 w-full py-2 text-xs" disabled={!(Number(l.perSend) > 0 && Number(l.perDay) > 0)}
         onClick={() => { setLimits({ perSend: Number(l.perSend), perDay: Number(l.perDay) }); setSaved(true); }}>{saved ? "Saved" : "Save limits"}</button>
-      <p className="mt-3 text-xs text-muted-foreground">Before each send: limits, then the recipient is screened — it must exist on mainnet, not be deleted, and not be on the blocked list.</p>
+      <p className="mt-3 text-xs text-muted-foreground">Send limits and recipient checks apply. HBAR can open a new account at its 0x address; other transfers require an existing mainnet account. Deleted and blocked accounts are rejected.</p>
     </Panel>
   );
 }

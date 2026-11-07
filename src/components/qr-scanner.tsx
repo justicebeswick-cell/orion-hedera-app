@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
+import { parseQrRecipient } from "@/lib/recipient";
 
 /** Pull a Hedera account ID (0.0.x) out of a scanned QR payload, e.g. "hedera:0.0.123" or a HashScan URL. */
-export function parseAccountFromQr(text: string): string | null {
-  const m = text.match(/\b0\.0\.\d+(?:-[a-z]{5})?\b/i);
-  return m ? m[0].split("-")[0]! : null;
+export function parseAccountFromQr(text: string, allowEvm = false): string | null {
+  return parseQrRecipient(text, allowEvm);
 }
 
 /** Full-screen camera scanner. Calls onResult with the account ID found. */
-export function QrScanner({ onResult, onClose }: { onResult: (account: string) => void; onClose: () => void }) {
+export function QrScanner({ onResult, onClose, allowEvm = false }: { onResult: (account: string) => void; onClose: () => void; allowEvm?: boolean }) {
   const video = useRef<HTMLVideoElement>(null);
   const [err, setErr] = useState("");
   const cb = useRef(onResult); cb.current = onResult;
@@ -36,9 +36,9 @@ export function QrScanner({ onResult, onClose }: { onResult: (account: string) =
             const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const code = jsQR(img.data, img.width, img.height);
             if (code?.data) {
-              const acct = parseAccountFromQr(code.data);
+              const acct = parseAccountFromQr(code.data, allowEvm);
               if (acct) { cb.current(acct); return; }
-              setErr("That QR code has no Hedera account ID.");
+              setErr(allowEvm ? "That QR code has no Hedera account ID or 0x address." : "That QR code has no Hedera account ID.");
             }
           }
           raf = requestAnimationFrame(tick);
@@ -49,7 +49,7 @@ export function QrScanner({ onResult, onClose }: { onResult: (account: string) =
       }
     })();
     return () => { stopped = true; cancelAnimationFrame(raf); stream?.getTracks().forEach((t) => t.stop()); };
-  }, []);
+  }, [allowEvm]);
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 p-6 backdrop-blur">

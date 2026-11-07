@@ -1,5 +1,10 @@
 # Roadmap
 
+## New account funding
+- [x] Allow immediate HBAR sends and QR scans to a new wallet's EVM alias while preserving limits and recipient checks
+- [x] Verify sender entry, backup/save flow and simulated new-account discovery on a phone viewport; 27 funding/NFT checks passed
+- [ ] Verify a signed mainnet account-funding transfer — requires the owner to approve sending HBAR; no funds moved during checks
+
 ## Settings and Pact navigation
 - [x] Add reference-style General preferences and wire display, themes, filters and haptics; English only, Hedera reserve marked not applicable
 - [x] Add the pictured contact option inside Settings Address book; saved contact read back after reload

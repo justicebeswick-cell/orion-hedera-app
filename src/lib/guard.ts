@@ -1,4 +1,5 @@
 import { MIRROR } from "./hedera";
+import { isHbarRecipient, isNewWalletAlias } from "./recipient";
 
 /** Send limits, recipient screening and the local audit log. All device-side. */
 
@@ -42,17 +43,25 @@ function sentToday(from: string): number {
 }
 
 /** Returns null when the send may go, or a reason naming the failing check. */
-export async function checkSend(from: string, to: string, amount: number): Promise<string | null> {
+export async function checkSend(from: string, to: string, amount: number, options: { allowNewAccount?: boolean } = {}): Promise<string | null> {
+  if (!isHbarRecipient(to)) return "Recipient check: enter a Hedera account ID or a 0x wallet address.";
+  if (!Number.isFinite(amount) || amount <= 0) return "Transfer amount: enter a positive HBAR amount.";
   const l = getLimits();
   if (to === from) return "Recipient check: cannot send to yourself.";
   if (amount > l.perSend) return `Send limit: ${amount} ℏ is over your ${l.perSend} ℏ per-send cap.`;
   const today = sentToday(from);
   if (today + amount > l.perDay) return `Daily limit: ${today} ℏ already sent today, cap is ${l.perDay} ℏ.`;
-  if (SCREEN_LIST.has(to) || readBlocklist().includes(to)) return `Screening: ${to} is on the blocked list.`;
+  const blocked = (value: string) => SCREEN_LIST.has(value) || readBlocklist().some((id) => id.toLowerCase() === value.toLowerCase());
+  if (blocked(to)) return `Screening: ${to} is on the blocked list.`;
   const r = await fetch(`${MIRROR}/api/v1/accounts/${to}?limit=1`).catch(() => null);
   if (!r) return "Hedera unreachable";
-  if (r.status === 404) return `Recipient check: ${to} does not exist on mainnet.`;
-  const a = await r.json();
+  if (r.status === 404) return options.allowNewAccount && isNewWalletAlias(to) ? null : `Recipient check: ${to} does not exist on mainnet.`;
+  if (!r.ok) return "Recipient check: mainnet verification unavailable. Try again.";
+  let a;
+  try { a = await r.json(); } catch { return "Recipient check: mainnet verification unavailable. Try again."; }
+  if (!a || typeof a.account !== "string") return "Recipient check: mainnet verification unavailable. Try again.";
+  if (a.account === from) return "Recipient check: cannot send to yourself.";
+  if (blocked(a.account) || (a.evm_address && blocked(a.evm_address))) return `Screening: ${a.account} is on the blocked list.`;
   if (a.deleted) return `Recipient check: ${to} is deleted.`;
   if (a.receiver_sig_required) return `Recipient check: ${to} must co-sign incoming transfers. Not supported.`;
   return null;

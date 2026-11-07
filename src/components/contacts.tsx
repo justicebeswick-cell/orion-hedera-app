@@ -7,7 +7,7 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { removeContact, saveContact, useContacts, type Contact } from "@/lib/contacts";
 
 /** "To" field with saved contacts one tap away, and a quick save for new accounts. */
-export function RecipientField({ value, onChange, self }: { value: string; onChange: (v: string) => void; self?: string }) {
+export function RecipientField({ value, onChange, self, allowEvm = false }: { value: string; onChange: (v: string) => void; self?: string; allowEvm?: boolean }) {
   const contacts = useContacts().filter((c) => c.account !== self);
   const [naming, setNaming] = useState(false);
   const [scan, setScan] = useState(false);
@@ -18,11 +18,11 @@ export function RecipientField({ value, onChange, self }: { value: string; onCha
   return (
     <div className="space-y-2">
       <div className="relative">
-        <input className="field pr-12 font-mono tnum" placeholder="To 0.0.…" value={value} onChange={(e) => onChange(e.target.value)} />
+        <input className="field pr-12 font-mono tnum" placeholder={allowEvm ? "To 0.0.… or 0x…" : "To 0.0.…"} autoCapitalize="none" autoCorrect="off" spellCheck={false} value={value} onChange={(e) => onChange(e.target.value)} />
         <button type="button" aria-label="Scan QR code" onClick={() => setScan(true)}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-signal hover:bg-primary/10"><ScanLine size={18} /></button>
       </div>
-      {scan && <QrScanner onClose={() => setScan(false)} onResult={(a) => { setScan(false); onChange(a); }} />}
+      {scan && <QrScanner allowEvm={allowEvm} onClose={() => setScan(false)} onResult={(a) => { setScan(false); onChange(a); }} />}
       {match && <p className="text-xs text-success">Sending to {match.name}</p>}
       {contacts.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
