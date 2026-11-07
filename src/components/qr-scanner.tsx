@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { createPortal } from "react-dom";
 
 /** Pull a Hedera account ID (0.0.x) out of a scanned QR payload, e.g. "hedera:0.0.123" or a HashScan URL. */
 export function parseAccountFromQr(text: string): string | null {
@@ -44,13 +45,13 @@ export function QrScanner({ onResult, onClose }: { onResult: (account: string) =
         };
         tick();
       } catch {
-        setErr("Camera not available. Allow camera access and try again.");
+        setErr(!window.isSecureContext || !navigator.mediaDevices ? "Camera needs the installed app or a secure page." : window.self !== window.top ? "Camera is blocked in the editor preview. Open the published app to scan." : "Camera blocked. Allow camera access for this site in your browser settings.");
       }
     })();
     return () => { stopped = true; cancelAnimationFrame(raf); stream?.getTracks().forEach((t) => t.stop()); };
   }, []);
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 p-6 backdrop-blur">
       <button type="button" aria-label="Close scanner" onClick={onClose} className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground hover:text-foreground"><X size={22} /></button>
       <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-3xl border border-primary/60">
@@ -58,6 +59,7 @@ export function QrScanner({ onResult, onClose }: { onResult: (account: string) =
         <div className="pointer-events-none absolute inset-8 rounded-2xl border-2 border-primary/80" />
       </div>
       <p className="mt-5 text-center text-sm text-muted-foreground">{err || "Point at a Hedera account QR code."}</p>
-    </div>
+    </div>,
+    document.body,
   );
 }
