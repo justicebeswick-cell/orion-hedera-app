@@ -33,3 +33,4 @@
 - Hedera/WalletConnect SDKs are stubbed out of the server bundle in vite.config.ts; they crash the Worker at startup, so never use them server-side.
 - Exchange prices use a shared read-only feed module behind /api/hbar-rates with no-store responses; manual and automatic refresh share one query, and unavailable markets never borrow another provider's rate.
 - Exchange names and official destinations are paired in one browser-safe registry; keep rows in registry order during refresh to prevent moving click targets.
+- Optional tap haptics use one root click listener and a browser-safe helper; this covers shared and legacy controls without double vibrations or blocking unsupported browsers.

@@ -17,6 +17,7 @@ import { LaunchScreen } from "@/components/launch-screen";
 import { LockScreen } from "@/components/lock-screen";
 import { needsUnlock } from "@/lib/lock";
 import { Toaster } from "@/components/ui/sonner";
+import { handleHapticClick } from "@/lib/haptics";
 
 function NotFoundComponent() {
   return (
@@ -137,6 +138,10 @@ function LockGate({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    document.addEventListener("click", handleHapticClick, true);
+    return () => document.removeEventListener("click", handleHapticClick, true);
+  }, []);
   // Ask the browser never to clear this device's saved account and key on its own.
   useEffect(() => { navigator.storage?.persist?.().catch(() => {}); }, []);
   const { queryClient } = Route.useRouteContext();

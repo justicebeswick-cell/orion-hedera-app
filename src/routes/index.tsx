@@ -2,8 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { listSavedAccounts, rememberAccount, renameSavedAccount } from "@/lib/keystore";
 import { HomeAssets } from "@/components/home-assets";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
@@ -56,6 +59,12 @@ function Home() {
     },
   });
   const [watchOnly, setWatchOnly] = useState(false);
+  const [walletName, setWalletName] = useState("");
+  const [nameDraft, setNameDraft] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  useEffect(() => {
+    setWalletName(id ? listSavedAccounts().find((account) => account.id === id)?.label ?? "" : "");
+  }, [id]);
   useEffect(() => {
     import("@/lib/signer").then((m) => setWatchOnly(m.signMode(id).kind === "none"));
   }, [id]);
@@ -97,16 +106,35 @@ function Home() {
 
       <div className="home-account mb-4 flex items-center gap-3 rounded-lg bg-secondary p-4">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
-          <span className="block text-lg font-semibold">{id}</span>
-          <span className="mt-1 block text-xs text-muted-foreground">{watchOnly ? "Watch-only" : "My Hedera wallet"}</span>
+          <span className="block break-words text-lg font-semibold">{walletName || id}</span>
+          <span className="mt-1 block text-xs text-muted-foreground">{walletName ? id : watchOnly ? "Watch-only" : "My Hedera wallet"}</span>
         </Link>
+        <Button variant="ghost" size="icon" aria-label="Name wallet" onClick={() => { setNameDraft(walletName); setEditingName(true); }}><Pencil size={16} /></Button>
         <Button variant="ghost" size="icon" aria-label="Copy account ID" onClick={async () => { try { await navigator.clipboard.writeText(id); toast.success("Account ID copied"); } catch { toast.error("Copy failed"); } }}><Copy size={16} /></Button>
         <Button asChild variant="ghost" size="icon" aria-label="Choose wallet"><Link to="/wallet"><ChevronDown /></Link></Button>
       </div>
+      <Dialog open={editingName} onOpenChange={setEditingName}>
+        <DialogContent>
+          <DialogTitle>Name your wallet</DialogTitle>
+          <DialogDescription>Saved on this device. Your account ID stays the same.</DialogDescription>
+          <form className="space-y-4" onSubmit={(event) => {
+            event.preventDefault();
+            const name = nameDraft.trim();
+            rememberAccount(id);
+            renameSavedAccount(id, name);
+            setWalletName(name);
+            setEditingName(false);
+            toast.success("Wallet name saved");
+          }}>
+            <Input aria-label="Wallet name" placeholder="Wallet name" value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} autoFocus />
+            <Button type="submit" className="w-full">Save</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
       <div className="mb-6 grid grid-cols-3 gap-2">
-        <Button asChild className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
-        <Button asChild className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
-        <Button asChild className="h-12 rounded-lg"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
+        <Button asChild variant="card" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
+        <Button asChild variant="card" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
+        <Button asChild variant="card" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
       <div className="mb-2 flex items-center justify-between">
         <Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens <span className="tnum text-muted-foreground">{tokenCount.data ?? "—"}</span></Link></Button>

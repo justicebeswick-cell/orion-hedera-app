@@ -1,5 +1,10 @@
 # Roadmap
 
+## Home refinements
+- [x] Match Send, Swap and Receive to the cards' deep purple finish
+- [x] Let users name their wallet from Home and keep the name on this device
+- [x] Add light vibration to app button taps on supported devices
+
 ## Orion redesign
 - [x] Simplify Home to the Xaman reference with existing purple and interactive assets, staking and rewards
 - [x] Move HBAR market and ETF information into a swipeable Vault market card
