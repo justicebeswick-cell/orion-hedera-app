@@ -105,11 +105,11 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
   return (
     <Panel>
       <Label>Recovery phrase</Label>
-      <ol className="grid grid-cols-3 gap-2 font-mono text-xs">
+      <ol className="grid grid-cols-2 gap-2 font-mono text-xs sm:grid-cols-3">
         {words.map((word, i) => (
-          <li key={i} className="flex h-9 min-w-0 items-center gap-1.5 rounded-md bg-graphite px-2">
+          <li key={i} className="flex min-h-9 min-w-0 items-center gap-1.5 rounded-md bg-graphite px-2 py-1.5">
             <span className="w-5 shrink-0 text-right tabular-nums text-muted-foreground">{i + 1}.</span>
-            <span className="truncate">{word}</span>
+            <span className="min-w-0 break-all">{word}</span>
           </li>
         ))}
       </ol>
