@@ -120,8 +120,8 @@ function Home() {
       {acct.isError && <p className="py-4 text-xs text-destructive">{(acct.error as Error).message}</p>}
       <Link to="/vault" search={{ section: "hbar" }} className="home-asset pt-6">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center text-primary"><HbarLogo size={32} /></span>
-        <span className="min-w-0 flex-1"><span className="block font-semibold">HBAR</span><span className="block text-xs text-muted-foreground">Hedera</span></span>
-        <span className="min-w-0 max-w-[65%] text-right"><span className="block break-words text-sm font-semibold tnum sm:text-lg">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span><span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span></span>
+        <span className="shrink-0"><span className="block font-semibold">HBAR</span><span className="block text-xs text-muted-foreground">Hedera</span></span>
+        <span className="min-w-0 flex-1 text-right"><span className="block text-sm font-semibold tnum [overflow-wrap:anywhere] sm:text-lg">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span><span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span></span>
         <ChevronRight size={14} className="text-muted-foreground" />
       </Link>
       <HomeAssets accountId={id} />
