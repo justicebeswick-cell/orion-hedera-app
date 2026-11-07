@@ -8,11 +8,15 @@ import { readKeystoreMeta, unlockKeystore, changeDeviceCode, type StoredKey } fr
 import { DeviceCode } from "@/components/device-code";
 import { bioEnrolled, bioRemove } from "@/lib/biometric";
 import { getLimits, setLimits, DEFAULT_LIMITS, audit } from "@/lib/guard";
-import { roundOn, setRound as saveRound } from "@/lib/display";
 import { lockOnClose, setLockOnClose } from "@/lib/lock";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, ChevronRight, SlidersHorizontal, Wallet, BookUser, Activity, Shield, CircleHelp, Info, FileText, Eye, EyeOff, Copy, ShieldAlert, type LucideIcon } from "lucide-react";
+import { GeneralSettings } from "@/components/general-settings";
+import { ContactsPanel } from "@/components/contacts";
+import { AdvancedSettings } from "@/components/advanced-settings";
 import { SecurityCheck } from "@/components/security-check";
+import { SecurityOptions } from "@/components/security-options";
+import { ThirdPartyApps } from "@/components/third-party-apps";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -37,7 +41,7 @@ function Row({ k, v }: { k: string; v: string }) {
   );
 }
 
-type Category = "General" | "Accounts" | "Advanced" | "Security";
+type Category = "General" | "Accounts" | "Advanced" | "Security" | "Address book" | "Third party apps";
 
 function Settings() {
   const [category, setCategory] = useState<Category | null>(null);
@@ -46,9 +50,8 @@ function Settings() {
   const [bio, setBio] = useState(false);
   const [limits, setL] = useState(DEFAULT_LIMITS);
   const [saved, setSaved] = useState(false);
-  const [round, setRound] = useState(false);
   const [lock, setLock] = useState(true);
-  useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); setRound(roundOn()); setLock(lockOnClose()); }, []);
+  useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); setLock(lockOnClose()); }, []);
 
   return (
     <Shell title="Settings">
@@ -58,11 +61,12 @@ function Settings() {
         <div className="pb-3">
           <SettingsItem icon={SlidersHorizontal} label="General" onClick={() => setCategory("General")} />
           <SettingsItem icon={Wallet} label="Accounts" onClick={() => setCategory("Accounts")} />
-          <SettingsLink icon={BookUser} label="Address book" to="/vault" section="contacts" />
+          <SettingsItem icon={BookUser} label="Address book" onClick={() => setCategory("Address book")} />
         </div>
         <div className="py-3">
           <SettingsItem icon={Activity} label="Advanced" onClick={() => setCategory("Advanced")} />
           <SettingsItem icon={Shield} label="Security" onClick={() => setCategory("Security")} />
+          <SettingsItem icon={Wallet} label="Third party apps" onClick={() => setCategory("Third party apps")} />
         </div>
         <div className="pt-3">
           <SettingsLink icon={CircleHelp} label="About Orion" to="/about" />
@@ -85,13 +89,11 @@ function Settings() {
           </div>
         </Panel>}
 
-        {category === "Security" && <SecurityCheck id={id} />}
-
-        {category === "Security" && meta && <RevealKey />}
+        {category === "Security" && <h2 className="-mx-5 bg-secondary px-5 py-3 text-sm font-semibold">Authentication</h2>}
         {category === "Security" && meta && <ChangeCode onChanged={() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); }} />}
 
         {category === "Security" && <Panel>
-          <Label>Security</Label>
+          <Label>Biometric authentication</Label>
           <div className="flex items-center justify-between text-sm">
             <span>Face ID / fingerprint</span>
             {bio ? <Button size="sm" variant="ghost" onClick={() => { bioRemove(); setBio(false); }}>Turn off</Button>
@@ -112,20 +114,14 @@ function Settings() {
           </div>
         </Panel>}
 
-        {category === "General" && <Panel>
-          <Label>Display</Label>
-          <div className="flex items-center justify-between gap-4 text-sm">
-            <div>
-              <p>Hide decimals</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">Show 313,307 instead of 313,307.34563574. Amounts under 1 keep their decimals.</p>
-            </div>
-            <Switch
-              checked={round}
-              aria-label="Hide decimals"
-              onCheckedChange={(v) => { saveRound(v); setRound(v); }}
-            />
-          </div>
-        </Panel>}
+        {category === "Security" && <SecurityOptions />}
+        {category === "Security" && <SecurityCheck id={id} />}
+        {category === "Security" && meta && <RevealKey />}
+
+        {category === "General" && <GeneralSettings />}
+        {category === "Address book" && <ContactsPanel unframed />}
+        {category === "Advanced" && <AdvancedSettings />}
+        {category === "Third party apps" && <ThirdPartyApps />}
 
         {category === "Advanced" && <Panel>
           <Label>Send limits (HBAR)</Label>

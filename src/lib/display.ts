@@ -3,6 +3,9 @@
  * Stored on this device only, never sent anywhere.
  */
 
+import { getPreferences } from "./preferences";
+import { convertUsd } from "./display-currency";
+import { getSecurityPreferences } from "./security-preferences";
 const KEY = "aurion.display.round";
 const EVENT = "aurion:round";
 
@@ -41,6 +44,7 @@ export function whole(v: number): number | null {
 
 /** Format an amount, dropping the decimals when the setting is on. */
 export function fmtAmount(v: number, opts: Intl.NumberFormatOptions = { minimumFractionDigits: 2, maximumFractionDigits: 8 }): string {
+  if (getSecurityPreferences().hideBalance) return "••••";
   const w = whole(v);
   return w === null
     ? v.toLocaleString("en-US", opts)
@@ -49,8 +53,14 @@ export function fmtAmount(v: number, opts: Intl.NumberFormatOptions = { minimumF
 
 /** Format a dollar amount, dropping the cents when the setting is on. */
 export function fmtUsd(v: number): string {
+  if (getSecurityPreferences().hideBalance) return "••••";
+  const prefs = getPreferences();
+  const converted = convertUsd(v, prefs.currency);
+  if (converted === null) return `${prefs.currency} —`;
+  v = converted;
+  const locale = prefs.systemFormat && typeof navigator !== "undefined" ? navigator.language : "en-US";
   const w = whole(v);
   return w === null
-    ? v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: v < 1 ? 4 : 2 })
-    : w.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    ? v.toLocaleString(locale, { style: "currency", currency: prefs.currency, maximumFractionDigits: prefs.currency === "JPY" ? 0 : v < 1 ? 4 : 2 })
+    : w.toLocaleString(locale, { style: "currency", currency: prefs.currency, maximumFractionDigits: 0 });
 }

@@ -17,6 +17,9 @@ import { LaunchScreen } from "@/components/launch-screen";
 import { LockScreen } from "@/components/lock-screen";
 import { needsUnlock } from "@/lib/lock";
 import { Toaster } from "@/components/ui/sonner";
+import { GeneralPreferences } from "@/components/general-preferences";
+import { useSecurityPreferences } from "@/lib/security-preferences";
+import { UNLOCKED } from "@/lib/lock";
 import { handleHapticClick } from "@/lib/haptics";
 
 function NotFoundComponent() {
@@ -126,12 +129,22 @@ function RootShell({ children }: { children: ReactNode }) {
 const PUBLIC_PATHS = ["/company", "/privacy", "/terms", "/about", "/fonts"];
 
 function LockGate({ children }: { children: ReactNode }) {
+  const security = useSecurityPreferences();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // null = still checking storage (avoids flashing the wallet before the lock appears)
   const [locked, setLocked] = useState<boolean | null>(null);
   useEffect(() => {
     setLocked(PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ? false : needsUnlock());
   }, [pathname]);
+  useEffect(() => {
+    if (!security.autoLock || PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return;
+    let lastActivity = Date.now();
+    const touch = () => { lastActivity = Date.now(); };
+    const check = () => { if (Date.now() - lastActivity < security.autoLock * 60_000 || locked) return; if (!localStorage.getItem("aurion.account") || !localStorage.getItem("aurion.keystore")) return; sessionStorage.removeItem(UNLOCKED); setLocked(true); };
+    const timer = window.setInterval(check, 1000);
+    document.addEventListener("pointerdown", touch); document.addEventListener("keydown", touch); document.addEventListener("visibilitychange", check);
+    return () => { clearInterval(timer); document.removeEventListener("pointerdown", touch); document.removeEventListener("keydown", touch); document.removeEventListener("visibilitychange", check); };
+  }, [security.autoLock, pathname, locked]);
   if (locked === null) return null;
   if (locked) return <LockScreen onUnlock={() => setLocked(false)} />;
   return <>{children}</>;
@@ -148,6 +161,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <GeneralPreferences />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <LockGate>
         <Outlet />

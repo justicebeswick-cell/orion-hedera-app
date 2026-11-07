@@ -1,0 +1,23 @@
+import { afterEach, expect, it, vi } from "vitest";
+import { DEFAULT_PREFERENCES, getPreferences, savePreferences, resolvedTheme, showAuditEvent } from "@/lib/preferences";
+import { saveSecurityPreferences, getSecurityPreferences } from "@/lib/security-preferences";
+import { showTransaction } from "@/lib/event-display";
+import { fmtAmount, fmtUsd } from "@/lib/display";
+import { setCurrencyRates } from "@/lib/display-currency";
+import { tapHaptic } from "@/lib/haptics";
+import { saveContact, readContacts } from "@/lib/contacts";
+
+afterEach(() => { localStorage.clear(); setCurrencyRates({ USD: 1 }); vi.unstubAllGlobals(); });
+it("keeps black Dark mode and home worth and prices by default", () => { expect(getPreferences().theme).toBe("dark"); expect(getPreferences().showWorth).toBe(true); expect(getPreferences().showPrices).toBe(true); });
+it("stores independently configurable Home visibility", () => { savePreferences({ showWorth: false, showPrices: false, showReserve: true }); expect(getPreferences()).toMatchObject({ showWorth: false, showPrices: false, showReserve: true }); });
+it("honors selected themes and system light/dark only when automatic is on", () => { expect(resolvedTheme({ ...DEFAULT_PREFERENCES, theme: "royal" }, true)).toBe("royal"); expect(resolvedTheme({ ...DEFAULT_PREFERENCES, autoTheme: true }, true)).toBe("default"); expect(resolvedTheme({ ...DEFAULT_PREFERENCES, autoTheme: true }, false)).toBe("dark"); });
+it("converts USD rather than just changing the currency symbol", () => { setCurrencyRates({ EUR: 0.9 }); savePreferences({ currency: "EUR" }); expect(fmtUsd(100)).toBe("€90.00"); });
+it("does not fabricate a conversion when the feed is unavailable", () => { savePreferences({ currency: "GBP" }); expect(fmtUsd(100)).toBe("GBP —"); });
+it("uses system currency number formatting when enabled", () => { vi.stubGlobal("navigator", { language: "de-DE" }); savePreferences({ systemFormat: true }); expect(fmtUsd(1234.5)).toBe(new Intl.NumberFormat("de-DE", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(1234.5)); });
+it("hides only known service fee events and retains failures and ordinary sends", () => { const prefs = { ...DEFAULT_PREFERENCES, hideFees: true }; expect(showAuditEvent("swap fee", prefs)).toBe(false); expect(showAuditEvent("send", prefs)).toBe(true); expect(showAuditEvent("swap fee failed", prefs)).toBe(true); });
+it("spam filter hides blocked incoming senders but never arbitrary transfers", () => { const tx = { transaction_id: "tx", consensus_timestamp: "1", name: "CRYPTOTRANSFER", result: "SUCCESS", transfers: [{ account: "0.0.1", amount: -100 }, { account: "0.0.2", amount: 100 }] }; const prefs = { ...DEFAULT_PREFERENCES, hideSpam: true }; expect(showTransaction(tx, "0.0.2", prefs, ["0.0.1"], [])).toBe(false); expect(showTransaction(tx, "0.0.2", prefs, [], [])).toBe(true); });
+it("turns off tap vibration", () => { const vibrate = vi.fn(); vi.stubGlobal("navigator", { vibrate }); savePreferences({ haptics: false }); tapHaptic(); expect(vibrate).not.toHaveBeenCalled(); });
+it("supports 1, 5 and 15 minute inactivity locks", () => { for (const autoLock of [1, 5, 15] as const) { saveSecurityPreferences({ autoLock }); expect(getSecurityPreferences().autoLock).toBe(autoLock); } });
+it("hides amounts and currency values without changing stored balances", () => { saveSecurityPreferences({ hideBalance: true }); expect(fmtAmount(313307.34)).toBe("••••"); expect(fmtUsd(313307.34)).toBe("••••"); });
+it("saves a named mainnet contact shared by Settings and send", () => { saveContact({ name: "Justice", account: "0.0.10898196" }); expect(readContacts()[0]).toMatchObject({ name: "Justice", account: "0.0.10898196" }); });
+it("rejects invalid contact accounts before saving", () => { expect(() => saveContact({ name: "Justice", account: "wrong" })).toThrow(); expect(readContacts()).toHaveLength(0); });

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined, ImageIcon, Handshake } from "lucide-react";
 import { PactPanel } from "@/components/pact-panel";
+import { usePreferences, showAuditEvent } from "@/lib/preferences";
 import { NftGallery } from "@/components/nft-gallery";
 import { HbarMarket } from "@/components/hbar-market";
 import { HbarEtf } from "@/components/hbar-etf";
@@ -578,6 +579,7 @@ function LimitsPanel() {
 }
 
 function EventsPanel() {
+  const prefs = usePreferences();
   const [rows, setRows] = useState<AuditEntry[]>([]);
   useEffect(() => { setRows(readAudit()); const t = setInterval(() => setRows(readAudit()), 3000); return () => clearInterval(t); }, []);
   const fees = rows.filter((r) => r.action === "swap fee" && r.ok);
@@ -589,7 +591,7 @@ function EventsPanel() {
       <p className="mb-2 text-xs text-muted-foreground">Everything this device has signed or attempted, newest first.</p>
       {rows.length === 0 ? <p className="text-sm text-muted-foreground">Nothing yet.</p> : (
         <ul className="divide-y divide-border text-xs">
-          {rows.slice(0, 30).map((r, i) => (
+          {rows.filter((r) => showAuditEvent(r.action, prefs)).slice(0, 30).map((r, i) => (
             <li key={i} className="py-2">
               <p className="flex justify-between gap-2"><span className={r.ok ? "text-success" : "text-destructive"}>{title(r.action)}</span><span className="text-muted-foreground tnum">{new Date(r.at).toLocaleString()}</span></p>
               <p className="break-all text-muted-foreground">{r.detail}</p>

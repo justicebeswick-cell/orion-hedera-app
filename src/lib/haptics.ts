@@ -1,5 +1,7 @@
 /** Optional browser haptics; unsupported devices remain fully functional. */
+import { getPreferences } from "./preferences";
 export function tapHaptic() {
+  if (!getPreferences().haptics) return;
   if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
   try { navigator.vibrate(10); } catch { /* Some browsers disallow vibration. */ }
 }

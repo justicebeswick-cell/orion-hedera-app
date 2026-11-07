@@ -87,6 +87,29 @@
   --ring: var(--primary);
 }
 
+:root[data-theme="default"] {
+  --background: oklch(0.98 0.003 298);
+  --foreground: oklch(0.18 0.01 298);
+  --card: oklch(0.95 0.015 298);
+  --graphite: oklch(0.92 0.008 298);
+  --muted-foreground: oklch(0.43 0.015 298);
+  --border: oklch(0.25 0.03 298 / 20%);
+  --input: oklch(0.25 0.03 298 / 28%);
+  --card-border: var(--border);
+  --card-finish: linear-gradient(135deg, oklch(0.94 0.04 298), var(--card));
+  --primary-foreground: oklch(0.99 0 0);
+  --success: oklch(0.46 0.13 163);
+  --destructive: oklch(0.5 0.21 15);
+}
+:root[data-theme="moonlight"] { --background: oklch(0.2 0.018 298); --card: oklch(0.26 0.025 298); --graphite: oklch(0.3 0.014 298); }
+:root[data-theme="royal"] { --background: oklch(0.16 0.065 298); --card: oklch(0.25 0.11 298); --graphite: oklch(0.27 0.045 298); }
+.theme-swatch { display: grid; place-items: center; width: 52px; height: 44px; border-radius: 6px; font-size: 14px; }
+.theme-swatch-default { background: oklch(0.98 0 0); color: oklch(0.2 0 0); }
+.theme-swatch-dark { background: oklch(0 0 0); color: oklch(0.98 0 0); }
+.theme-swatch-moonlight { background: oklch(0.3 0.02 298); color: oklch(0.98 0 0); }
+.theme-swatch-royal { background: oklch(0.35 0.18 298); color: oklch(0.98 0 0); }
+:root[data-theme="default"] .orion-lettering { filter: invert(1); }
+
 @layer base {
   * { border-color: var(--color-border); }
   body {

@@ -1,6 +1,13 @@
 # Roadmap
 
 ## Settings and Pact navigation
+- [x] Add reference-style General preferences and wire display, themes, filters and haptics; English only, Hedera reserve marked not applicable
+- [x] Add the pictured contact option inside Settings Address book; saved contact read back after reload
+- [x] Add Advanced network, release and local debug options; notification permission requests do not claim background delivery
+- [x] Add Security options with tested one-minute inactivity lock and hidden amounts; automatic key erasure intentionally unavailable
+- [x] Add Third party apps with HashPack/Blade connections and SaucerSwap/Buy entry points
+- [ ] Activate and verify HashPack/Blade connections — requires VITE_WALLETCONNECT_PROJECT_ID and owner wallet approval
+- [ ] Enable background push delivery — requires a push service and delivery setup; permission status is available now
 - [x] Move Pact into a Vault card and replace its dock tab with Settings
 - [x] Remove the top Settings button and reorganize Settings into reference-style grouped rows
 - [x] Verify category controls, Pact draft preservation and phone layout

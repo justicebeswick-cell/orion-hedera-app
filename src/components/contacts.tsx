@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { BookUser, Trash2, Pencil, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Panel, Label } from "@/components/aurion";
@@ -41,17 +41,18 @@ export function RecipientField({ value, onChange, self }: { value: string; onCha
 }
 
 /** Full address book: add, rename, remove. */
-export function ContactsPanel() {
+function ContactSurface({ children, unframed }: { children: ReactNode; unframed: boolean }) { return unframed ? <div>{children}</div> : <Panel>{children}</Panel>; }
+export function ContactsPanel({ unframed = false }: { unframed?: boolean }) {
   const contacts = useContacts();
   const [edit, setEdit] = useState<Partial<Contact> | null>(null);
   const ok = !!edit?.name?.trim() && ACCOUNT_RE.test(edit?.account?.trim() ?? "");
   return (
-    <Panel>
-      <Label>Contacts</Label>
-      <p className="mb-4 text-sm text-muted-foreground">Save the wallets you pay often. Tap a name when sending. Saved on this device only.</p>
+    <ContactSurface unframed={unframed}>
+      {!unframed && <Label>Contacts</Label>}
+      {!unframed && <p className="mb-4 text-sm text-muted-foreground">Saved on this device only.</p>}
       {contacts.length === 0 && !edit && (
-        <div className="flex flex-col items-center rounded-xl border border-dashed border-border py-8 text-center text-sm text-muted-foreground">
-          <BookUser className="mb-2" /> No contacts yet.
+        <div className="flex min-h-64 flex-col items-center justify-center py-8 text-center text-sm text-muted-foreground">
+          <BookUser className="mb-6 size-20 text-primary" strokeWidth={1} /> Add your first contact.
         </div>
       )}
       <ul className="divide-y divide-border">
@@ -69,17 +70,17 @@ export function ContactsPanel() {
       </ul>
       {edit ? (
         <div className="mt-4 space-y-3">
-          <input className="field" placeholder="Name" maxLength={40} value={edit.name ?? ""} onChange={(e) => setEdit({ ...edit, name: e.target.value })} />
-          <input className="field font-mono tnum" placeholder="Account 0.0.…" value={edit.account ?? ""} onChange={(e) => setEdit({ ...edit, account: e.target.value })} />
+          <input className="field" placeholder="Name" aria-label="Contact name" maxLength={40} value={edit.name ?? ""} onChange={(e) => setEdit({ ...edit, name: e.target.value })} />
+          <input className="field font-mono tnum" placeholder="Account 0.0.…" maxLength={16} aria-label="Contact account" value={edit.account ?? ""} onChange={(e) => setEdit({ ...edit, account: e.target.value })} />
           <input className="field" placeholder="Note (optional)" maxLength={80} value={edit.note ?? ""} onChange={(e) => setEdit({ ...edit, note: e.target.value })} />
           <div className="flex gap-2">
-            <Button className="flex-1" disabled={!ok} onClick={() => { saveContact({ id: edit.id, name: edit.name!, account: edit.account!, note: edit.note }); setEdit(null); }}>{edit.id ? "Save changes" : "Add contact"}</Button>
+            <Button className="flex-1" disabled={!ok} onClick={() => { if (!edit.name || !edit.account) return; saveContact({ id: edit.id, name: edit.name, account: edit.account, note: edit.note }); setEdit(null); }}>{edit.id ? "Save changes" : "Add contact"}</Button>
             <Button variant="outline" onClick={() => setEdit(null)}>Cancel</Button>
           </div>
         </div>
       ) : (
         <Button className="mt-4 w-full" onClick={() => setEdit({})}><UserPlus /> Add contact</Button>
       )}
-    </Panel>
+    </ContactSurface>
   );
 }

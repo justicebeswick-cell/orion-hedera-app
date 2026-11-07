@@ -16,6 +16,10 @@ import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
 import { fmtUsd } from "@/lib/display";
+import { usePreferences } from "@/lib/preferences";
+import { useSecurityPreferences } from "@/lib/security-preferences";
+import { showTransaction } from "@/lib/event-display";
+import { readAudit, readBlocklist } from "@/lib/guard";
 import { REFRESH_MS } from "@/lib/refresh";
 
 export const Route = createFileRoute("/")({
@@ -43,6 +47,8 @@ export const Route = createFileRoute("/")({
 const usd = (n: number) => fmtUsd(n);
 
 function Home() {
+  const prefs = usePreferences();
+  const security = useSecurityPreferences();
   const { id, ready, bind } = useAccount();
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
   const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id, refetchInterval: REFRESH_MS });
@@ -142,19 +148,20 @@ function Home() {
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}><ImageIcon size={16} />NFTs</Link></Button></div>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
       </div>
-      <Link to="/vault" search={{ section: "holdings" }} className="home-asset border-b border-border py-5">
+      {prefs.showWorth && <Link to="/vault" search={{ section: "holdings" }} className="home-asset border-b border-border py-5">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"><Coins size={23} /></span>
         <span className="min-w-0 flex-1 font-semibold">HBAR worth</span>
-        <span className="text-right text-xl font-semibold tnum">{acct.data && rate.data ? usd(acct.data.tinybar / 1e8 * rate.data) : "—"}</span>
-      </Link>
+        <span className="text-right text-xl font-semibold tnum">{security.hideBalance ? "••••" : acct.data && rate.data ? usd(acct.data.tinybar / 1e8 * rate.data) : "—"}</span>
+      </Link>}
       {acct.isError && <p className="py-4 text-xs text-destructive">{(acct.error as Error).message}</p>}
       <Link to="/vault" search={{ section: "holdings" }} className="home-asset pt-6">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center text-primary"><HbarLogo size={32} /></span>
         <span className="shrink-0"><span className="block font-semibold">HBAR</span><span className="block text-xs text-muted-foreground">Hedera</span></span>
-        <span className="min-w-0 flex-1 text-right"><span className="block text-sm font-semibold tnum [overflow-wrap:anywhere] sm:text-lg">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span><span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span></span>
+        <span className="min-w-0 flex-1 text-right"><span className="block text-sm font-semibold tnum [overflow-wrap:anywhere] sm:text-lg">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span>{prefs.showPrices && <span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span>}</span>
         <ChevronRight size={14} className="text-muted-foreground" />
       </Link>
       <HomeAssets accountId={id} />
+      {prefs.showReserve && <div className="flex justify-between border-b border-border py-4 text-sm"><span className="text-muted-foreground">Required HBAR reserve</span><span className="text-xs text-muted-foreground">Not applicable on Hedera</span></div>}
       <div className="mt-4 border-t border-border">
         <Link to="/stake" className="flex items-center gap-3 py-3 text-sm"><Network size={16} className="text-primary" /><span className="flex-1">{acct.data?.stakedNode != null ? `Staked to node ${acct.data.stakedNode}` : "Choose a staking node"}</span><ChevronRight size={15} className="text-muted-foreground" /></Link>
         <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
@@ -170,7 +177,7 @@ function Home() {
         {txs.isPending && <p className="px-5 py-5 text-sm text-muted-foreground">Loading receipts…</p>}
         {txs.isError && <p className="px-5 py-5 text-sm text-destructive">{(txs.error as Error).message}</p>}
         {txs.data?.length === 0 && <p className="px-5 py-5 font-receipt receipt-label text-lg text-muted-foreground">No receipts yet.</p>}
-        {txs.data?.map((t) => {
+        {txs.data?.filter((t) => showTransaction(t, id, prefs, readBlocklist(), readAudit().filter((r) => r.action === "swap fee" && r.ok).flatMap((r) => r.txId ? [r.txId] : []))).map((t) => {
           const n = netAmount(t, id);
           const received = n > 0;
           return (

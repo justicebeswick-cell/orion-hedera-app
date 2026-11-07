@@ -1,5 +1,6 @@
 // Address book. Lives only in this browser (localStorage), like the rest of HashBase's wallet data.
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 export type Contact = { id: string; name: string; account: string; note?: string | undefined };
 const KEY = "aurion.contacts";
@@ -14,6 +15,7 @@ function write(list: Contact[]) {
   window.dispatchEvent(new Event(EVT));
 }
 export function saveContact(c: Omit<Contact, "id"> & { id?: string | undefined }) {
+  c = z.object({ id: z.string().uuid().optional(), name: z.string().trim().min(1).max(40), account: z.string().trim().regex(/^0\.0\.\d{1,10}$/), note: z.string().trim().max(80).optional() }).parse(c);
   const list = readContacts();
   const id = c.id ?? crypto.randomUUID();
   const next = { id, name: c.name.trim().slice(0, 40), account: c.account.trim(), note: c.note?.trim().slice(0, 80) || undefined };

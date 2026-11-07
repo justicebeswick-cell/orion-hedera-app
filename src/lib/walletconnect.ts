@@ -8,15 +8,16 @@ let connector: DAppConnector | null = null;
 let initPromise: Promise<DAppConnector> | null = null;
 
 export async function getConnector() {
-  if (!WC_PROJECT_ID) throw new Error("WalletConnect is not configured");
+  const projectId = WC_PROJECT_ID;
+  if (!projectId) throw new Error("WalletConnect is not configured");
   if (connector) return connector;
   initPromise ??= (async () => {
     const sdk = await import("@hiero-ledger/sdk");
     const wc = await import("@hashgraph/hedera-wallet-connect");
     const c = new wc.DAppConnector(
-      { name: "HashBase", description: "Mainnet HBAR vault", url: window.location.origin, icons: [`${window.location.origin}/icon-192-v4.png`] },
+      { name: "Orion", description: "A Hashgraph Wallet on Hedera mainnet", url: window.location.origin, icons: [`${window.location.origin}/icon-192-v24.png`] },
       sdk.LedgerId.MAINNET,
-      WC_PROJECT_ID!,
+      projectId,
       Object.values(wc.HederaJsonRpcMethod),
       [wc.HederaSessionEvent.ChainChanged, wc.HederaSessionEvent.AccountsChanged],
       [wc.HederaChainId.Mainnet],
@@ -47,7 +48,8 @@ export async function connectWallet(opt: WalletOption): Promise<string> {
   const session = opt.installed ? await c.connectExtension(opt.id) : await c.openModal();
   const acct = session.namespaces['hedera']?.accounts?.[0]; // "hedera:mainnet:0.0.x"
   if (!acct || !acct.startsWith("hedera:mainnet:")) throw new Error("Wallet is not on Hedera mainnet");
-  const id = acct.split(":")[2]!;
+  const id = acct.split(":")[2];
+  if (!id || !/^0\.0\.\d{1,10}$/.test(id)) throw new Error("Wallet returned an invalid mainnet account");
   localStorage.setItem(WC_KEY, JSON.stringify({ id, wallet: opt.name }));
   return id;
 }
