@@ -17,7 +17,6 @@ import { LaunchScreen } from "@/components/launch-screen";
 import { LockScreen } from "@/components/lock-screen";
 import { needsUnlock } from "@/lib/lock";
 import { Toaster } from "@/components/ui/sonner";
-import { AskFab } from "@/components/ask-fab";
 
 function NotFoundComponent() {
   return (
@@ -86,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black" },
-      { name: "apple-mobile-web-app-title", content: "HashBase" },
+      { name: "apple-mobile-web-app-title", content: "Orion" },
       { name: "theme-color", content: "#050308" },
     ],
     links: [
@@ -99,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon-v21.png", type: "image/png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon-v21.png" },
-      { rel: "manifest", href: "/manifest.webmanifest?v=21" },
+      { rel: "manifest", href: "/manifest.webmanifest?v=22" },
     ],
   }),
   shellComponent: RootShell,
@@ -148,7 +147,7 @@ function RootComponent() {
       <LockGate>
         <Outlet />
       </LockGate>
-      <AskFab />
+
       <Toaster theme="dark" position="top-center" />
       <LaunchScreen />
     </QueryClientProvider>

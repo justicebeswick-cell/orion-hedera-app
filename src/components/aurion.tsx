@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 export function AurionLogo({ className = "" }: { className?: string }) {
-  return <img src={aurionLogo.url} alt="HashBase logo" width={1024} height={1024} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
+  return <img src={aurionLogo.url} alt="Orion logo" width={1024} height={1024} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [
@@ -32,7 +32,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
   const nav = useNavigate();
   return (
     <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
-      <header className="mb-8 flex items-start justify-between">
+      <header className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-3">
           <AurionLogo className="h-12 w-12" />
           <div>
@@ -41,14 +41,14 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onPointerUp={() => clearTimeout(timer.current)}
             onPointerLeave={() => clearTimeout(timer.current)}
             onContextMenu={(e) => e.preventDefault()}
-            className="h-auto select-none p-0 font-brand text-lg font-medium tracking-[0.16em] text-signal hover:bg-transparent"
+            className="h-auto select-none p-0 font-brand text-lg font-medium tracking-normal text-foreground hover:bg-transparent"
             onClick={() => setOpen(true)}
-            aria-label="HashBase — open menu"
+            aria-label="Orion — open menu"
           >
-            HashBase
+            Orion
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            <HederaMark size={12} /> Powered by Hedera
+            A Hashgraph Wallet
           </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
               key={d.to}
               to={d.to}
               className="flex flex-col items-center gap-1.5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-signal" }}
+              activeProps={{ className: "text-primary" }}
               activeOptions={{ exact: true }}
             >
               <d.icon size={20} strokeWidth={1.6} />{d.label}
@@ -87,7 +87,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             className="panel mx-auto mt-24 max-w-md p-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">HashBase</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
+            <div className="flex items-center justify-between px-3 py-2"><p className="text-xs text-muted-foreground">Orion</p><Button aria-label="Close apps" variant="ghost" size="icon" onClick={() => setOpen(false)}><X /></Button></div>
             {groups.map((g) => (
               <div key={g.name} className="mt-1 border-t border-border/60 px-1 pt-2 first:mt-0 first:border-t-0 first:pt-0">
                 <p className="px-3 pb-1 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{g.name}</p>

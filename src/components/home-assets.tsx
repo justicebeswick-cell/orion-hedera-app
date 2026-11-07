@@ -26,7 +26,7 @@ export function HomeAssets({ accountId }: { accountId: string }) {
     {query.data?.map((token) => <Link key={token.token_id} to="/vault" search={{ section: "holdings" }} className="home-asset">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"><Coins size={23} /></span>
       <span className="min-w-0 flex-1"><span className="block truncate font-semibold">{token.symbol}</span><span className="block truncate text-xs text-muted-foreground">{token.name}</span></span>
-      <span className="text-right text-sm font-medium tnum">{token.known ? fmtAmount(token.balance / 10 ** token.decimals, { maximumFractionDigits: 8 }) : "—"}</span>
+      <span className="min-w-0 max-w-[50%] break-words text-right text-sm font-medium tnum">{token.known ? fmtAmount(token.balance / 10 ** token.decimals, { maximumFractionDigits: 8 }) : "—"}</span>
       <ChevronRight size={14} className="shrink-0 text-muted-foreground" />
     </Link>)}
   </>;

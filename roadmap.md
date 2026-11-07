@@ -1,12 +1,13 @@
 # Roadmap
 
 ## Orion redesign
-- [ ] Simplify Home to the Xaman reference with existing purple and interactive assets, staking and rewards
-- [ ] Move HBAR market and ETF information into a swipeable Vault market card
-- [ ] Add 4/6/8-digit device codes, biometric option and blurred transparent unlock; preserve existing-key access
-- [ ] Combine Studio chat and image creation; keep Agents separate
-- [ ] Rename visible wallet and installed-app identity to Orion (A Hashgraph Wallet)
-- [ ] Verify navigation, unlock and Studio workflows on mobile and desktop
+- [x] Simplify Home to the Xaman reference with existing purple and interactive assets, staking and rewards
+- [x] Move HBAR market and ETF information into a swipeable Vault market card
+- [x] Add 4/6/8-digit device codes, biometric option and blurred transparent unlock; preserve existing-key access
+- [x] Combine Studio chat and image creation; keep Agents separate
+- [x] Rename visible wallet and installed-app identity to Orion (A Hashgraph Wallet)
+- [x] Verify navigation, unlock and Studio workflows on mobile and desktop
+- [ ] Verify Face ID / fingerprint on the owner's physical device — requires their biometric approval; no mainnet transfers performed
 
 - [x] Refine AI Studio with elegant layout and smooth transitions
 - [x] Improve non-HBAR HTS market coverage, preflight and fresh quotes; live quotes and nine regression checks verified

@@ -17,11 +17,11 @@ export function GenerationCanvas({ src, final, busy, alt }: { src: string | null
 
 /** Opens the share sheet (Save Image / Save to Photos on phones), else downloads. */
 export async function saveToPhone(dataUrl: string, prompt: string) {
-  const name = `aurion-${prompt.slice(0, 24).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "image"}.png`;
+  const name = `orion-${prompt.slice(0, 24).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "image"}.png`;
   try {
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], name, { type: blob.type || "image/png" });
-    if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "HashBase Studio" }); return; }
+    if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: "Orion Studio" }); return; }
   } catch (e) { if ((e as Error).name === "AbortError") return; }
   const a = document.createElement("a");
   a.href = dataUrl; a.download = name; document.body.appendChild(a); a.click(); a.remove();

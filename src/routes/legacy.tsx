@@ -9,9 +9,9 @@ import { audit } from "@/lib/guard";
 export const Route = createFileRoute("/legacy")({
   head: () => ({
     meta: [
-      { title: "Legacy — HashBase" },
+      { title: "Legacy — Orion" },
       { name: "description", content: "Pick one person to receive your HBAR if you stop checking in for 30 days." },
-      { property: "og:title", content: "Legacy — HashBase" },
+      { property: "og:title", content: "Legacy — Orion" },
       { property: "og:description", content: "Hold it. A 30-day check-in switch for one heir on Hedera mainnet." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -42,7 +42,7 @@ function Legacy() {
           <li>You choose one person (your heir) and an amount of HBAR.</li>
           <li>Hedera holds an instruction: "in {DAYS} days, send this HBAR to my heir."</li>
           <li>Each time you tap <span className="text-foreground">Check in</span>, the clock restarts at {DAYS} days.</li>
-          <li>If you stop checking in, the payment goes out on its own — even if HashBase is gone.</li>
+          <li>If you stop checking in, the payment goes out on its own — even if Orion is gone.</li>
           <li>Keep the HBAR in your account. If the balance is too low on the day, the payment fails.</li>
         </ul>
       </Panel>

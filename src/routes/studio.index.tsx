@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Bot, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
 import { Shell, Label, AurionLogo } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
-import { clearStudio, deleteThread, readThreads, type Thread } from "@/lib/studio-threads";
+import { clearStudio, deleteThread, readThreads, readImages, type SavedImage, type Thread } from "@/lib/studio-threads";
+import { saveToPhone } from "@/components/generation-canvas";
 import { AgentsStudio } from "@/components/studio-agents";
 
 export const Route = createFileRoute("/studio/")({
   head: () => ({
     meta: [
-      { title: "AI Studio — HashBase" },
-      { name: "description", content: "Ask about your wallet, draft sends, write memos and create images with HashBase's built-in AI." },
-      { property: "og:title", content: "HashBase AI Studio" },
+      { title: "AI Studio — Orion" },
+      { name: "description", content: "Ask about your wallet, draft sends, write memos and create images with Orion's built-in AI." },
+      { property: "og:title", content: "Orion AI Studio" },
       { property: "og:description", content: "Your Hedera wallet assistant, writer and image creator." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,15 +26,15 @@ const starters = [
   "Send 5 HBAR to one of my contacts",
   "Write Pact terms for a logo design job",
   "Explain my staking rewards simply",
-  "Create an image of a futuristic Hedera city",
 ];
 
 function Studio() {
   const nav = useNavigate();
   const [tab, setTab] = useState<"chat" | "agents">("chat");
   const [threads, setThreads] = useState<Thread[]>([]);
+  const [images, setImages] = useState<SavedImage[]>([]);
   const [prompt, setPrompt] = useState("");
-  useEffect(() => setThreads(readThreads()), []);
+  useEffect(() => { setThreads(readThreads()); setImages(readImages()); }, []);
   const start = (prompt?: string) => nav({ to: "/studio/$threadId", params: { threadId: crypto.randomUUID() }, search: { q: prompt, agent: undefined } });
 
   return (
@@ -41,7 +42,7 @@ function Studio() {
       <div className="studio-heading mb-7 flex items-center gap-4 py-3">
         <AurionLogo className="h-16 w-16 shrink-0" />
         <div>
-          <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">HashBase</p>
+          <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">Orion</p>
           <h1 className="text-3xl font-light">AI Studio</h1>
         </div>
       </div>
@@ -53,7 +54,7 @@ function Studio() {
       <div hidden={tab !== "chat"} role="tabpanel" aria-label="Chat" className="studio-view">
           <form className="studio-composer mb-5 rounded-lg border border-border bg-card p-4" onSubmit={(e) => { e.preventDefault(); if (prompt.trim()) start(prompt.trim()); }}>
             <Sparkles size={18} className="mb-3 text-signal" />
-            <textarea aria-label="Message to HashBase" className="min-h-20 w-full resize-none bg-transparent text-base outline-none placeholder:text-muted-foreground" placeholder="What’s on your mind?" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+            <textarea aria-label="Message to Orion" className="min-h-20 w-full resize-none bg-transparent text-base outline-none placeholder:text-muted-foreground" placeholder="What’s on your mind?" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
             <div className="mt-2 flex items-center justify-between border-t border-border pt-3">
               <Button variant="ghost" size="sm" onClick={() => start()}><MessageSquarePlus /> New chat</Button>
               <Button type="submit" size="icon" aria-label="Start conversation" disabled={!prompt.trim()} className="rounded-full"><ArrowUp /></Button>
@@ -81,6 +82,7 @@ function Studio() {
               </ul>
             )}
           </section>
+          {images.length > 0 && <section className="mt-6 border-t border-border pt-5"><Label>Created images</Label><div className="grid grid-cols-3 gap-2">{images.map((image) => <Button key={image.id} variant="ghost" className="h-auto overflow-hidden rounded-lg p-0" aria-label={`Save image: ${image.prompt}`} onClick={() => saveToPhone(image.url, image.prompt)}><img src={image.url} alt={image.prompt} className="aspect-square w-full object-cover" /></Button>)}</div></section>}
       </div>
       <div hidden={tab !== "agents"} role="tabpanel" aria-label="Agents" className="studio-view"><AgentsStudio /></div>
 

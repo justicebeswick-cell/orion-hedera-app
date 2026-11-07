@@ -14,10 +14,10 @@ import { DeviceCode } from "@/components/device-code";
 export const Route = createFileRoute("/wallet")({
   head: () => ({
     meta: [
-      { title: "Wallet — HashBase" },
+      { title: "Wallet — Orion" },
       { name: "description", content: "Create a new Hedera mainnet wallet on this device or connect an existing one." },
-      { property: "og:title", content: "Wallet — HashBase" },
-      { property: "og:description", content: "Your key is made on your device. HashBase never sees it." },
+      { property: "og:title", content: "Wallet — Orion" },
+      { property: "og:description", content: "Your key is made on your device. Orion never sees it." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -107,7 +107,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
           <li key={i} className="rounded-md bg-graphite px-2 py-1.5"><span className="text-muted-foreground">{i + 1}.</span> {word}</li>
         ))}
       </ol>
-      <p className="mt-3 text-xs text-destructive">Write it down. HashBase cannot restore it. Anyone with it can move your HBAR.</p>
+      <p className="mt-3 text-xs text-destructive">Write it down. Orion cannot restore it. Anyone with it can move your HBAR.</p>
       {!wrote && <BackupCheck words={w.phrase.split(" ")} onPass={() => setWrote(true)} />}
       {wrote && <p className="mt-4 text-sm text-success">Backup checked.</p>}
       {wrote && (

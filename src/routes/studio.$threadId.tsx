@@ -24,9 +24,9 @@ export const Route = createFileRoute("/studio/$threadId")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined, agent: typeof s["agent"] === "string" ? (s["agent"] as string) : undefined }),
   head: () => ({
     meta: [
-      { title: "Studio chat — HashBase" },
-      { name: "description", content: "Chat with HashBase's AI about your Hedera wallet." },
-      { property: "og:title", content: "HashBase Studio chat" },
+      { title: "Studio chat — Orion" },
+      { name: "description", content: "Chat with Orion's AI about your Hedera wallet." },
+      { property: "og:title", content: "Orion Studio chat" },
       { property: "og:description", content: "Ask, draft, write and create." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -99,7 +99,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
     id: threadId, messages: initial, transport,
     onError: (e) => {
       const m = e.message;
-      setErr(/402|credits/i.test(m) ? "AI credits are used up." : /429/.test(m) ? "Too many messages. Try again shortly." : "Could not reach AI Studio. Check your connection and try again.");
+      setErr(m);
     },
   });
   const chatBusy = status === "submitted" || status === "streaming";
@@ -115,6 +115,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
       if (complete) {
         const image: SavedImage = { id: crypto.randomUUID(), prompt, url: complete, at: Date.now(), threadId };
         saveImage(image); setImages((items) => [...items, image]); setPreview(null);
+        if (!messages.length) saveThread(threadId, [{ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: `Created image: ${prompt}` }] }], agent?.id);
       }
     } catch (e) { if ((e as Error).name !== "AbortError") setErr((e as Error).message); }
     finally { setImageBusy(false); }
@@ -131,7 +132,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
     <div className="studio-chat flex h-[calc(100dvh-15rem)] min-h-[360px] flex-col">
       <Conversation className="flex-1">
         <ConversationContent>
-          {messages.length === 0 && (
+          {messages.length === 0 && images.length === 0 && !imageBusy && (
             <ConversationEmptyState icon={<AurionLogo className="h-20 w-20" />} title="What’s on your mind?" description={account ? "Your wallet. Your ideas." : "A little inspiration starts here."} />
           )}
           {messages.map((m) => (

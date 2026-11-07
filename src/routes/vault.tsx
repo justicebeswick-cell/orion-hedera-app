@@ -23,13 +23,13 @@ import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
 
 export const Route = createFileRoute("/vault")({
-  validateSearch: (search: Record<string, unknown>): { section?: string } => ({ section: typeof search.section === "string" ? search.section : undefined }),
+  validateSearch: (search: Record<string, unknown>): { section?: string | undefined } => ({ section: typeof search["section"] === "string" ? search["section"] : undefined }),
   head: () => ({
     meta: [
-      { title: "Vault — HashBase" },
+      { title: "Vault — Orion" },
       { name: "description", content: "Your mainnet HBAR vault. Send limits and recipient checks run before value moves." },
-      { property: "og:title", content: "Vault — HashBase" },
-      { property: "og:description", content: "Hold HBAR on Hedera mainnet. HashBase cannot move it unless you sign." },
+      { property: "og:title", content: "Vault — Orion" },
+      { property: "og:description", content: "Hold HBAR on Hedera mainnet. Orion cannot move it unless you sign." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -556,7 +556,7 @@ function SwapPanel({ id, onSwapped }: { id: string; onSwapped: () => void }) {
           <Row k="Price impact" v={`${(live.impact * 100).toFixed(2)}%`} warn={live.impact > 0.03} />
           <Row k="Minimum received" v={`${fmtUnits(minOut, out.decimals)} ${out.symbol}`} />
           <Row k={`Pool fee (${(LP_FEE * 100).toFixed(1)}% × ${live.hops})`} v="included in rate" />
-          <Row k={`HashBase fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
+          <Row k={`Orion fee (${SERVICE_FEE * 100}%)`} v={`${fmtUnits(live.fee, 8)} ℏ`} />
           <Row k="Network fee" v={tIn.id === "HBAR" ? "≈ 0.3–0.5 ℏ" : "≈ 1–1.5 ℏ (plus ≈ 0.5 ℏ the first time you allow a token)"} />
           {tIn.id !== "HBAR" && Number(live.hbarValue) / 1e8 < 3 && <p className="text-destructive">This swap is worth less than the network fee to make it. Swapping a bigger amount is cheaper per HBAR.</p>}
           <p className="pt-1 text-muted-foreground">Route: {live.route.join(" → ")} on SaucerSwap. Price refreshes every 10 seconds.</p>

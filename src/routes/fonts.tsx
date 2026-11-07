@@ -75,7 +75,7 @@ const PAIRS = [
   { name: "Monument", display: '"Cinzel", serif', sans: '"Hanken Grotesk", sans-serif', mono: '"Victor Mono", monospace' },
   { name: "Whisper", display: '"Marcellus", serif', sans: '"Onest", sans-serif', mono: '"DM Mono", monospace' },
   { name: "Editorial", display: '"Newsreader", serif', sans: '"Schibsted Grotesk", sans-serif', mono: '"Spline Sans Mono", monospace' },
-  { name: "HashBase today", display: '"Cormorant Garamond", serif', sans: '"Sora", sans-serif', mono: '"JetBrains Mono", monospace' },
+  { name: "Orion today", display: '"Cormorant Garamond", serif', sans: '"Sora", sans-serif', mono: '"JetBrains Mono", monospace' },
 ];
 
 const NEW_PAIRS = [
@@ -88,10 +88,10 @@ const NEW_PAIRS = [
 export const Route = createFileRoute("/fonts")({
   head: () => ({
     meta: [
-      { title: "HashBase — Type samples" },
-      { name: "description", content: "Font samples for HashBase, shown inside the real wallet screens." },
-      { property: "og:title", content: "HashBase — Type samples" },
-      { property: "og:description", content: "Compare font styles in HashBase wallet previews." },
+      { title: "Orion — Type samples" },
+      { name: "description", content: "Font samples for Orion, shown inside the real wallet screens." },
+      { property: "og:title", content: "Orion — Type samples" },
+      { property: "og:description", content: "Compare font styles in Orion wallet previews." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -122,7 +122,7 @@ function Fonts() {
   return (
     <Shell title="Type samples">
       <p className="mb-6 text-sm text-muted-foreground">
-        Every font below is rendered inside a real HashBase screen — the balance, a receipt, a button — so you can
+        Every font below is rendered inside a real Orion screen — the balance, a receipt, a button — so you can
         judge it the way you'll actually see it.
       </p>
 
@@ -196,7 +196,7 @@ function Mock({ p }: { p: { name: string; display: string; sans: string; mono: s
       <div className="mt-3 flex items-center gap-3" style={{ fontFamily: p.display }}>
         <AurionLogo className="h-10 w-10" />
         <div>
-          <p className="text-2xl tracking-[0.22em]">HashBase</p>
+          <p className="text-2xl tracking-[0.22em]">Orion</p>
           <p className="mt-0.5 font-sans text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
             Powered by Hedera
           </p>

@@ -17,10 +17,10 @@ import { SecurityCheck } from "@/components/security-check";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — HashBase" },
-      { name: "description", content: "Manage your HashBase account, security, send limits and device data." },
-      { property: "og:title", content: "Settings — HashBase" },
-      { property: "og:description", content: "Manage your HashBase account, security, send limits and device data." },
+      { title: "Settings — Orion" },
+      { name: "description", content: "Manage your Orion account, security, send limits and device data." },
+      { property: "og:title", content: "Settings — Orion" },
+      { property: "og:description", content: "Manage your Orion account, security, send limits and device data." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -125,7 +125,7 @@ function Settings() {
             <Button variant="secondary" size="sm" className="w-full" onClick={async () => { const ok = await navigator.storage?.persist?.(); alert(ok ? "Storage is protected on this device." : "Your browser didn't allow it."); }}>Keep my data from being cleared</Button>
             <Button variant="ghost" size="sm" className="w-full" onClick={() => { if (confirm("Delete all AI Studio chats and images on this device?")) { localStorage.removeItem("aurion.studio.threads"); localStorage.removeItem("aurion.studio.images"); } }}>Clear AI Studio data</Button>
             <Button variant="ghost" size="sm" className="w-full" onClick={() => { if (confirm("Clear the activity log on this device?")) localStorage.removeItem("aurion.audit"); }}>Clear activity log</Button>
-            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/about">About HashBase</Link></Button>
+            <Button asChild variant="ghost" size="sm" className="w-full"><Link to="/about">About Orion</Link></Button>
           </div>
         </Panel>
       </div>

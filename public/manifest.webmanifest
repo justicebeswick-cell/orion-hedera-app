@@ -1,8 +1,8 @@
 {
   "id": "/?app=aurion",
-  "name": "HashBase",
-  "short_name": "HashBase",
-  "description": "Prove it. Agree it. Hold it. On Hedera.",
+  "name": "Orion — A Hashgraph Wallet",
+  "short_name": "Orion",
+  "description": "A Hashgraph Wallet. Store, send, swap and stake on Hedera.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

@@ -18,13 +18,13 @@ import { REFRESH_MS } from "@/lib/refresh";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HashBase — A future proof HBAR wallet on Hedera" },
+      { title: "Orion — A future proof HBAR wallet on Hedera" },
       {
         name: "description",
         content:
           "A future proof HBAR wallet native to the Hedera network where you can safely store, stake, swap and agree on secure transactions. Keys stay on your device; every move needs your approval.",
       },
-      { property: "og:title", content: "HashBase — A future proof HBAR wallet on Hedera" },
+      { property: "og:title", content: "Orion — A future proof HBAR wallet on Hedera" },
       {
         property: "og:description",
         content:
@@ -121,7 +121,7 @@ function Home() {
       <Link to="/vault" search={{ section: "hbar" }} className="home-asset pt-6">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center text-primary"><HbarLogo size={32} /></span>
         <span className="min-w-0 flex-1"><span className="block font-semibold">HBAR</span><span className="block text-xs text-muted-foreground">Hedera</span></span>
-        <span className="text-right"><span className="block text-lg font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span><span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span></span>
+        <span className="min-w-0 max-w-[65%] text-right"><span className="block break-words text-sm font-semibold tnum sm:text-lg">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span><span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span></span>
         <ChevronRight size={14} className="text-muted-foreground" />
       </Link>
       <HomeAssets accountId={id} />
@@ -130,9 +130,9 @@ function Home() {
         <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
       </div>
       <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
-      <button onClick={signOut} className="btn-ghost mt-9 w-full text-muted-foreground">
+      <Button variant="outline" onClick={signOut} className="mt-9 w-full text-muted-foreground">
         Sign out
-      </button>
+      </Button>
     </Shell>
   );
 }
