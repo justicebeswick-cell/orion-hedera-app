@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy, Pencil, ImageIcon } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy, Pencil, ImageIcon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { SignBackIn } from "@/components/signin";
 import { ClaimRewards } from "@/components/claim-rewards";
 import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
-import { MIRROR, getAccount, getLag, hbar, hbarUsdLive } from "@/lib/hedera";
+import { MIRROR, getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
 import { fmtUsd } from "@/lib/display";
 import { REFRESH_MS } from "@/lib/refresh";
 
@@ -45,6 +45,7 @@ const usd = (n: number) => fmtUsd(n);
 function Home() {
   const { id, ready, bind } = useAccount();
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
+  const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id, refetchInterval: REFRESH_MS });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
   const tokenCount = useQuery({
@@ -159,6 +160,36 @@ function Home() {
         <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
       </div>
       <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
+      <div className="mb-3 mt-9 flex items-center justify-between">
+        <h2 className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</h2>
+        <Button variant="ghost" size="icon" aria-label="Refresh activity" disabled={txs.isFetching} onClick={() => txs.refetch()}>
+          <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
+        </Button>
+      </div>
+      <div className="panel divide-y divide-border overflow-hidden">
+        {txs.isPending && <p className="px-5 py-5 text-sm text-muted-foreground">Loading receipts…</p>}
+        {txs.isError && <p className="px-5 py-5 text-sm text-destructive">{(txs.error as Error).message}</p>}
+        {txs.data?.length === 0 && <p className="px-5 py-5 font-receipt receipt-label text-lg text-muted-foreground">No receipts yet.</p>}
+        {txs.data?.map((t) => {
+          const n = netAmount(t, id);
+          const received = n > 0;
+          return (
+            <a key={t.transaction_id + t.consensus_timestamp} href={`${HASHSCAN}/transaction/${t.consensus_timestamp}`} target="_blank" rel="noreferrer"
+              className="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-secondary/40">
+              <span className={`shrink-0 ${received ? "text-foreground" : "text-muted-foreground"}`}>
+                {received ? <ArrowDownLeft size={20} strokeWidth={1.8} /> : <ArrowUpRight size={20} strokeWidth={1.8} />}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="font-receipt receipt-label text-lg leading-tight text-foreground">{received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}</p>
+                <p className="mt-1 break-words font-mono text-[10px] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
+              </div>
+              <span className={`shrink-0 whitespace-nowrap text-right font-sans text-sm font-medium tnum sm:text-lg ${received ? "text-success" : "text-muted-foreground"}`}>
+                {received ? "+" : ""}{hbar(n)} ℏ
+              </span>
+            </a>
+          );
+        })}
+      </div>
       <Button variant="outline" onClick={signOut} className="mt-9 w-full text-muted-foreground">
         Sign out
       </Button>

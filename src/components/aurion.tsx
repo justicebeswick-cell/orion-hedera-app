@@ -3,22 +3,22 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import logo96 from "@/assets/orion-logo/orion-logo-96.webp";
-import logo144 from "@/assets/orion-logo/orion-logo-144.webp";
-import logo192 from "@/assets/orion-logo/orion-logo-192.webp";
-import logo288 from "@/assets/orion-logo/orion-logo-288.webp";
-import logo384 from "@/assets/orion-logo/orion-logo-384.webp";
-import logo576 from "@/assets/orion-logo/orion-logo-576.webp";
-import logo768 from "@/assets/orion-logo/orion-logo-768.webp";
+import logo96 from "@/assets/orion-logo/orion-crisp-96.png.asset.json";
+import logo144 from "@/assets/orion-logo/orion-crisp-144.png.asset.json";
+import logo192 from "@/assets/orion-logo/orion-crisp-192.png.asset.json";
+import logo288 from "@/assets/orion-logo/orion-crisp-288.png.asset.json";
+import logo384 from "@/assets/orion-logo/orion-crisp-384.png.asset.json";
+import logo576 from "@/assets/orion-logo/orion-crisp-576.png.asset.json";
+import logo768 from "@/assets/orion-logo/orion-crisp-768.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 // Pre-sized copies keep the fine texture crisp; the browser picks the one matching display size × screen density.
-const logoSrcSet = `${logo96} 96w, ${logo144} 144w, ${logo192} 192w, ${logo288} 288w, ${logo384} 384w, ${logo576} 576w, ${logo768} 768w`;
+const logoSrcSet = `${logo96.url} 96w, ${logo144.url} 144w, ${logo192.url} 192w, ${logo288.url} 288w, ${logo384.url} 384w, ${logo576.url} 576w, ${logo768.url} 768w`;
 
 export function AurionLogo({ className = "", sizes = "48px" }: { className?: string; sizes?: string }) {
-  return <img sizes={sizes} srcSet={logoSrcSet} src={logo384} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className={`shrink-0 object-contain ${className}`} />;
+  return <img sizes={sizes} srcSet={logoSrcSet} src={logo384.url} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [
@@ -55,7 +55,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             onClick={() => setOpen(true)}
             aria-label="Orion — open menu"
           >
-            <OrionName className={title === "Home" ? "w-28" : "w-32"} />
+            <OrionName className={title === "Home" ? "w-24" : "w-32"} />
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             A Hashgraph Wallet

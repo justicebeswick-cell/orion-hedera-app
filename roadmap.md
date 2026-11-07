@@ -7,6 +7,9 @@
 - [ ] Verify a signed mainnet NFT transfer — requires the owner to approve from a wallet holding an NFT; no funds or NFTs moved during checks
 
 ## Home refinements
+- [x] Restore the original send/receive receipts on Home; live mainnet receipts and refresh checked
+- [x] Make Home's ORION lettering smaller without changing other screens
+- [x] Repair chopped logo edges and refresh the shared artwork and installed icons; phone/desktop checked
 - [x] Match Send, Swap and Receive to the cards' deep purple finish
 - [x] Let users name their wallet from Home and keep the name on this device
 - [x] Add light vibration to app button taps on supported devices
