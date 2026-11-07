@@ -1,10 +1,10 @@
-/** The ℏ symbol in HashBase's brand purple (#7428d8), sampled from the app artwork. */
+/** The ℏ symbol in white, used for HBAR amounts across the app. */
 export function HbarLogo({ size = 20, className = "" }: { size?: number; className?: string }) {
   return (
     <span
       role="img"
       aria-label="HBAR"
-      style={{ fontSize: size, lineHeight: 1, color: "#7428d8" }}
+      style={{ fontSize: size, lineHeight: 1, color: "#ffffff" }}
       className={`inline-block shrink-0 font-semibold ${className}`}
     >
       ℏ

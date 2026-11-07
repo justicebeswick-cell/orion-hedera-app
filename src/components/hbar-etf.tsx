@@ -58,7 +58,7 @@ export function HbarEtf() {
             <div className="stat-tile mt-4 p-3">
               <p className="text-[11px] text-muted-foreground">HBAR locked in the fund</p>
               <p className="mt-1 text-2xl font-semibold tnum">
-                <span className="text-primary">ℏ</span> {Math.round(q.data!.holdings.hbar).toLocaleString("en-US")}
+                <span className="text-foreground">ℏ</span> {Math.round(q.data!.holdings.hbar).toLocaleString("en-US")}
               </p>
               <p className="mt-1 text-[11px] text-muted-foreground tnum">
                 ${compact(q.data!.holdings.netAssets)} net assets · {compact(q.data!.holdings.shares)} shares · as of {q.data!.holdings.asOf}
