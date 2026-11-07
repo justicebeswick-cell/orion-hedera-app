@@ -54,11 +54,9 @@ function Vault() {
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="holdings" /> },
         { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
-        { key: "hbar", label: "HBAR", icon: Coins, content: <Panel><Label>HBAR balance</Label><p className="flex flex-wrap items-center gap-3 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"}<HbarLogo size={36} /></p><p className="mt-4 font-mono text-sm text-muted-foreground">{id}</p><p className="mt-6 text-sm text-muted-foreground">Held in your Hedera account. Only you can sign a transfer.</p></Panel> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },
         { key: "contacts", label: "Contacts", icon: BookUser, content: <ContactsPanel /> },
         { key: "history", label: "Swap history", icon: History, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="history" /> },
-        { key: "fees", label: "Fees", icon: Receipt, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="fees" /> },
         { key: "limits", label: "Limits", icon: ShieldCheck, content: <LimitsPanel /> },
         { key: "activity", label: "Activity", icon: History, content: <AuditPanel /> },
         { key: "cross-chain", label: "Cross-chain", icon: Globe, content: <ClprCard /> },
@@ -86,7 +84,7 @@ async function tokenMeta(tid: string) {
 
 const usd = (n: number) => fmtUsd(n);
 
-function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" | "fees" }) {
+function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
   const held = useQuery({
@@ -176,16 +174,6 @@ function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; 
             </ul>
           )}
           <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {fmtAmount(feesPaid, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>
-        </Panel>}
-        {view === "fees" && <Panel>
-          <Label>Upcoming fees</Label>
-          <dl className="space-y-2 text-xs tnum">
-            <Row k="Next swap service fee" v={`${SERVICE_FEE * 100}% of the swap, in ℏ`} />
-            <Row k="Network fee per action" v="≈ 0.001–0.5 ℏ" />
-            <Row k="Token send network fee" v="≈ 0.001 ℏ" />
-            {legacy ? <Row k={`Legacy transfer in ${days} day${days === 1 ? "" : "s"}`} v={`${legacy.amount} ℏ → ${legacy.heir}`} warn={days <= 3} /> : <Row k="Legacy transfer" v="Not set" />}
-          </dl>
-          <p className="mt-3 text-xs text-muted-foreground">Nothing is charged until you sign. The Legacy transfer only happens if you don't check in.</p>
         </Panel>}
     </>
   );

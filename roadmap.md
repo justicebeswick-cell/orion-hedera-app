@@ -119,3 +119,5 @@
 - [x] Add neon glow, update CDN asset, icons, favicon
 - [x] Shift neon logo to deeper purple, rebuild asset and icons
 - [x] Make HBAR ℏ symbol white instead of purple
+- [x] Remove HBAR and Fees cards from Vault
+- [x] Re-render Orion logo at higher resolution (pixelated in app)
