@@ -14,7 +14,7 @@ async function deriveKey(pass: string, salt: Uint8Array) {
   return crypto.subtle.importKey("raw", raw as Uint8Array<ArrayBuffer>, "AES-GCM", false, ["encrypt", "decrypt"]);
 }
 
-export type StoredKey = { publicKey: string; evm: string; accountId: string | null; kind?: "ecdsa" | "ed25519" };
+export type StoredKey = { publicKey: string; evm: string; accountId: string | null; kind?: "ecdsa" | "ed25519"; codeLength?: 4 | 6 | 8 };
 
 export async function saveKeystore(privHex: string, pass: string, meta: StoredKey) {
   const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -65,8 +65,8 @@ export function activateSavedAccount(id: string): boolean {
 export function readKeystoreMeta(): StoredKey | null {
   const s = localStorage.getItem(KS);
   if (!s) return null;
-  const { publicKey, evm, accountId, kind } = JSON.parse(s);
-  return { publicKey, evm, accountId, kind };
+  const { publicKey, evm, accountId, kind, codeLength } = JSON.parse(s);
+  return { publicKey, evm, accountId, kind, codeLength };
 }
 
 export function setKeystoreAccount(accountId: string) {
@@ -91,6 +91,26 @@ export async function unlockKeystore(pass: string): Promise<string> {
 
 export function clearKeystore() {
   localStorage.removeItem(KS);
+}
+
+/** Rotate only the active wallet, preserving its account and saved encrypted copy. */
+export async function changeDeviceCode(current: string, code: string) {
+  const { checkDeviceCode } = await import("./passphrase");
+  if (!checkDeviceCode(code).ok) throw new Error("Choose a less guessable 4, 6 or 8 digit code.");
+  const original = localStorage.getItem(KS);
+  const saved = localStorage.getItem(SAVED);
+  const meta = readKeystoreMeta();
+  if (!original || !meta) throw new Error("No key on this device");
+  const privateKey = await unlockKeystore(current);
+  try {
+    await saveKeystore(privateKey, code, { ...meta, codeLength: code.length as 4 | 6 | 8 });
+  } catch (e) {
+    localStorage.setItem(KS, original);
+    if (saved === null) localStorage.removeItem(SAVED); else localStorage.setItem(SAVED, saved);
+    throw e;
+  }
+  // The old biometric seal contains the old password. Re-enroll explicitly.
+  (await import("./biometric")).bioRemove();
 }
 
 /** New ECDSA key from a fresh 24-word phrase. */

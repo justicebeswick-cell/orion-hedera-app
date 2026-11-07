@@ -97,6 +97,15 @@
   }
 }
 
+.home-asset { display: flex; align-items: center; gap: .85rem; padding-top: 1rem; padding-bottom: 1rem; transition: opacity .2s; }
+.home-asset:hover { opacity: .8; }
+.unlock-backdrop { position: fixed; inset: 0; background: var(--background); overflow: hidden; }
+.unlock-glass { position: fixed; inset: 0; z-index: 60; background: color-mix(in oklab, var(--background) 52%, transparent); backdrop-filter: blur(18px); overflow-y: auto; padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(1.5rem, env(safe-area-inset-bottom)); }
+.unlock-key { height: 72px; width: 100%; border-radius: 50%; background: transparent; font-size: 1.8rem; font-weight: 400; }
+.unlock-key:hover { background: color-mix(in oklab, var(--foreground) 8%, transparent); }
+.unlock-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--foreground); background: transparent; }
+.unlock-dot-filled { background: var(--foreground); }
+
 @utility tnum { font-variant-numeric: tabular-nums; }
 @utility bloom {
   background: radial-gradient(circle, oklch(0.5 0.25 298 / 28%) 0%, transparent 65%);

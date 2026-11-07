@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, isToolUIPart, getToolName, type UIMessage } from "ai";
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Copy } from "lucide-react";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { ArrowLeft, Copy, ImageIcon, Download, MessagesSquare } from "lucide-react";
 import { Shell, SignButton, AurionLogo } from "@/components/aurion";
 import { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse, MessageActions, MessageAction } from "@/components/ai-elements/message";
@@ -11,7 +11,10 @@ import { MAX_FILE_BYTES, prepareFiles } from "@/lib/studio-files";
 import { Paperclip, X, FileText } from "lucide-react";
 import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { Shimmer } from "@/components/ai-elements/shimmer";
-import { getThread, saveThread } from "@/lib/studio-threads";
+import { getThread, saveThread, readImages, saveImage, type SavedImage } from "@/lib/studio-threads";
+import { Button } from "@/components/ui/button";
+import { GenerationCanvas, saveToPhone } from "@/components/generation-canvas";
+import { streamImage } from "@/lib/stream-image";
 import { readContacts } from "@/lib/contacts";
 import { HASHSCAN } from "@/lib/hedera";
 import { getAgent, agentStatus, agentHash, actionMessage, type Agent, type AgentStatus } from "@/lib/agents";
@@ -75,6 +78,17 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
   const { q } = Route.useSearch();
   const [account, setAccount] = useState<string | null>(null);
   const [err, setErr] = useState("");
+  const [composeMode, setComposeMode] = useState<"chat" | "image">("chat");
+  const [images, setImages] = useState<SavedImage[]>([]);
+  const [imageBusy, setImageBusy] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [imageFinal, setImageFinal] = useState(false);
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [reference, setReference] = useState<SavedImage | null>(null);
+  const imageAbort = useRef<AbortController | null>(null);
+  const textarea = useRef<HTMLTextAreaElement | null>(null);
+  useEffect(() => { setImages(readImages().filter((image) => image.threadId === threadId)); }, [threadId]);
+  useEffect(() => () => imageAbort.current?.abort(), []);
   useEffect(() => setAccount(localStorage.getItem("aurion.account")), []);
   const transport = useMemo(() => new DefaultChatTransport({
     api: "/api/studio",
@@ -88,7 +102,23 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
       setErr(/402|credits/i.test(m) ? "AI credits are used up." : /429/.test(m) ? "Too many messages. Try again shortly." : "Could not reach AI Studio. Check your connection and try again.");
     },
   });
-  const busy = status === "submitted" || status === "streaming";
+  const chatBusy = status === "submitted" || status === "streaming";
+  const busy = chatBusy || imageBusy;
+  useEffect(() => { if (!busy) textarea.current?.focus(); }, [busy]);
+  const createImage = async (prompt: string) => {
+    if (!prompt || busy) return;
+    setErr(""); setImageBusy(true); setPreview(null); setImageFinal(false); setImagePrompt(prompt);
+    imageAbort.current = new AbortController();
+    let complete: string | null = null;
+    try {
+      await streamImage("/api/generate-image", { prompt }, (url, final) => { setPreview(url); setImageFinal(final); if (final) complete = url; }, imageAbort.current.signal);
+      if (complete) {
+        const image: SavedImage = { id: crypto.randomUUID(), prompt, url: complete, at: Date.now(), threadId };
+        saveImage(image); setImages((items) => [...items, image]); setPreview(null);
+      }
+    } catch (e) { if ((e as Error).name !== "AbortError") setErr((e as Error).message); }
+    finally { setImageBusy(false); }
+  };
 
   useEffect(() => { if (messages.length && !busy) saveThread(threadId, messages, agent?.id); }, [messages, busy, threadId, agent]);
   useEffect(() => {
@@ -138,6 +168,8 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
               )}
             </Message>
           ))}
+          {images.map((image) => <Message key={image.id} from="assistant"><MessageContent className="bg-transparent"><p className="mb-2 text-sm text-muted-foreground">{image.prompt}</p><img src={image.url} alt={image.prompt} className="max-h-80 w-full rounded-lg object-contain" /><MessageActions><MessageAction label="Save image" tooltip="Save to phone" onClick={() => saveToPhone(image.url, image.prompt)}><Download className="size-4" /></MessageAction><MessageAction label="Discuss image" tooltip="Use this image in your next message" onClick={() => { setReference(image); setComposeMode("chat"); textarea.current?.focus(); }}><MessagesSquare className="size-4" /></MessageAction></MessageActions></MessageContent></Message>)}
+          {imageBusy && <Message from="assistant"><MessageContent className="bg-transparent"><GenerationCanvas src={preview} final={imageFinal} busy={imageBusy} alt={imagePrompt} /></MessageContent></Message>}
           {status === "submitted" && <div className="flex items-center gap-3"><span className="relative flex h-6 w-6 items-center justify-center"><span className="absolute inset-0 animate-ping rounded-full bg-primary/30" /><span className="h-2.5 w-2.5 rounded-full bg-primary" /></span><Shimmer className="text-sm">Reading Hedera and thinking…</Shimmer></div>}
         </ConversationContent>
         <ConversationScrollButton />
@@ -148,16 +180,22 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
         onSubmit={(msg) => {
           const t = msg.text?.trim() ?? "";
           if ((!t && !msg.files.length) || busy) return;
+          if (composeMode === "image") {
+            if (msg.files.length) { setErr("Image creation uses your description. Switch to Chat to discuss attachments."); return; }
+            void createImage(t); return;
+          }
           const { parts, skipped } = prepareFiles(msg.files);
           if (msg.files.length && !parts.length) { setErr(`Can't read ${skipped.join(", ")}. Try a photo, PDF or text file.`); return; }
           setErr(skipped.length ? `Skipped ${skipped.join(", ")} — try a photo, PDF or text file.` : "");
-          sendMessage({ role: "user", parts: [...parts, { type: "text", text: t || "Take a look at this." }] });
+          sendMessage({ role: "user", parts: [...parts, ...(reference ? [{ type: "file" as const, mediaType: "image/png", url: reference.url, filename: "created-image.png" }] : []), { type: "text", text: t || "Take a look at this." }] });
+          setReference(null);
         }}>
         <AttachmentChips />
-        <PromptInputTextarea autoFocus placeholder="Ask HashBase anything…" />
+        {reference && <div className="flex items-center gap-2 px-3 pt-2"><img src={reference.url} alt="Image reference" className="size-8 rounded object-cover" /><span className="flex-1 text-xs">Image attached</span><Button variant="ghost" size="icon" aria-label="Remove image reference" onClick={() => setReference(null)}><X /></Button></div>}
+        <PromptInputTextarea ref={textarea} autoFocus placeholder={composeMode === "image" ? "Describe the picture you want…" : "Ask Orion anything…"} />
         <PromptInputFooter className="justify-between">
-          <AttachButton />
-          <PromptInputSubmit status={status} onStop={stop} />
+          <div className="flex items-center gap-1"><AttachButton /><Button type="button" size="sm" variant={composeMode === "image" ? "default" : "ghost"} aria-pressed={composeMode === "image"} onClick={() => { setComposeMode((mode) => mode === "image" ? "chat" : "image"); textarea.current?.focus(); }}><ImageIcon />Create image</Button></div>
+          <PromptInputSubmit status={imageBusy ? "streaming" : status} onStop={() => { if (imageBusy) imageAbort.current?.abort(); else stop(); }} />
         </PromptInputFooter>
       </PromptInput>
     </div>

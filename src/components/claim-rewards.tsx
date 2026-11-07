@@ -8,7 +8,7 @@ import { hbar, HASHSCAN } from "@/lib/hedera";
 import { canClaimReward } from "@/lib/rewards";
 import type { SignMode } from "@/lib/signer";
 
-export function ClaimRewards({ accountId, pendingReward }: { accountId: string; pendingReward: number | undefined }) {
+export function ClaimRewards({ accountId, pendingReward, compact = false }: { accountId: string; pendingReward: number | undefined; compact?: boolean }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<SignMode>({ kind: "none" });
@@ -42,12 +42,13 @@ export function ClaimRewards({ accountId, pendingReward }: { accountId: string; 
 
   return (
     <>
-      <Button variant="ghost" className="stat-tile block h-auto min-w-0 w-full whitespace-normal text-left font-normal hover:bg-accent"
+      <Button variant="ghost" className={compact ? "home-reward h-auto min-w-0 w-full justify-start whitespace-normal px-0 py-3 text-left font-normal" : "stat-tile block h-auto min-w-0 w-full whitespace-normal text-left font-normal hover:bg-accent"}
         aria-label={`Claim rewards${pendingReward === undefined ? "" : `: ${hbar(pendingReward)} HBAR`}`}
         onClick={() => { setError(""); setResult(null); setOpen(true); }}>
-        <Sparkles size={16} className="text-signal" />
-        <span className="mt-2 block break-words text-sm font-semibold tnum">{pendingReward === undefined ? "—" : `${hbar(pendingReward)} ℏ`}</span>
-        <span className="mt-0.5 block text-xs text-muted-foreground">Claim rewards</span>
+        <Sparkles size={16} className="text-primary" />
+        {compact && <span className="flex-1 text-sm">Claim rewards</span>}
+        <span className={`${compact ? "" : "mt-2 block"} break-words text-sm font-semibold tnum`}>{pendingReward === undefined ? "—" : `${hbar(pendingReward)} ℏ`}</span>
+        {!compact && <span className="mt-0.5 block text-xs text-muted-foreground">Claim rewards</span>}
       </Button>
       <Dialog open={open} onOpenChange={(value) => { if (!busy) { setOpen(value); setPass(""); } }}>
         <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-2xl">

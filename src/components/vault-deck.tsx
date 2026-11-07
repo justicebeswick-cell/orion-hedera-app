@@ -6,7 +6,7 @@ import { useReducedMotion } from "framer-motion";
 
 export type VaultPage = { key: string; label: string; icon: LucideIcon; content: ReactNode };
 
-export function VaultDeck({ pages }: { pages: VaultPage[] }) {
+export function VaultDeck({ pages, activeKey }: { pages: VaultPage[]; activeKey?: string }) {
   const reduce = useReducedMotion();
   const [ref, api] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragThreshold: 6, watchDrag: (_api, event) => !(event.target instanceof Element && event.target.closest("input, select, textarea, [contenteditable], [data-no-swipe]")) });
   const [selected, setSelected] = useState(0);
@@ -24,6 +24,11 @@ export function VaultDeck({ pages }: { pages: VaultPage[] }) {
     update(); api.on("select", update);
     return () => { api.off("select", update); };
   }, [api, update]);
+  useEffect(() => {
+    if (!api || !activeKey) return;
+    const index = pages.findIndex((p) => p.key === activeKey);
+    if (index >= 0) api.scrollTo(index, true);
+  }, [api, activeKey]);
   useEffect(() => {
     const el = slides.current[selected];
     if (!el) return;

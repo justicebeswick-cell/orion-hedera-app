@@ -28,6 +28,16 @@ function repeatsShortChunk(s: string): boolean {
 
 export function isPin(p: string) { return /^\d+$/.test(p); }
 
+/** New device codes; legacy password/PIN validation stays compatible. */
+export function checkDeviceCode(p: string): Strength {
+  if (!/^\d+$/.test(p) || ![4, 6, 8].includes(p.length))
+    return { ok: false, score: 0, label: "Incomplete", reason: "Choose a 4, 6 or 8 digit code.", pin: true };
+  if (repeatsShortChunk(p) || sequential(p) || new Set(p).size < 3 || ["2580", "0852", "1379", "1004", "2000", "2026"].includes(p) || /^(19|20)\d{2}$/.test(p))
+    return { ok: false, score: 1, label: "Too easy", reason: "Avoid repeated digits, counting, keypad patterns and years.", pin: true };
+  if (p.length > 4) return checkPassphrase(p);
+  return { ok: true, score: 1, label: "Basic protection", pin: true };
+}
+
 export function checkPassphrase(p: string): Strength {
   if (!p) return { ok: false, score: 0, label: "", pin: false };
   if (isPin(p)) {

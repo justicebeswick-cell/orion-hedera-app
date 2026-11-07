@@ -25,7 +25,7 @@ export function deleteThread(id: string) {
   localStorage.setItem(KEY, JSON.stringify(readThreads().filter((t) => t.id !== id)));
 }
 
-export type SavedImage = { id: string; prompt: string; url: string; at: number };
+export type SavedImage = { id: string; prompt: string; url: string; at: number; threadId?: string };
 export function readImages(): SavedImage[] {
   if (typeof window === "undefined") return [];
   try { return JSON.parse(localStorage.getItem(IMG) ?? "[]"); } catch { return []; }

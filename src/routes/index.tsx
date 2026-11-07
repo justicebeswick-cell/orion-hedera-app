@@ -2,19 +2,18 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, Eye, RefreshCw, Coins, Network, PenLine, Handshake, HeartHandshake } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { HomeAssets } from "@/components/home-assets";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
-import { AskActivity } from "@/components/ask";
 import { SignBackIn } from "@/components/signin";
 import { ClaimRewards } from "@/components/claim-rewards";
 import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
-import { MIRROR, getAccount, getTransactions, getLag, hbar, hbarUsdLive, fmtTs, netAmount, txLabel, HASHSCAN } from "@/lib/hedera";
+import { MIRROR, getAccount, getLag, hbar, hbarUsdLive } from "@/lib/hedera";
 import { fmtUsd } from "@/lib/display";
 import { REFRESH_MS } from "@/lib/refresh";
-import { HbarMarket } from "@/components/hbar-market";
-import { HbarEtf } from "@/components/hbar-etf";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,12 +42,12 @@ const usd = (n: number) => fmtUsd(n);
 function Home() {
   const { id, ready, bind } = useAccount();
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
-  const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
   const tokenCount = useQuery({
     queryKey: ["tok-count", id],
     enabled: !!id,
+    refetchInterval: REFRESH_MS,
     queryFn: async () => {
       const r = await fetch(`${MIRROR}/api/v1/accounts/${id}/tokens?limit=100`);
       if (!r.ok) throw new Error(`Mirror node returned ${r.status}`);
@@ -96,109 +95,41 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      <div className="mb-5 flex flex-wrap items-center gap-2.5 animate-in fade-in duration-500">
-        <button type="button" className="chip tnum" aria-label="Copy account ID"
-          onClick={async () => { try { await navigator.clipboard.writeText(id); toast.success("Account ID copied"); } catch { toast.error("Copy failed"); } }}>
-          {id}
-        </button>
-        <span className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${watchOnly ? "border-border text-muted-foreground" : "border-primary/50 text-signal"}`}>
-          {watchOnly ? <><Eye size={12} /> Watch-only</> : <><PenLine size={12} /> Can sign</>}
-        </span>
-        <Link to="/wallet" className="ml-auto text-xs text-signal hover:underline">{watchOnly ? "Connect to sign" : "Switch account"}</Link>
-      </div>
-
-      <section className="hero-card hash-mark overflow-hidden p-6">
-        <div className="flex items-start justify-between">
-          <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Balance</p>
-        </div>
-        {acct.isError ? (
-          <p className="mt-4 text-sm text-destructive">{(acct.error as Error).message}</p>
-        ) : (
-          <p className="mt-3 flex items-baseline gap-2.5 text-5xl font-semibold tracking-tight tnum">
-            {acct.data ? hbar(acct.data.tinybar) : "—"} <HbarLogo size={26} className="self-center text-signal" />
-          </p>
-        )}
-        <p className="mt-2 text-sm text-muted-foreground tnum">
-          {acct.data && rate.data ? `≈ ${usd((acct.data.tinybar / 1e8) * rate.data)} · live price` : "Fetching price…"}
-        </p>
-        <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
-        <div className="mt-6 grid grid-cols-3 gap-2.5">
-          <div className="stat-tile">
-            <Network size={16} className="text-signal" />
-            <p className="mt-2 truncate text-sm font-semibold tnum">{acct.data?.stakedNode != null ? `Node ${acct.data.stakedNode}` : "—"}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Staked to</p>
-          </div>
-          <ClaimRewards key={id} accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
-          <div className="stat-tile">
-            <Coins size={16} className="text-signal" />
-            <p className="mt-2 truncate text-sm font-semibold tnum">{tokenCount.data ?? "—"}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Tokens</p>
-          </div>
-        </div>
-      </section>
-
-      <HbarMarket />
-      <HbarEtf />
-
-      <AskActivity accountId={id} />
-
-      <div className="mt-9 mb-3 flex items-center justify-between">
-        <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</p>
-        <button
-          onClick={() => txs.refetch()}
-          aria-label="Refresh activity"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
-        </button>
-      </div>
-      <div className="panel divide-y overflow-hidden">
-        {txs.isLoading && [0, 1, 2].map((i) => (
-          <div key={i} className="flex items-center gap-4 px-5 py-4"><div className="h-5 w-5 animate-pulse rounded-full bg-muted/40" /><div className="flex-1 space-y-2"><div className="h-4 w-24 animate-pulse rounded bg-muted/40" /><div className="h-2.5 w-32 animate-pulse rounded bg-muted/30" /></div></div>
-        ))}
-        {txs.data?.length === 0 && (
-          <div className="px-5 py-6">
-            <p className="font-display text-lg text-muted-foreground">No receipts yet.</p>
-            <p className="mt-1 text-xs text-muted-foreground">Sends, swaps and rewards appear here once Hedera records them. Share your account ID to receive HBAR.</p>
-          </div>
-        )}
-        {txs.data?.map((t) => {
-          const n = netAmount(t, id);
-          const received = n > 0;
-          return (
-            <a key={t.transaction_id + t.consensus_timestamp} href={`${HASHSCAN}/transaction/${t.consensus_timestamp}`}
-              target="_blank" rel="noreferrer"
-              className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-secondary/40">
-              <span className={`shrink-0 ${received ? "text-signal" : "text-muted-foreground"}`}>
-                {received ? <ArrowDownLeft size={20} strokeWidth={1.8} /> : <ArrowUpRight size={20} strokeWidth={1.8} />}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="font-receipt receipt-label text-xl leading-tight text-foreground">
-                  {received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}
-                </p>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
-              </div>
-              <span className={`shrink-0 font-sans text-lg font-medium tracking-tight tnum ${received ? "text-success" : "text-muted-foreground"}`}>
-                {received ? "+" : ""}{hbar(n)} ℏ
-              </span>
-            </a>
-          );
-        })}
-      </div>
-
-      <div className="mt-9 grid grid-cols-2 gap-2.5">
-        <Link to="/pact" className="stat-tile transition-colors hover:border-primary">
-          <Handshake size={16} className="text-signal" />
-          <p className="mt-2 text-sm font-semibold">Pact</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">Agree a deal, fingerprinted on Hedera</p>
+      <div className="home-account mb-4 flex items-center gap-3 rounded-lg bg-secondary p-4">
+        <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
+          <span className="block text-lg font-semibold">{id}</span>
+          <span className="mt-1 block text-xs text-muted-foreground">{watchOnly ? "Watch-only" : "My Hedera wallet"}</span>
         </Link>
-        <Link to="/legacy" className="stat-tile transition-colors hover:border-primary">
-          <HeartHandshake size={16} className="text-signal" />
-          <p className="mt-2 text-sm font-semibold">Legacy</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">Pass HBAR to one heir if you go quiet</p>
-        </Link>
+        <Button variant="ghost" size="icon" aria-label="Copy account ID" onClick={async () => { try { await navigator.clipboard.writeText(id); toast.success("Account ID copied"); } catch { toast.error("Copy failed"); } }}><Copy size={16} /></Button>
+        <Button asChild variant="ghost" size="icon" aria-label="Choose wallet"><Link to="/wallet"><ChevronDown /></Link></Button>
       </div>
-
+      <div className="mb-6 grid grid-cols-3 gap-2">
+        <Button asChild className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
+        <Button asChild className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
+        <Button asChild className="h-12 rounded-lg"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
+      </div>
+      <div className="mb-2 flex items-center justify-between">
+        <Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens <span className="tnum text-muted-foreground">{tokenCount.data ?? "—"}</span></Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
+      </div>
+      <Link to="/vault" search={{ section: "holdings" }} className="home-asset border-b border-border py-5">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"><Coins size={23} /></span>
+        <span className="min-w-0 flex-1 font-semibold">HBAR worth</span>
+        <span className="text-right text-xl font-semibold tnum">{acct.data && rate.data ? usd(acct.data.tinybar / 1e8 * rate.data) : "—"}</span>
+      </Link>
+      {acct.isError && <p className="py-4 text-xs text-destructive">{(acct.error as Error).message}</p>}
+      <Link to="/vault" search={{ section: "hbar" }} className="home-asset pt-6">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center text-primary"><HbarLogo size={32} /></span>
+        <span className="min-w-0 flex-1"><span className="block font-semibold">HBAR</span><span className="block text-xs text-muted-foreground">Hedera</span></span>
+        <span className="text-right"><span className="block text-lg font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span><span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span></span>
+        <ChevronRight size={14} className="text-muted-foreground" />
+      </Link>
+      <HomeAssets accountId={id} />
+      <div className="mt-4 border-t border-border">
+        <Link to="/stake" className="flex items-center gap-3 py-3 text-sm"><Network size={16} className="text-primary" /><span className="flex-1">{acct.data?.stakedNode != null ? `Staked to node ${acct.data.stakedNode}` : "Choose a staking node"}</span><ChevronRight size={15} className="text-muted-foreground" /></Link>
+        <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
+      </div>
+      <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
       <button onClick={signOut} className="btn-ghost mt-9 w-full text-muted-foreground">
         Sign out
       </button>

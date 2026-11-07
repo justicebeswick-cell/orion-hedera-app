@@ -4,7 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard } from "lucide-react";
+import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined } from "lucide-react";
+import { HbarMarket } from "@/components/hbar-market";
+import { HbarEtf } from "@/components/hbar-etf";
 import { BuyHbar } from "@/components/buy-hbar";
 import { VaultDeck } from "@/components/vault-deck";
 import { RecipientField, ContactsPanel } from "@/components/contacts";
@@ -21,6 +23,7 @@ import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
 
 export const Route = createFileRoute("/vault")({
+  validateSearch: (search: Record<string, unknown>): { section?: string } => ({ section: typeof search.section === "string" ? search.section : undefined }),
   head: () => ({
     meta: [
       { title: "Vault — HashBase" },
@@ -35,19 +38,21 @@ export const Route = createFileRoute("/vault")({
 });
 
 function Vault() {
+  const { section } = Route.useSearch();
   const { id, ready, bind } = useAccount();
   const [copied, setCopied] = useState(false);
-  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => getAccount(id!), enabled: !!id, retry: false });
+  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
   if (!ready) return <Shell title="Vault"><div /></Shell>;
   if (!id) return <Shell title="Vault"><BindAccount onBind={bind} /><Link to="/wallet" className="btn mt-3 w-full">Create or connect a wallet</Link></Shell>;
 
   return (
     <Shell title="Vault">
-      <VaultDeck pages={[
+      <VaultDeck activeKey={section} pages={[
         { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="holdings" /> },
+        { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
         { key: "hbar", label: "HBAR", icon: Coins, content: <Panel><Label>HBAR balance</Label><p className="flex flex-wrap items-center gap-3 text-4xl font-semibold tnum">{acct.data ? hbar(acct.data.tinybar) : "—"}<HbarLogo size={36} /></p><p className="mt-4 font-mono text-sm text-muted-foreground">{id}</p><p className="mt-6 text-sm text-muted-foreground">Held in your Hedera account. Only you can sign a transfer.</p></Panel> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },

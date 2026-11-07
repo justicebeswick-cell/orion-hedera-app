@@ -25,6 +25,10 @@
 - Swaps route through SaucerSwap V1 via WHBAR; the token list comes from SaucerSwap's public pools API and quotes from mirror-node contract calls, so no server is needed. The service fee is a separate HBAR transfer sent after the swap succeeds, so the treasury never has to hold or add tokens.
 - Swap preflight distinguishes mirror failures from missing associations, checks input balance, and requotes after prerequisite signatures while preserving the reviewed minimum output; this avoids stale execution without weakening price protection.
 - Studio mode panels stay mounted while hidden to preserve drafts and active image generation during smooth tab navigation.
+- Home asset/action links select Vault sections through validated search state; the deck keeps sections mounted to retain drafts and swipes.
+- Unlock glass renders only a non-sensitive wallet silhouette, never the underlying routed pages, so transparency does not expose keys or interactive wallet controls.
+- New device codes carry their length inside encrypted-wallet metadata; code rotation preserves the active account and saved blob and removes the stale biometric seal.
+- Studio image results use the existing image stream and device-local image store with thread IDs; Chat can attach a generated image for discussion without changing model endpoints.
 - AI Studio: chat streams from /api/studio (server fetches mirror data itself; draft_send only prepares a send, the user signs in-app) and images from /api/generate-image; chats, images and contacts live in localStorage so wallet data stays on the device.
 - Hedera/WalletConnect SDKs are stubbed out of the server bundle in vite.config.ts; they crash the Worker at startup, so never use them server-side.
 - Exchange prices use a shared read-only feed module behind /api/hbar-rates with no-store responses; manual and automatic refresh share one query, and unavailable markets never borrow another provider's rate.

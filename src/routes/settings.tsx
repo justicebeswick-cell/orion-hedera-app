@@ -4,7 +4,8 @@ import { Shell, Panel, Label } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAccount } from "@/lib/account";
-import { readKeystoreMeta, unlockKeystore, type StoredKey } from "@/lib/keystore";
+import { readKeystoreMeta, unlockKeystore, changeDeviceCode, type StoredKey } from "@/lib/keystore";
+import { DeviceCode } from "@/components/device-code";
 import { bioEnrolled, bioRemove } from "@/lib/biometric";
 import { getLimits, setLimits, DEFAULT_LIMITS, audit } from "@/lib/guard";
 import { roundOn, setRound as saveRound } from "@/lib/display";
@@ -66,6 +67,7 @@ function Settings() {
         <SecurityCheck id={id} />
 
         {meta && <RevealKey />}
+        {meta && <ChangeCode onChanged={() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); }} />}
 
         <Panel>
           <Label>Security</Label>
@@ -129,6 +131,34 @@ function Settings() {
       </div>
     </Shell>
   );
+}
+
+function ChangeCode({ onChanged }: { onChanged: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  return <Panel><Label>Device code</Label>
+    <p className="text-xs text-muted-foreground">Change the code for this wallet only. Other saved wallets keep their existing passwords.</p>
+    {!open ? <Button variant="outline" className="mt-3" onClick={() => setOpen(true)}>Set or change code</Button> : <>
+      <input className="field mt-3" type="password" aria-label="Current device password" placeholder="Current code or passphrase" value={current} onChange={(e) => setCurrent(e.target.value)} />
+      <DeviceCode busy={busy || !current} cta="Change code" onSubmit={async (code, biometric) => {
+        setBusy(true); setError(""); setDone(false);
+        try {
+          await changeDeviceCode(current, code);
+          setCurrent(""); setOpen(false); setDone(true); onChanged();
+          if (biometric) {
+            try { await (await import("@/lib/biometric")).bioEnroll(code); onChanged(); }
+            catch (e) { setError(`Code changed. Biometrics were not enabled: ${(e as Error).message}`); }
+          }
+        } catch (e) { setError((e as Error).message); }
+        finally { setBusy(false); }
+      }} />
+    </>}
+    {done && <p role="status" className="mt-2 text-sm text-success">Device code changed.</p>}
+    {error && <p role="alert" className="mt-2 text-xs text-destructive">{error}</p>}
+  </Panel>;
 }
 
 function RevealKey() {

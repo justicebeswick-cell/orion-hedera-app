@@ -8,7 +8,8 @@ import {
   generateWallet, importWallet, saveKeystore, readKeystoreMeta, setKeystoreAccount,
   findAccountByKey, findAccountByEvm, clearKeystore, type StoredKey,
 } from "@/lib/keystore";
-import { checkPassphrase, pickCheckPositions } from "@/lib/passphrase";
+import { pickCheckPositions } from "@/lib/passphrase";
+import { DeviceCode } from "@/components/device-code";
 
 export const Route = createFileRoute("/wallet")({
   head: () => ({
@@ -70,33 +71,16 @@ function Wallet() {
 }
 
 function Passphrase({ onSubmit, busy, cta }: { onSubmit: (p: string) => void; busy: boolean; cta: string }) {
-  const [a, setA] = useState("");
-  const [b, setB] = useState("");
-  const s = checkPassphrase(a);
-  const ok = s.ok && a === b;
-  const bar = ["bg-destructive", "bg-destructive", "bg-amber-500", "bg-primary", "bg-success"][s.score];
-  return (
-    <>
-      <Label><span className="mt-5 block">Device passphrase</span></Label>
-      <input type="password" className="field" placeholder="Any password, or a 6, 8 or 10 digit code" value={a} onChange={(e) => setA(e.target.value)} />
-      {a && (
-        <div className="mt-2" aria-live="polite">
-          <div className="flex gap-1">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= Math.max(1, s.score) ? bar : "bg-muted"}`} />
-            ))}
-          </div>
-          <p className={`mt-1 text-xs ${s.ok ? "text-muted-foreground" : "text-destructive"}`}>
-            {s.label}{s.reason ? ` — ${s.reason}` : s.pin ? " number code" : ""}
-          </p>
-        </div>
-      )}
-      <input type="password" inputMode={s.pin ? "numeric" : undefined} className="field mt-2" placeholder="Repeat" value={b} onChange={(e) => setB(e.target.value)} />
-      {b && a !== b && <p className="mt-1 text-xs text-destructive">Doesn't match.</p>}
-      <p className="mt-2 text-xs text-muted-foreground">Unlocks the key on this device. Encrypted with AES-GCM and Argon2id. Longer is safer.</p>
-      <button className="btn mt-4 w-full" disabled={!ok || busy} onClick={() => onSubmit(a)}>{busy ? "Encrypting…" : cta}</button>
-    </>
-  );
+  const [err, setErr] = useState("");
+  return <><DeviceCode busy={busy} cta={cta} onSubmit={async (code, biometric) => {
+    setErr("");
+    // Setup happens before saving so a cancelled biometric dialog never strands a key.
+    if (biometric) {
+      try { await (await import("@/lib/biometric")).bioEnroll(code); }
+      catch (e) { setErr((e as Error).message); return; }
+    } else (await import("@/lib/biometric")).bioRemove();
+    onSubmit(code);
+  }} />{err && <p role="alert" className="mt-2 text-xs text-destructive">{err}</p>}</>;
 }
 
 function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
@@ -129,7 +113,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
       {wrote && (
         <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
           setBusy(true);
-          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const };
+          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const, codeLength: p.length as 4 | 6 | 8 };
           await saveKeystore(w.privHex, p, meta);
           onPending(meta);
         }} />
@@ -143,7 +127,7 @@ function BackupCheck({ words, onPass }: { words: string[]; onPass: () => void })
   const [vals, setVals] = useState<string[]>(["", "", ""]);
   const [err, setErr] = useState(false);
   const check = () => {
-    const good = pos.every((p, i) => vals[i]!.trim().toLowerCase() === words[p]);
+    const good = pos.every((p, i) => vals[i]?.trim().toLowerCase() === words[p]);
     if (good) onPass(); else setErr(true);
   };
   return (
@@ -233,7 +217,7 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
           <p className="text-xs text-success">Found on mainnet.</p>
           <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
             setBusy(true);
-            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind });
+            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind, codeLength: p.length as 4 | 6 | 8 });
             onDone(found.id);
           }} />
         </>

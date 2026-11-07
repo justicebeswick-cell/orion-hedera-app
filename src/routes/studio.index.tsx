@@ -1,12 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Download, Bot, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
-import { Shell, Panel, Label, AurionLogo } from "@/components/aurion";
+import { useEffect, useState } from "react";
+import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Bot, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
+import { Shell, Label, AurionLogo } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
-import { clearStudio, deleteThread, readImages, readThreads, saveImage, type SavedImage, type Thread } from "@/lib/studio-threads";
-import { streamImage } from "@/lib/stream-image";
+import { clearStudio, deleteThread, readThreads, type Thread } from "@/lib/studio-threads";
 import { AgentsStudio } from "@/components/studio-agents";
-import { GenerationCanvas, saveToPhone } from "@/components/generation-canvas";
 
 export const Route = createFileRoute("/studio/")({
   head: () => ({
@@ -27,11 +25,12 @@ const starters = [
   "Send 5 HBAR to one of my contacts",
   "Write Pact terms for a logo design job",
   "Explain my staking rewards simply",
+  "Create an image of a futuristic Hedera city",
 ];
 
 function Studio() {
   const nav = useNavigate();
-  const [tab, setTab] = useState<"chat" | "images" | "agents">("chat");
+  const [tab, setTab] = useState<"chat" | "agents">("chat");
   const [threads, setThreads] = useState<Thread[]>([]);
   const [prompt, setPrompt] = useState("");
   useEffect(() => setThreads(readThreads()), []);
@@ -46,9 +45,8 @@ function Studio() {
           <h1 className="text-3xl font-light">AI Studio</h1>
         </div>
       </div>
-      <div className="studio-tabs mb-6 grid grid-cols-3 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
+      <div className="studio-tabs mb-6 grid grid-cols-2 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
         <Button role="tab" aria-selected={tab === "chat"} variant={tab === "chat" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("chat")}><MessagesSquare /> Chat</Button>
-        <Button role="tab" aria-selected={tab === "images"} variant={tab === "images" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("images")}><ImageIcon /> Images</Button>
         <Button role="tab" aria-selected={tab === "agents"} variant={tab === "agents" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("agents")}><Bot /> Agents</Button>
       </div>
 
@@ -84,7 +82,6 @@ function Studio() {
             )}
           </section>
       </div>
-      <div hidden={tab !== "images"} role="tabpanel" aria-label="Images" className="studio-view"><ImageStudio /></div>
       <div hidden={tab !== "agents"} role="tabpanel" aria-label="Agents" className="studio-view"><AgentsStudio /></div>
 
       <Button variant="ghost" size="sm" className="mx-auto mt-8 flex text-muted-foreground hover:text-destructive" onClick={() => {
@@ -92,61 +89,5 @@ function Studio() {
       }}><Trash2 /> Clear all Studio data</Button>
       <p className="mt-3 text-center text-xs text-muted-foreground">AI-powered. Chats and images are saved on this device only. Not financial advice.</p>
     </Shell>
-  );
-}
-
-function ImageStudio() {
-  const [prompt, setPrompt] = useState("");
-  const [img, setImg] = useState<string | null>(null);
-  const [final, setFinal] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-  const [saved, setSaved] = useState<SavedImage[]>([]);
-  const abort = useRef<AbortController | null>(null);
-  useEffect(() => setSaved(readImages()), []);
-
-  const go = async () => {
-    const p = prompt.trim();
-    if (!p || busy) return;
-    setBusy(true); setErr(""); setImg(null); setFinal(false);
-    abort.current = new AbortController();
-    let last = "";
-    try {
-      await streamImage("/api/generate-image", { prompt: p }, (url, isFinal) => { last = url; setImg(url); setFinal(isFinal); }, abort.current.signal);
-      if (last) { saveImage({ id: crypto.randomUUID(), prompt: p, url: last, at: Date.now() }); setSaved(readImages()); }
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") {
-        const m = (e as Error).message;
-        setErr(m.includes(" 402") ? "AI credits are used up." : m.includes(" 429") ? "Too many requests. Try again shortly." : "Could not make that image. Try a different description.");
-      }
-    } finally { setBusy(false); }
-  };
-
-  return (
-    <>
-      <Panel>
-        <Label>Create an image</Label>
-        <textarea aria-label="Image description" className="field min-h-36 resize-none text-sm" maxLength={2000} placeholder="Describe your image…" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-        {busy
-          ? <Button variant="outline" className="mt-3 w-full" onClick={() => abort.current?.abort()}>Stop</Button>
-          : <Button className="mt-3 w-full" disabled={!prompt.trim()} onClick={go}><ImageIcon /> Create</Button>}
-        {(busy || img) && <GenerationCanvas src={img} final={final} busy={busy} alt={prompt} />}
-        {img && final && !busy && <Button variant="outline" className="mt-3 w-full" onClick={() => saveToPhone(img, prompt)}><Download /> Save to phone</Button>}
-        {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
-      </Panel>
-      {saved.length > 0 && (
-        <Panel className="mt-4">
-          <Label>Your images</Label>
-          <div className="grid grid-cols-3 gap-2">
-            {saved.map((s) => (
-              <button key={s.id} type="button" onClick={() => saveToPhone(s.url, s.prompt)} className="relative block overflow-hidden rounded-lg" title={`Save: ${s.prompt}`} aria-label={`Save image: ${s.prompt}`}>
-                <img src={s.url} alt={s.prompt} className="aspect-square w-full object-cover" />
-                <span className="absolute bottom-1 right-1 rounded-full bg-background/80 p-1"><Download className="size-3" /></span>
-              </button>
-            ))}
-          </div>
-        </Panel>
-      )}
-    </>
   );
 }
