@@ -113,3 +113,8 @@
 - [x] Rebrand AURION → HashKey with purple hash-sphere logo + app icon
 
 - [x] Lock when app closes — Face ID or passphrase gate on reopen; minimizing stays unlocked; Settings toggle; five automated checks pass
+
+## Orion @ logo
+- [x] Reshape logo like @ symbol, keep exact purple
+- [x] Add neon glow, update CDN asset, icons, favicon
+- [x] Shift neon logo to deeper purple, rebuild asset and icons
