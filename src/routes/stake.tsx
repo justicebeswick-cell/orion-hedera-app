@@ -73,12 +73,13 @@ function Stake() {
         {info.isError ? (
           <p className="text-sm text-destructive">{(info.error as Error).message}</p>
         ) : info.data?.stakedNodeId != null ? (
-          <>
-            <p className="flex items-center gap-4 text-2xl font-semibold"><NodeLogo description={current?.description} size={64} /><span className="min-w-0 break-words">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</span></p>
+          <div className="flex flex-col items-center gap-2 text-center">
+            <NodeLogo description={current?.description} size={64} />
+            <p className="text-2xl font-semibold break-words">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
             <p className="text-xs text-muted-foreground tnum">
               Node {info.data.stakedNodeId}{current && ` · ~${apr(current)} yearly`}
             </p>
-          </>
+          </div>
         ) : info.data?.stakedAccountId ? (
           <p className="text-lg">Account {info.data.stakedAccountId}</p>
         ) : (
