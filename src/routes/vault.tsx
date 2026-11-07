@@ -51,14 +51,13 @@ function Vault() {
         { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
-        { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="holdings" /> },
+        { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} /> },
         { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },
         { key: "contacts", label: "Contacts", icon: BookUser, content: <ContactsPanel /> },
-        { key: "history", label: "Swap history", icon: History, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} view="history" /> },
         { key: "limits", label: "Limits", icon: ShieldCheck, content: <LimitsPanel /> },
-        { key: "activity", label: "Activity", icon: History, content: <AuditPanel /> },
+        { key: "events", label: "Events", icon: History, content: <EventsPanel /> },
         { key: "cross-chain", label: "Cross-chain", icon: Globe, content: <ClprCard /> },
       ]} />
     </Shell>
@@ -84,7 +83,7 @@ async function tokenMeta(tid: string) {
 
 const usd = (n: number) => fmtUsd(n);
 
-function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; view: "holdings" | "history" }) {
+function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
   const held = useQuery({
@@ -102,26 +101,15 @@ function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; 
     },
   });
   const [sending, setSending] = useState<string | null>(null);
-  const [audits, setAudits] = useState<AuditEntry[]>([]);
-  const [legacy, setLegacy] = useState<{ amount: number; expiry: string; heir: string } | null>(null);
-  useEffect(() => {
-    const load = () => { setAudits(readAudit()); try { setLegacy(JSON.parse(localStorage.getItem("aurion.legacy") ?? "null")); } catch { /* none */ } };
-    load(); const t = setInterval(load, 3000); return () => clearInterval(t);
-  }, []);
 
   const rows = held.data ?? [];
   const hb = tinybar != null ? tinybar / 1e8 : null;
   const tokHbar = rows.reduce((s, r) => s + (r.inHbar ?? 0), 0);
   const totalHbar = hb != null ? hb + tokHbar : null;
   const px = rate.data;
-  const swaps = audits.filter((a) => a.action === "swap");
-  const fees = audits.filter((a) => a.action === "swap fee" && a.ok);
-  const feesPaid = fees.reduce((s, a) => s + (parseFloat(a.detail) || 0), 0);
-  const days = legacy ? Math.max(0, Math.ceil((new Date(legacy.expiry).getTime() - Date.now()) / 86_400_000)) : 0;
 
   return (
-    <>
-      {view === "holdings" && <Panel>
+    <Panel>
         <Label>Total wallet value</Label>
         <p className="text-4xl font-semibold tnum">{totalHbar != null && px ? usd(totalHbar * px) : "—"}</p>
         <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground tnum"><span>≈ {totalHbar != null ? fmtAmount(totalHbar, { maximumFractionDigits: 2 }) : "—"}</span><HbarLogo size={14} /></p>
@@ -158,24 +146,7 @@ function Dashboard({ id, tinybar, view }: { id: string; tinybar: number | null; 
         </ul>
         {held.isError && <p className="text-xs text-destructive">Mirror node: could not load tokens.</p>}
         {!held.isLoading && rows.length === 0 && <p className="text-xs text-muted-foreground">No tokens yet. Anything you swap into shows up here.</p>}
-      </Panel>}
-
-        {view === "history" && <Panel>
-          <Label>Swap history</Label>
-          {swaps.length === 0 ? <p className="text-sm text-muted-foreground">No swaps yet.</p> : (
-            <ul className="divide-y divide-border text-xs">
-              {swaps.slice(0, 8).map((s, i) => (
-                <li key={i} className="py-2">
-                  <p className="flex justify-between gap-2"><span className={s.ok ? "text-success" : "text-destructive"}>{s.ok ? "Swapped" : "Failed"}</span><span className="text-muted-foreground tnum">{new Date(s.at).toLocaleDateString()}</span></p>
-                  <p className="break-all text-muted-foreground">{s.detail}</p>
-                  {s.txId && <a className="text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${s.txId}`}>View on HashScan</a>}
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {fmtAmount(feesPaid, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>
-        </Panel>}
-    </>
+    </Panel>
   );
 }
 
@@ -601,23 +572,28 @@ function LimitsPanel() {
   );
 }
 
-function AuditPanel() {
+function EventsPanel() {
   const [rows, setRows] = useState<AuditEntry[]>([]);
   useEffect(() => { setRows(readAudit()); const t = setInterval(() => setRows(readAudit()), 3000); return () => clearInterval(t); }, []);
+  const fees = rows.filter((r) => r.action === "swap fee" && r.ok);
+  const feesPaid = fees.reduce((s, r) => s + (parseFloat(r.detail) || 0), 0);
+  const title = (a: string) => a.charAt(0).toUpperCase() + a.slice(1);
   return (
     <Panel className="mt-4">
-      <Label>Audit log · this device</Label>
+      <Label>Events</Label>
+      <p className="mb-2 text-xs text-muted-foreground">Everything this device has signed or attempted, newest first.</p>
       {rows.length === 0 ? <p className="text-sm text-muted-foreground">Nothing yet.</p> : (
         <ul className="divide-y divide-border text-xs">
           {rows.slice(0, 30).map((r, i) => (
             <li key={i} className="py-2">
-              <p className="flex justify-between"><span className={r.ok ? "text-success" : "text-destructive"}>{r.action}</span><span className="text-muted-foreground tnum">{new Date(r.at).toLocaleString()}</span></p>
+              <p className="flex justify-between gap-2"><span className={r.ok ? "text-success" : "text-destructive"}>{title(r.action)}</span><span className="text-muted-foreground tnum">{new Date(r.at).toLocaleString()}</span></p>
               <p className="break-all text-muted-foreground">{r.detail}</p>
               {r.txId && <a className="break-all text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${r.txId}`}>{r.txId}</a>}
             </li>
           ))}
         </ul>
       )}
+      {fees.length > 0 && <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {fmtAmount(feesPaid, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>}
     </Panel>
   );
 }
