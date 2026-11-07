@@ -87,6 +87,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
   const [w, setW] = useState<Awaited<ReturnType<typeof generateWallet>> | null>(null);
   const [wrote, setWrote] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [saveErr, setSaveErr] = useState("");
 
   if (!w)
     return (
@@ -99,25 +100,35 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
       </Panel>
     );
 
+  const words = w.phrase.trim().split(/\s+/);
+
   return (
     <Panel>
       <Label>Recovery phrase</Label>
       <ol className="grid grid-cols-3 gap-2 font-mono text-xs">
-        {w.phrase.split(" ").map((word, i) => (
-          <li key={i} className="rounded-md bg-graphite px-2 py-1.5"><span className="text-muted-foreground">{i + 1}.</span> {word}</li>
+        {words.map((word, i) => (
+          <li key={i} className="flex h-9 min-w-0 items-center gap-1.5 rounded-md bg-graphite px-2">
+            <span className="w-5 shrink-0 text-right tabular-nums text-muted-foreground">{i + 1}.</span>
+            <span className="truncate">{word}</span>
+          </li>
         ))}
       </ol>
       <p className="mt-3 text-xs text-destructive">Write it down. Orion cannot restore it. Anyone with it can move your HBAR.</p>
-      {!wrote && <BackupCheck words={w.phrase.split(" ")} onPass={() => setWrote(true)} />}
+      {!wrote && <BackupCheck words={words} onPass={() => setWrote(true)} />}
       {wrote && <p className="mt-4 text-sm text-success">Backup checked.</p>}
       {wrote && (
         <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
-          setBusy(true);
-          const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const, codeLength: p.length as 4 | 6 | 8 };
-          await saveKeystore(w.privHex, p, meta);
-          onPending(meta);
+          setBusy(true); setSaveErr("");
+          try {
+            const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const, codeLength: p.length as 4 | 6 | 8 };
+            await saveKeystore(w.privHex, p, meta);
+            onPending(meta);
+          } catch (e) {
+            setSaveErr(`Key not saved: ${(e as Error).message}`);
+          } finally { setBusy(false); }
         }} />
       )}
+      {saveErr && <p role="alert" className="mt-2 text-xs text-destructive">{saveErr}</p>}
     </Panel>
   );
 }
@@ -127,7 +138,8 @@ function BackupCheck({ words, onPass }: { words: string[]; onPass: () => void })
   const [vals, setVals] = useState<string[]>(["", "", ""]);
   const [err, setErr] = useState(false);
   const check = () => {
-    const good = pos.every((p, i) => vals[i]?.trim().toLowerCase() === words[p]);
+    const norm = (s: string) => (s ?? "").normalize("NFKD").toLowerCase().replace(/[^a-z]/g, "");
+    const good = pos.every((p, i) => norm(vals[i]!) === norm(words[p]!));
     if (good) onPass(); else setErr(true);
   };
   return (
