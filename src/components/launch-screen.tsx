@@ -14,7 +14,7 @@ export function LaunchScreen() {
   return (
     <div className={`launch-screen ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening Orion">
       <div className="launch-brand">
-        <AurionLogo className="launch-logo" />
+        <AurionLogo className="launch-logo" sizes="(max-width: 420px) 120px, 148px" />
         <div className="launch-wordmark">
           <p className="launch-name">Orion</p>
           <p className="mt-3 text-xs text-muted-foreground">A Hashgraph Wallet</p>

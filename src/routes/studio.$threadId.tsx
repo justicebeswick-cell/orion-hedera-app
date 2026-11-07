@@ -133,7 +133,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
       <Conversation className="flex-1">
         <ConversationContent>
           {messages.length === 0 && images.length === 0 && !imageBusy && (
-            <ConversationEmptyState icon={<AurionLogo className="h-20 w-20" />} title="What’s on your mind?" description={account ? "Your wallet. Your ideas." : "A little inspiration starts here."} />
+            <ConversationEmptyState icon={<AurionLogo className="h-20 w-20" sizes="80px" />} title="What’s on your mind?" description={account ? "Your wallet. Your ideas." : "A little inspiration starts here."} />
           )}
           {messages.map((m) => (
             <Message key={m.id} from={m.role} className="studio-message">

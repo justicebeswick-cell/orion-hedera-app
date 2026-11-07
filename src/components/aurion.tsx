@@ -3,12 +3,21 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import aurionLogo from "@/assets/orion-logo-clear.png";
+import logo96 from "@/assets/orion-logo/orion-logo-96.webp";
+import logo144 from "@/assets/orion-logo/orion-logo-144.webp";
+import logo192 from "@/assets/orion-logo/orion-logo-192.webp";
+import logo288 from "@/assets/orion-logo/orion-logo-288.webp";
+import logo384 from "@/assets/orion-logo/orion-logo-384.webp";
+import logo576 from "@/assets/orion-logo/orion-logo-576.webp";
+import logo768 from "@/assets/orion-logo/orion-logo-768.webp";
 import { Button } from "@/components/ui/button";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
-export function AurionLogo({ className = "" }: { className?: string }) {
-  return <img src={aurionLogo} alt="Orion logo" width={1920} height={1920} fetchPriority="high" className={`shrink-0 object-contain ${className}`} />;
+// Pre-sized copies keep the fine texture crisp; the browser picks the one matching display size × screen density.
+const logoSrcSet = `${logo96} 96w, ${logo144} 144w, ${logo192} 192w, ${logo288} 288w, ${logo384} 384w, ${logo576} 576w, ${logo768} 768w`;
+
+export function AurionLogo({ className = "", sizes = "48px" }: { className?: string; sizes?: string }) {
+  return <img sizes={sizes} srcSet={logoSrcSet} src={logo384} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className={`shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [

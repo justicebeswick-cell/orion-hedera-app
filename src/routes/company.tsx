@@ -12,7 +12,7 @@ export const Route = createFileRoute("/company")({
 function Company() {
   return <PublicSite>
     <section className="relative border-b pb-12">
-      <AurionLogo className="mb-6 h-28 w-28" />
+      <AurionLogo className="mb-6 h-28 w-28" sizes="112px" />
       <h1 className="font-display text-6xl sm:text-7xl">Orion</h1>
       <p className="mt-5 max-w-xl text-xl leading-8 text-muted-foreground">A self-custody wallet for Hedera mainnet.</p>
       <p className="mt-4 max-w-xl leading-7 text-muted-foreground">Hold HBAR and tokens. Send, swap and stake with transactions you approve.</p>
