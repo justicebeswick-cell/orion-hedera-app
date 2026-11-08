@@ -148,23 +148,23 @@ function Home() {
         </DialogContent>
       </Dialog>
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-7 flex min-h-[10rem] flex-col justify-center overflow-hidden rounded-[var(--card-radius)] border border-primary/25 px-6 py-6 transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 28%, transparent), transparent 70%), var(--card)" }}>
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-7 overflow-hidden rounded-[var(--card-radius)] border border-primary/25 px-5 py-3 transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 28%, transparent), transparent 70%), var(--card)" }}>
           <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
           <span aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-32 w-48 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl transition-opacity duration-500 group-hover:opacity-80" />
           <span className="relative block">
             <span className="flex items-center justify-center gap-2 text-[9px] font-medium uppercase tracking-[0.32em] text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-success shadow-[0_0_8px_currentColor] text-success" />Total balance</span>
-            <span className="mt-6 flex items-end justify-between gap-5">
+            <span className="mt-3 flex items-end justify-between gap-5">
               <span className="min-w-0 flex-1 text-left">
                 <span className={`block truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light leading-none tracking-tight text-transparent tnum ${usdSize}`}>
                   {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.6em] font-extralight">{parts.frac}</span> : null}</> : "—"}
                 </span>
-                <span className="mt-2.5 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">US dollars</span>
+                <span className="mt-1.5 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">US dollars</span>
               </span>
               <span className="min-w-0 flex-1 text-right">
                 <span className={`flex items-center justify-end gap-2 font-medium leading-none tnum text-foreground/90 ${hbarSize}`}>
                   <HbarLogo size={16} /><span className="truncate">{hbarText}</span>
                 </span>
-                <span className="mt-2.5 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">HBAR + tokens</span>
+                <span className="mt-1.5 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">HBAR + tokens</span>
               </span>
             </span>
           </span>

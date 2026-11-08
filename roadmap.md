@@ -181,3 +181,4 @@
 - [x] Make the "Total balance" label text smaller and the card itself smaller
 - [x] Verify phone layout and build
 - [x] Make the wallet name / copy card on Home smaller too
+- [x] Compact balance card: "Total balance" at the very top, balances raised into one upper row, card height cut to just around the figures
