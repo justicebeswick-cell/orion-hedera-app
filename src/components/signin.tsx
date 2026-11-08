@@ -19,7 +19,7 @@ export function SignBackIn({ onIn }: { onIn: (id: string) => void }) {
     if (!sel) return;
     setBusy(true); setErr("");
     try {
-      activateSavedAccount(sel.id);
+      if (!activateSavedAccount(sel.id)) throw new Error("This wallet's saved key is unavailable. Import its recovery phrase to sign in.");
       const p = useBio ? await (await import("@/lib/biometric")).bioPassphrase() : pass;
       await unlockKeystore(p);
       onIn(sel.id);

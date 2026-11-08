@@ -1,5 +1,10 @@
 # Roadmap
 
+## Fingerprint unlock repair
+- [x] Bind fingerprint codes to the encrypted wallet and verify old seals before use
+- [x] Save new/imported keys before fingerprint setup; 19 checks and simulated phone unlock/recovery passed without deleting keys
+- [ ] Verify fingerprint on the owner's phone — requires their physical biometric approval
+
 ## New account funding
 - [x] Allow immediate HBAR sends and QR scans to a new wallet's EVM alias while preserving limits and recipient checks
 - [x] Verify sender entry, backup/save flow and simulated new-account discovery on a phone viewport; 27 funding/NFT checks passed

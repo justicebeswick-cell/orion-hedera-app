@@ -70,16 +70,23 @@ function Wallet() {
   );
 }
 
-function Passphrase({ onSubmit, busy, cta }: { onSubmit: (p: string) => void; busy: boolean; cta: string }) {
+function Passphrase({ onSubmit, busy, cta }: { onSubmit: (p: string) => Promise<() => void>; busy: boolean; cta: string }) {
   const [err, setErr] = useState("");
-  return <><DeviceCode busy={busy} cta={cta} onSubmit={async (code, biometric) => {
+  const [saving, setSaving] = useState(false);
+  return <><DeviceCode busy={busy || saving} cta={cta} onSubmit={async (code, biometric) => {
+    if (saving || busy) return;
+    setSaving(true);
     setErr("");
-    // Setup happens before saving so a cancelled biometric dialog never strands a key.
-    if (biometric) {
-      try { await (await import("@/lib/biometric")).bioEnroll(code); }
-      catch (e) { setErr((e as Error).message); return; }
-    } else (await import("@/lib/biometric")).bioRemove();
-    onSubmit(code);
+    try {
+      const done = await onSubmit(code);
+      const b = await import("@/lib/biometric");
+      if (biometric) {
+        try { await b.bioEnroll(code); }
+        catch (e) { setErr(`Key saved. Use your code, or retry fingerprint setup: ${(e as Error).message}`); return; }
+      } else b.bioRemove();
+      done();
+    } catch (e) { setErr(`Key not saved: ${(e as Error).message}`); }
+    finally { setSaving(false); }
   }} />{err && <p role="alert" className="mt-2 text-xs text-destructive">{err}</p>}</>;
 }
 
@@ -122,9 +129,10 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
           try {
             const meta = { publicKey: w.publicKey, evm: w.evm, accountId: null, kind: "ecdsa" as const, codeLength: p.length as 4 | 6 | 8 };
             await saveKeystore(w.privHex, p, meta);
-            onPending(meta);
+            return () => onPending(meta);
           } catch (e) {
             setSaveErr(`Key not saved: ${(e as Error).message}`);
+            throw e;
           } finally { setBusy(false); }
         }} />
       )}
@@ -228,8 +236,10 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
           <p className="text-xs text-success">Found on mainnet.</p>
           <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
             setBusy(true);
-            await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind, codeLength: p.length as 4 | 6 | 8 });
-            onDone(found.id);
+            try {
+              await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind, codeLength: p.length as 4 | 6 | 8 });
+              return () => onDone(found.id);
+            } finally { setBusy(false); }
           }} />
         </>
       )}

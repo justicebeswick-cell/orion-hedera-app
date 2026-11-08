@@ -2,14 +2,32 @@
 // The authenticator derives a secret that only exists after a biometric check.
 // That secret encrypts the device passphrase. Nothing leaves this device.
 
+import { unlockKeystore } from "./keystore";
+
 const BIO = "aurion.bio";
-type Stored = { credId: string; salt: string; iv: string; ct: string };
+type Stored = { credId: string; salt: string; iv: string; ct: string; walletBinding?: string };
+const RESET = "Fingerprint is linked to an old code or another wallet. Enter this wallet's code, then enable biometrics again in Settings → Security.";
+
+// Salt and IV identify the encrypted key, including code rotations, without storing keys.
+function walletBinding(): string | null {
+  try {
+    const key = JSON.parse(localStorage.getItem("aurion.keystore") ?? "null");
+    return key?.salt && key?.iv ? `${key.salt}:${key.iv}` : null;
+  } catch { return null; }
+}
+
+function storedSeal(): Stored | null {
+  try { return JSON.parse(localStorage.getItem(BIO) ?? "null"); } catch { return null; }
+}
 
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)) as Uint8Array<ArrayBuffer>;
 
 export function bioEnrolled(): boolean {
-  return typeof localStorage !== "undefined" && !!localStorage.getItem(BIO);
+  if (typeof localStorage === "undefined") return false;
+  const seal = storedSeal();
+  const binding = walletBinding();
+  return !!seal && !!binding && (!seal.walletBinding || seal.walletBinding === binding);
 }
 export function bioRemove() { localStorage.removeItem(BIO); }
 
@@ -24,6 +42,10 @@ async function aesFrom(prf: ArrayBuffer) {
 
 /** Register a biometric credential and seal the passphrase with it. */
 export async function bioEnroll(passphrase: string) {
+  // Never seal an unverified code, or a code intended for a not-yet-saved wallet.
+  await unlockKeystore(passphrase);
+  const binding = walletBinding();
+  if (!binding) throw new Error("Save this wallet's key before enabling biometrics.");
   const salt = crypto.getRandomValues(new Uint8Array(32));
   const cred = (await navigator.credentials.create({
     publicKey: {
@@ -45,7 +67,8 @@ export async function bioEnroll(passphrase: string) {
   }
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await aesFrom(prf), new TextEncoder().encode(passphrase)));
-  localStorage.setItem(BIO, JSON.stringify({ credId: b64(credId), salt: b64(salt), iv: b64(iv), ct: b64(ct) } satisfies Stored));
+  if (walletBinding() !== binding) throw new Error("Wallet changed during fingerprint setup. Try again for the selected wallet.");
+  localStorage.setItem(BIO, JSON.stringify({ credId: b64(credId), salt: b64(salt), iv: b64(iv), ct: b64(ct), walletBinding: binding } satisfies Stored));
 }
 
 async function evalPrf(credId: Uint8Array, salt: Uint8Array): Promise<ArrayBuffer> {
@@ -65,11 +88,20 @@ async function evalPrf(credId: Uint8Array, salt: Uint8Array): Promise<ArrayBuffe
 
 /** Biometric check, then return the device passphrase. */
 export async function bioPassphrase(): Promise<string> {
-  const s: Stored | null = JSON.parse(localStorage.getItem(BIO) ?? "null");
+  const s = storedSeal();
   if (!s) throw new Error("Biometrics not set up on this device");
+  const binding = walletBinding();
+  if (!binding || (s.walletBinding && s.walletBinding !== binding)) throw new Error(RESET);
   const prf = await evalPrf(unb64(s.credId), unb64(s.salt));
+  let passphrase: string;
   try {
     const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(s.iv) }, await aesFrom(prf), unb64(s.ct));
-    return new TextDecoder().decode(pt);
+    passphrase = new TextDecoder().decode(pt);
   } catch { throw new Error("Biometric key did not match. Use the passphrase."); }
+  if (walletBinding() !== binding) throw new Error(RESET);
+  try { await unlockKeystore(passphrase); } catch { throw new Error(RESET); }
+  if (walletBinding() !== binding) throw new Error(RESET);
+  // Existing installations migrate only after their sealed code actually unlocks the key.
+  if (!s.walletBinding) localStorage.setItem(BIO, JSON.stringify({ ...s, walletBinding: binding }));
+  return passphrase;
 }

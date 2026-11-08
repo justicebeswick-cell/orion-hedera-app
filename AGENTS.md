@@ -18,7 +18,7 @@
 - Device keys live only in localStorage, AES-GCM encrypted with an Argon2id-derived key; never sent to the server.
 - WalletConnect signing uses @hiero-ledger/sdk classes (the version hedera-wallet-connect depends on); local-key signing uses @hashgraph/sdk. Mixing them fails type checks.
 - AI activity answers: server route /api/ask fetches mirror-node data itself (never trusts client-supplied history) and streams via the Responses API.
-- Biometric unlock uses WebAuthn PRF to encrypt the device passphrase locally (aurion.bio); the private key is still only decrypted by the passphrase, so biometrics never weaken the keystore.
+- Biometric unlock seals only a verified code after saving the key, binds the local WebAuthn PRF seal to that encrypted wallet revision, and validates legacy seals before migration; this prevents stale or another wallet's code reaching signers without weakening device-local custody.
 - App branding including LaunchScreen uses one shared AurionLogo with density-matched lossless CDN image pointers; installed icons and the small local favicon derive from the same transparent source artwork with centered safe margins and versioned filenames, avoiding compressed edges and stale caches.
 - Initial document loads show the shared LaunchScreen; client-side navigation does not remount it, avoiding repeated startup interruptions.
 - Vault uses an Embla deck with all sections mounted and inactive sections inert, preserving form state while making swipe navigation accessible.
