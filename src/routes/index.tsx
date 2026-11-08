@@ -15,7 +15,8 @@ import { ClaimRewards } from "@/components/claim-rewards";
 import { HelloGreeting } from "@/components/hello-greeting";
 import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
-import { fmtUsd } from "@/lib/display";
+import { fmtAmount, fmtUsd, fmtUsdParts } from "@/lib/display";
+import { heldTokens, totalInHbar } from "@/lib/portfolio";
 import { usePreferences } from "@/lib/preferences";
 import { useSecurityPreferences } from "@/lib/security-preferences";
 import { showTransaction } from "@/lib/event-display";
@@ -54,6 +55,7 @@ function Home() {
   const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id, refetchInterval: REFRESH_MS });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
+  const portfolio = useQuery({ queryKey: ["portfolio", id], enabled: !!id, queryFn: () => { if (!id) throw new Error("No account selected"); return heldTokens(id); }, refetchInterval: REFRESH_MS, retry: false });
   const tokenCount = useQuery({
     queryKey: ["tok-count", id],
     enabled: !!id,
@@ -102,6 +104,9 @@ function Home() {
     if (confirm("Sign out of this account on this device? Your saved key stays, so you can sign back in.")) bind(null);
   };
 
+  const total = totalInHbar(acct.data ? acct.data.tinybar / 1e8 : null, portfolio.data ?? []);
+  const parts = total !== null && rate.data ? fmtUsdParts(total * rate.data) : null;
+
   return (
     <Shell title="Home">
       {lag.data !== undefined && lag.data > 120 && (
@@ -110,6 +115,21 @@ function Home() {
         </p>
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
+
+      {prefs.showWorth && (
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-7 block overflow-hidden text-center">
+          <span aria-hidden className="bloom pointer-events-none absolute inset-0" />
+          <span className="relative block">
+            <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">Portfolio</span>
+            <span className="mt-3 block text-5xl font-semibold leading-none tnum sm:text-6xl">
+              {parts ? <>{parts.main}{parts.frac ? <span className="text-2xl font-medium text-muted-foreground sm:text-3xl">{parts.frac}</span> : null}</> : "—"}
+            </span>
+            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground tnum">
+              ≈ {total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"} ℏ · HBAR + your HTS tokens
+            </span>
+          </span>
+        </Link>
+      )}
 
       <div className="home-account mb-4 flex items-center gap-3 rounded-lg bg-secondary p-4">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
@@ -148,11 +168,6 @@ function Home() {
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}><ImageIcon size={16} />NFTs</Link></Button></div>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
       </div>
-      {prefs.showWorth && <Link to="/vault" search={{ section: "holdings" }} className="home-asset border-b border-border py-5">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"><Coins size={23} /></span>
-        <span className="min-w-0 flex-1 font-semibold">HBAR worth</span>
-        <span className="text-right text-xl font-semibold tnum">{security.hideBalance ? "••••" : acct.data && rate.data ? usd(acct.data.tinybar / 1e8 * rate.data) : "—"}</span>
-      </Link>}
       {acct.isError && <p className="py-4 text-xs text-destructive">{(acct.error as Error).message}</p>}
       <Link to="/vault" search={{ section: "holdings" }} className="home-asset pt-6">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center text-primary"><HbarLogo size={32} /></span>

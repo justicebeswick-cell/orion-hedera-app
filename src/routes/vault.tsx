@@ -19,6 +19,7 @@ import { HbarLogo } from "@/components/hbar";
 import { useAccount } from "@/lib/account";
 import { getAccount, hbar, hbarUsdLive, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { fmtAmount, fmtUsd } from "@/lib/display";
+import { heldTokens } from "@/lib/portfolio";
 import { REFRESH_MS } from "@/lib/refresh";
 import { EVM_RE, isHbarRecipient } from "@/lib/recipient";
 import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
@@ -70,57 +71,21 @@ function Vault() {
   );
 }
 
-type Held = { token_id: string; balance: number; decimals?: number };
-async function getHoldings(id: string): Promise<Held[]> {
-  const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/accounts/${id}/tokens?limit=100`);
-  if (!r.ok) throw new Error(`Mirror node returned ${r.status}`);
-  const j = await r.json();
-  return (j.tokens ?? []) as Held[];
-}
-const metaCache = new Map<string, { symbol: string; name: string; decimals: number; nft: boolean }>();
-async function tokenMeta(tid: string) {
-  const cached = metaCache.get(tid);
-  if (cached) return cached;
-  const r = await fetch(`https://mainnet-public.mirrornode.hedera.com/api/v1/tokens/${tid}`);
-  const j = r.ok ? await r.json() : {};
-  const m = { symbol: j.symbol ?? tid, name: j.name ?? "", decimals: Number(j.decimals ?? 0), nft: j.type === "NON_FUNGIBLE_UNIQUE" };
-  metaCache.set(tid, m);
-  return m;
-}
-
 const usd = (n: number) => fmtUsd(n);
 
 function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
   const list = useQuery({ queryKey: ["swap-tokens"], queryFn: listTokens, staleTime: 10 * 60_000 });
   const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
-  const held = useQuery({
-    queryKey: ["holdings", id],
-    refetchInterval: REFRESH_MS,
-    queryFn: async () => {
-      const rows = (await getHoldings(id)).filter((h) => h.balance > 0);
-      return Promise.all(rows.map(async (h) => {
-        const meta = await tokenMeta(h.token_id);
-        const tok: SwapToken = { id: h.token_id, symbol: meta.symbol, name: meta.name, decimals: meta.decimals };
-        let inHbar: number | null = null;
-        if (!meta.nft) try { inHbar = Number((await quote(tok, HBAR, BigInt(h.balance))).out) / 1e8; } catch { /* no pool */ }
-        return { ...h, meta, inHbar };
-      }));
-    },
-  });
+  const held = useQuery({ queryKey: ["holdings", id], refetchInterval: REFRESH_MS, queryFn: () => heldTokens(id) });
   const [sending, setSending] = useState<string | null>(null);
 
-  const rows = (held.data ?? []).filter((row) => !row.meta.nft);
+  const rows = (held.data ?? []).filter((row) => !row.nft);
   const hb = tinybar != null ? tinybar / 1e8 : null;
-  const tokHbar = rows.reduce((s, r) => s + (r.inHbar ?? 0), 0);
-  const totalHbar = hb != null ? hb + tokHbar : null;
   const px = rate.data;
 
   return (
     <Panel>
-        <Label>Total wallet value</Label>
-        <p className="text-4xl font-semibold tnum">{totalHbar != null && px ? usd(totalHbar * px) : "—"}</p>
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground tnum"><span>≈ {totalHbar != null ? fmtAmount(totalHbar, { maximumFractionDigits: 2 }) : "—"}</span><HbarLogo size={14} /></p>
-        <p className="mt-1 text-xs text-muted-foreground">HBAR + your HTS tokens</p>
+        <Label>Your assets</Label>
 
         <ul className="mt-4 divide-y divide-border">
           <li className="flex items-center gap-3 py-3">
@@ -130,7 +95,7 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
           </li>
           {rows.map((h) => {
             const t = list.data?.find((x) => x.id === h.token_id);
-            const tok: SwapToken = t ?? { id: h.token_id, symbol: h.meta.symbol, name: h.meta.name, decimals: h.meta.decimals };
+            const tok: SwapToken = t ?? { id: h.token_id, symbol: h.symbol, name: h.name, decimals: h.decimals };
             const open = sending === h.token_id;
             return (
               <li key={h.token_id} className="py-3">
@@ -141,7 +106,7 @@ function Dashboard({ id, tinybar }: { id: string; tinybar: number | null }) {
                     <a href={`${HASHSCAN}/token/${h.token_id}`} target="_blank" rel="noreferrer" className="font-mono text-xs text-muted-foreground">{h.token_id}</a>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold tnum">{fmtUnits(BigInt(h.balance), h.meta.decimals)}</p>
+                    <p className="font-semibold tnum">{fmtUnits(BigInt(h.balance), h.decimals)}</p>
                     <p className="text-xs text-muted-foreground tnum">{h.inHbar != null && px ? usd(h.inHbar * px) : "no price"}</p>
                   </div>
                   <button className="btn-ghost px-3 py-1.5 text-xs" onClick={() => setSending(open ? null : h.token_id)}>{open ? "Close" : "Send"}</button>

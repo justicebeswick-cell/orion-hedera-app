@@ -64,3 +64,22 @@ export function fmtUsd(v: number): string {
     ? v.toLocaleString(locale, { style: "currency", currency: prefs.currency, maximumFractionDigits: prefs.currency === "JPY" ? 0 : v < 1 ? 4 : 2 })
     : w.toLocaleString(locale, { style: "currency", currency: prefs.currency, maximumFractionDigits: 0 });
 }
+
+/**
+ * Format a dollar amount as its big figures plus a smaller cents part, so a
+ * portfolio balance can lead with the whole number. Honours the same settings
+ * as fmtUsd: hidden balances, the chosen currency and hide-decimals.
+ */
+export function fmtUsdParts(v: number): { main: string; frac: string } {
+  if (getSecurityPreferences().hideBalance) return { main: "••••", frac: "" };
+  const prefs = getPreferences();
+  const converted = convertUsd(v, prefs.currency);
+  if (converted === null) return { main: `${prefs.currency} —`, frac: "" };
+  const locale = prefs.systemFormat && typeof navigator !== "undefined" ? navigator.language : "en-US";
+  const w = whole(converted);
+  const main = (w ?? Math.trunc(converted)).toLocaleString(locale, { style: "currency", currency: prefs.currency, maximumFractionDigits: 0 });
+  const digits = prefs.currency === "JPY" ? 0 : converted < 1 ? 4 : 2;
+  if (w !== null || digits === 0) return { main, frac: "" };
+  const frac = (converted - Math.trunc(converted)).toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  return { main, frac: frac.replace(/^0(?=[.,])/, "") };
+}
