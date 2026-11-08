@@ -144,16 +144,19 @@ function Home() {
         </DialogContent>
       </Dialog>
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-7 block overflow-hidden text-center">
-          <span aria-hidden className="bloom pointer-events-none absolute inset-0" />
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-7 block overflow-hidden rounded-[var(--card-radius)] border border-primary/25 px-6 py-7 text-center transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 28%, transparent), transparent 70%), var(--card)" }}>
+          <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+          <span aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-32 w-48 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl transition-opacity duration-500 group-hover:opacity-80" />
           <span className="relative block">
-            <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">Portfolio</span>
-            <span className="mt-2 block text-4xl font-semibold leading-none tracking-tight tnum">
-              {parts ? <>{parts.main}{parts.frac ? <span className="text-xl font-medium text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
+            <span className="flex items-center justify-center gap-2 text-[10px] font-medium uppercase tracking-[0.35em] text-muted-foreground"><span className="h-1.5 w-1.5 rounded-full bg-success shadow-[0_0_8px_currentColor] text-success" />Total balance</span>
+            <span className="mt-3 block bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text text-[2.6rem] font-light leading-none tracking-tight text-transparent tnum">
+              {parts ? <>{parts.main}{parts.frac ? <span className="text-2xl font-extralight">{parts.frac}</span> : null}</> : "—"}
             </span>
-            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground tnum">
-              ≈ {total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"} ℏ · HBAR + your HTS tokens
+            <span className="mx-auto mt-5 block h-px w-16 bg-gradient-to-r from-transparent via-border to-transparent" />
+            <span className="mt-4 flex items-center justify-center gap-1.5 text-base font-medium tnum text-foreground/90">
+              <HbarLogo size={15} />{total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"}
             </span>
+            <span className="mt-1 block text-[10px] uppercase tracking-[0.25em] text-muted-foreground">HBAR + tokens</span>
           </span>
         </Link>
       )}
