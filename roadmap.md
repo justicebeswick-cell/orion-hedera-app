@@ -1,9 +1,11 @@
 # Roadmap
 
 ## White Orion rings
+- [x] Show silver, cyan and champagne ring previews without changing the selected app logo
 - [x] Make surrounding rings white; preserve the original purple ball and transparent background
 - [x] Refresh shared logo, app icons and favicon
-- [x] Verify phone logo and successful build; request publishing of logo and color theme changes
+- [x] Verify phone logo and successful build
+- [ ] Publish logo and color theme changes — publishing approval was interrupted by new messages
 
 ## Expanded color themes
 - [x] Add purple shades, blue and custom color choices in General Settings
