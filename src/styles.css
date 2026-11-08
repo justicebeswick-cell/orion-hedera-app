@@ -58,6 +58,7 @@
   --card-border: oklch(1 0 0 / 20%);
   --action-sheen: radial-gradient(120% 90% at 6% 0%, oklch(1 0 0 / 28%) 0%, transparent 60%), radial-gradient(110% 110% at 94% 100%, oklch(0 0 0 / 20%) 0%, transparent 58%);
   --send-finish: var(--action-sheen), linear-gradient(135deg, oklch(0.59 0.22 298), oklch(0.48 0.23 298));
+  --swap-finish: var(--action-sheen), linear-gradient(135deg, oklch(0.39 0.19 298), oklch(0.28 0.15 298));
   --receive-finish: var(--action-sheen), linear-gradient(135deg, #3dcca5, #41d9a0);
   /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:

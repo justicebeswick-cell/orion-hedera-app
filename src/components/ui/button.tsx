@@ -12,6 +12,7 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         card: "border border-[var(--card-border)] [background:var(--card-finish)] text-card-foreground hover:brightness-125",
         send: "border border-[var(--card-border)] [background:var(--send-finish)] text-card-foreground hover:brightness-110",
+        swap: "border border-[var(--card-border)] [background:var(--swap-finish)] text-card-foreground hover:brightness-110",
         receive: "border border-[var(--card-border)] [background:var(--receive-finish)] text-card-foreground hover:brightness-110",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
