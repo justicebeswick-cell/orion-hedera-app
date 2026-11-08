@@ -23,7 +23,7 @@ export function AdvancedSettings() {
     <p className="text-xs text-muted-foreground">Background push delivery is not available yet.</p>
     {notification && <p role="status" className="mt-2 text-xs">{notification}</p>}
     {heading("Release Information")}
-    <div className="flex min-h-16 items-center justify-between text-sm"><span>Version</span><span className="text-xs text-muted-foreground">Orion web · icons v25</span></div>
+    <div className="flex min-h-16 items-center justify-between text-sm"><span>Version</span><span className="text-xs text-muted-foreground">Orion web · icons v26</span></div>
     {row("View changelog", () => setSection(section === "changes" ? "" : "changes"))}
     {section === "changes" && <ul className="space-y-2 pb-4 text-xs text-muted-foreground"><li>Grouped Settings and Pact in Vault</li><li>General display preferences and optional themes</li><li>Address book, Advanced and Security controls</li><li>Hedera NFT viewing and approved transfers</li></ul>}
     {heading("Debug")}
