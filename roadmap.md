@@ -185,3 +185,4 @@
 - [x] Balance card: remove "Total balance" label, bring USD and HBAR figures closer and higher
 - [x] Balance card: figures back apart (justify-between), wallet name card moved back on top
 - [x] Balance card: transparent fill blending into dark purple background (soft glow only)
+- [x] Wallet name card and balance card: gap tightened (mb-5 to mb-2, 8px)

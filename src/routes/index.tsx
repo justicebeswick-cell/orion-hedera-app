@@ -120,7 +120,7 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      <div className="home-account mb-5 flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2">
+      <div className="home-account mb-2 flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
           <span className="block break-words text-base font-semibold leading-tight">{walletName || id}</span>
           <span className="mt-0.5 block text-[11px] text-muted-foreground">{walletName ? id : watchOnly ? "Watch-only" : "My Hedera wallet"}</span>
