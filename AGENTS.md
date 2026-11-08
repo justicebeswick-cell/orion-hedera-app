@@ -14,6 +14,7 @@
 - Card surfaces share the global card-finish, card-border, card-radius and shadow tokens through panel/card-surface/hero-card/stat-tile and the Vault deck; this keeps the app-wide card design consistent without changing layouts or interactions.
 - Native reward claims use a signed account update preserving staking settings; report payout from mirror staking_reward_transfers, never a successful receipt or net balance alone, because fees and unrelated transfers can obscure rewards.
 - Hedera mainnet only; reads go through the public mirror node from the browser (no server needed for public chain data).
+- Mirror freshness uses HTTP response time (same-origin HEAD fallback when CORS hides the mirror Date header), never the device clock; this prevents clock skew from creating false lag alerts.
 - HBAR sends explicitly opt into fresh EVM-alias funding; other transfers retain existing-account checks, and alias lookups enforce canonical account blocklists and confirmed receipts to avoid bypassing safeguards.
 - Device keys live only in localStorage, AES-GCM encrypted with an Argon2id-derived key; never sent to the server.
 - WalletConnect signing uses @hiero-ledger/sdk classes (the version hedera-wallet-connect depends on); local-key signing uses @hashgraph/sdk. Mixing them fails type checks.

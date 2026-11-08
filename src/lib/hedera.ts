@@ -83,11 +83,28 @@ export async function getTransactions(id: string) {
   return r.transactions;
 }
 
-/** Seconds the mirror node is behind wall clock. */
+/** Latest public transaction age, measured against HTTP time, not the device clock. */
 export async function getLag() {
-  const r = await get<{ transactions: Tx[] }>(`/api/v1/transactions?limit=1&order=desc`);
-  const ts = Number(r.transactions[0]?.consensus_timestamp ?? 0);
-  return Date.now() / 1000 - ts;
+  const response = await fetch(`${MIRROR}/api/v1/transactions?limit=1&order=desc`, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!response.ok) throw new Error(`Mirror node returned ${response.status}`);
+  const r = await response.json() as { transactions: Tx[] };
+  const timestamp = r.transactions[0]?.consensus_timestamp;
+  const ts = timestamp ? Number(timestamp) : NaN;
+  if (!Number.isFinite(ts) || ts <= 0) throw new Error("Mirror node: latest timestamp unavailable");
+
+  // The public mirror does not expose Date through CORS. Our same-origin
+  // HTTP response supplies a trusted time reference without sending wallet data.
+  let reference = Date.parse(response.headers.get("date") ?? "");
+  if (!Number.isFinite(reference)) {
+    const clock = await fetch("/", { method: "HEAD", cache: "no-store", signal: AbortSignal.timeout(10000) });
+    if (!clock.ok) throw new Error("Mirror delay: time reference unavailable");
+    reference = Date.parse(clock.headers.get("date") ?? "");
+  }
+  if (!Number.isFinite(reference)) throw new Error("Mirror delay: time reference unavailable");
+  return Math.max(0, reference / 1000 - ts);
 }
 
 export type TopicMsg = { consensus_timestamp: string; sequence_number: number; message: string };
