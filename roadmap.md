@@ -1,8 +1,8 @@
 # Roadmap
 
 ## Light theme color fidelity
-- [x] Preserve the dark-mode logo, purple accents and colored card finishes; change only page-neutral contrast
-- [x] Verify identical logo and chromatic tokens in light/dark, readable phone/desktop Settings and 18 preference tests
+- [x] Lighten light-mode purple accents and finishes, use black logo rings around the unchanged purple sphere, and slightly thicken ORION lettering; preserve dark mode
+- [x] Verify phone/desktop appearance, unchanged dark-mode branding and 18 preference tests
 
 ## Platinum Orion rings and incoming NFT
 - [x] Apply approved platinum-silver rings and refresh icons; phone logo and build verified
