@@ -176,3 +176,7 @@
 - [x] Remove HBAR and Fees cards from Vault
 - [x] Re-render Orion logo at higher resolution (pixelated in app)
 - [x] Home portfolio balance (reverted to original pill design)
+
+## Balance card sizing
+- [x] Make the "Total balance" label text smaller and the card itself smaller
+- [x] Verify phone layout and build
