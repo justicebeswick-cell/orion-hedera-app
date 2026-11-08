@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
-import { AurionLogo } from "@/components/aurion";
+import orbitRings from "@/assets/orion-logo/orion-orbit-rings.png.asset.json";
+import orbitSphere from "@/assets/orion-logo/orion-orbit-sphere.png.asset.json";
 import { OrionName } from "@/components/orion-name";
 
 export function LaunchScreen() {
@@ -15,7 +16,10 @@ export function LaunchScreen() {
   return (
     <div className={`launch-screen ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening Orion">
       <div className="launch-brand">
-        <AurionLogo className="launch-logo" sizes="(max-width: 420px) 120px, 148px" />
+        <div className="launch-logo relative" role="img" aria-label="Orion logo">
+          <img src={orbitSphere.url} alt="" className="absolute inset-0 h-full w-full object-contain" width={768} height={768} />
+          <img src={orbitRings.url} alt="" className="launch-orbit absolute inset-0 h-full w-full object-contain" width={768} height={768} />
+        </div>
         <div className="launch-wordmark">
           <div className="launch-name"><OrionName className="mx-auto w-48" /></div>
           <p className="mt-3 text-xs text-muted-foreground">A Hashgraph Wallet</p>

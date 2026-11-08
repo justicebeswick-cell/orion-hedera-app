@@ -1,5 +1,9 @@
 # Roadmap
 
+## Loading orbit
+- [x] Animate the loading logo rings through one smooth orbit around the stationary purple sphere
+- [x] Verify the orbit finishes before dismissal and respects reduced motion
+
 ## Light theme color fidelity
 - [x] Lighten light-mode purple accents and finishes, use black logo rings around the unchanged purple sphere, and slightly thicken ORION lettering; preserve dark mode
 - [x] Verify phone/desktop appearance, unchanged dark-mode branding and 18 preference tests
