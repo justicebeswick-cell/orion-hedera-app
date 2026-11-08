@@ -1,5 +1,9 @@
 # Roadmap
 
+## Platinum Orion rings and incoming NFT
+- [x] Apply approved platinum-silver rings and refresh icons; phone logo and build verified
+- [x] Check HashPack NFT error: recipient active with unlimited automatic associations; screenshot token lookup returns 404, so collection eligibility remains unverified
+
 ## White Orion rings
 - [x] Show silver, cyan and champagne ring previews without changing the selected app logo
 - [x] Make surrounding rings white; preserve the original purple ball and transparent background
