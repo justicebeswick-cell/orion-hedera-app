@@ -7,7 +7,7 @@ import { fmtAmount } from "@/lib/display";
 import { REFRESH_MS } from "@/lib/refresh";
 import { listTokens } from "@/lib/swap";
 
-function AssetLogo({ symbol, icon }: { symbol: string; icon?: string }) {
+function AssetLogo({ symbol, icon }: { symbol: string; icon?: string | undefined }) {
   const [failed, setFailed] = useState(false);
   const safeIcon = icon?.startsWith("https://") ? icon : undefined;
   return <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-foreground">
