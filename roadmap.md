@@ -175,3 +175,4 @@
 - [x] Make HBAR ℏ symbol white instead of purple
 - [x] Remove HBAR and Fees cards from Vault
 - [x] Re-render Orion logo at higher resolution (pixelated in app)
+- [x] Elegant Home portfolio balance with prominent HBAR total

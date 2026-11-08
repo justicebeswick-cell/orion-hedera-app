@@ -117,16 +117,19 @@ function Home() {
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-7 block overflow-hidden text-center">
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-8 block overflow-hidden text-center">
           <span aria-hidden className="bloom pointer-events-none absolute inset-0" />
           <span className="relative block">
-            <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">Portfolio</span>
-            <span className="mt-3 block text-5xl font-semibold leading-none tnum sm:text-6xl">
-              {parts ? <>{parts.main}{parts.frac ? <span className="text-2xl font-medium text-muted-foreground sm:text-3xl">{parts.frac}</span> : null}</> : "—"}
+            <span className="block text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground">Portfolio</span>
+            <span className="mt-4 block text-[3.4rem] font-light leading-none tracking-tight tnum sm:text-6xl">
+              {parts ? <>{parts.main}{parts.frac ? <span className="text-2xl font-light text-muted-foreground sm:text-3xl">{parts.frac}</span> : null}</> : "—"}
             </span>
-            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground tnum">
-              ≈ {total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"} ℏ · HBAR + your HTS tokens
+            <span aria-hidden className="mx-auto mt-6 block h-px w-24 bg-border" />
+            <span className="mt-5 flex items-baseline justify-center gap-2">
+              <HbarLogo size={26} className="translate-y-0.5 text-primary" />
+              <span className="text-3xl font-semibold tracking-tight tnum">{total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"}</span>
             </span>
+            <span className="mt-1.5 block text-[11px] uppercase tracking-[0.25em] text-muted-foreground">Total HBAR value</span>
           </span>
         </Link>
       )}
