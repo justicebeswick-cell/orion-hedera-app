@@ -17,6 +17,12 @@ import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
 import { fmtAmount, fmtUsd, fmtUsdParts } from "@/lib/display";
 import { heldTokens, totalInHbar } from "@/lib/portfolio";
+
+/** Last balance seen on this device, shown while a fresh read is retried. */
+function cachedAcct(id: string | null) {
+  if (!id || typeof window === "undefined") return undefined;
+  try { const v = localStorage.getItem(`orion.lastAcct.${id}`); return v ? JSON.parse(v) as Awaited<ReturnType<typeof getAccount>> : undefined; } catch { return undefined; }
+}
 import { usePreferences } from "@/lib/preferences";
 import { useSecurityPreferences } from "@/lib/security-preferences";
 import { showTransaction } from "@/lib/event-display";
@@ -51,11 +57,11 @@ function Home() {
   const prefs = usePreferences();
   const security = useSecurityPreferences();
   const { id, ready, bind } = useAccount();
-  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
+  const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id).then((a) => { try { localStorage.setItem(`orion.lastAcct.${id}`, JSON.stringify(a)); } catch { /* storage full */ } return a; }); }, enabled: !!id, retry: 5, retryDelay: (n) => Math.min(800 * 2 ** n, 8000), placeholderData: (prev) => prev ?? cachedAcct(id), refetchInterval: REFRESH_MS });
   const txs = useQuery({ queryKey: ["txs", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getTransactions(id); }, enabled: !!id, refetchInterval: REFRESH_MS });
   const lag = useQuery({ queryKey: ["lag"], queryFn: getLag, refetchInterval: 30000 });
-  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS });
-  const portfolio = useQuery({ queryKey: ["portfolio", id], enabled: !!id, queryFn: () => { if (!id) throw new Error("No account selected"); return heldTokens(id); }, refetchInterval: REFRESH_MS, retry: false });
+  const rate = useQuery({ queryKey: ["hbar-usd"], queryFn: hbarUsdLive, refetchInterval: REFRESH_MS, retry: 5, retryDelay: (n) => Math.min(800 * 2 ** n, 8000), placeholderData: (prev) => prev });
+  const portfolio = useQuery({ queryKey: ["portfolio", id], enabled: !!id, queryFn: () => { if (!id) throw new Error("No account selected"); return heldTokens(id); }, refetchInterval: REFRESH_MS, retry: 3, retryDelay: (n) => Math.min(800 * 2 ** n, 8000), placeholderData: (prev) => prev });
   const tokenCount = useQuery({
     queryKey: ["tok-count", id],
     enabled: !!id,
