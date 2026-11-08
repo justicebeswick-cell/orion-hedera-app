@@ -103,11 +103,25 @@
 }
 :root[data-theme="moonlight"] { --background: oklch(0.2 0.018 298); --card: oklch(0.26 0.025 298); --graphite: oklch(0.3 0.014 298); }
 :root[data-theme="royal"] { --background: oklch(0.16 0.065 298); --card: oklch(0.25 0.11 298); --graphite: oklch(0.27 0.045 298); }
+:root[data-theme="amethyst"] { --primary: oklch(0.5 0.24 310); }
+:root[data-theme="lavender"] { --primary: oklch(0.54 0.19 295); }
+:root[data-theme="plum"] { --primary: oklch(0.47 0.22 330); }
+:root[data-theme="blue"] { --primary: oklch(0.5 0.2 255); }
+:root[data-theme="custom"] { --primary: color-mix(in oklab, var(--custom-color, #7a3fd6) 60%, oklch(0 0 0)); }
+:root:is([data-theme="amethyst"], [data-theme="lavender"], [data-theme="plum"], [data-theme="blue"], [data-theme="custom"]) {
+  --card: color-mix(in oklab, var(--primary) 16%, var(--background));
+  --card-finish: radial-gradient(120% 90% at 6% 0%, color-mix(in oklab, var(--primary) 55%, transparent) 0%, transparent 60%), radial-gradient(110% 110% at 94% 100%, color-mix(in oklab, var(--primary) 30%, transparent) 0%, transparent 58%), var(--card);
+}
 .theme-swatch { display: grid; place-items: center; width: 52px; height: 44px; border-radius: 6px; font-size: 14px; }
 .theme-swatch-default { background: oklch(0.98 0 0); color: oklch(0.2 0 0); }
 .theme-swatch-dark { background: oklch(0 0 0); color: oklch(0.98 0 0); }
 .theme-swatch-moonlight { background: oklch(0.3 0.02 298); color: oklch(0.98 0 0); }
 .theme-swatch-royal { background: oklch(0.35 0.18 298); color: oklch(0.98 0 0); }
+.theme-swatch-amethyst { background: oklch(0.5 0.24 310); color: oklch(0.98 0 0); }
+.theme-swatch-lavender { background: oklch(0.54 0.19 295); color: oklch(0.98 0 0); }
+.theme-swatch-plum { background: oklch(0.47 0.22 330); color: oklch(0.98 0 0); }
+.theme-swatch-blue { background: oklch(0.5 0.2 255); color: oklch(0.98 0 0); }
+.theme-swatch-custom { background: color-mix(in oklab, var(--custom-color, #7a3fd6) 60%, oklch(0 0 0)); color: oklch(0.98 0 0); }
 :root[data-theme="default"] .orion-lettering { filter: invert(1); }
 
 @layer base {
@@ -131,7 +145,7 @@
 
 @utility tnum { font-variant-numeric: tabular-nums; }
 @utility bloom {
-  background: radial-gradient(circle, oklch(0.5 0.25 298 / 28%) 0%, transparent 65%);
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 28%, transparent) 0%, transparent 65%);
 }
 @utility panel {
   background: var(--card-finish);
@@ -188,7 +202,7 @@
   display: inline-flex; align-items: center; gap: 0.5rem;
   border-radius: 999px;
   border: 1px solid var(--color-primary);
-  background: oklch(0.5 0.25 298 / 14%);
+  background: color-mix(in oklab, var(--primary) 14%, transparent);
   padding: 0.55rem 1rem;
   font-family: var(--font-mono); font-size: 0.8rem;
   color: var(--color-foreground);
@@ -201,7 +215,7 @@
   font-size: 0.85rem; font-weight: 600;
   color: var(--color-foreground);
   transition: border-color .15s, background .15s;
-  &:hover { border-color: var(--color-primary); background: oklch(0.5 0.25 298 / 10%); }
+  &:hover { border-color: var(--color-primary); background: color-mix(in oklab, var(--primary) 10%, transparent); }
 }
 
 /* Card corners stay consistent when a control's base variant sets a radius. */
@@ -233,7 +247,7 @@
 .deck-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
 .deck-tabs::-webkit-scrollbar { display: none; }
 .deck-tab { flex-shrink: 0; color: var(--muted-foreground); border-radius: 999px; border: 1px solid transparent; transition: color .2s, background .2s, border-color .2s; }
-.deck-tab-active { color: var(--signal); background: oklch(0.5 0.25 298 / 14%); border-color: var(--card-border); }
+.deck-tab-active { color: var(--signal); background: color-mix(in oklab, var(--primary) 14%, transparent); border-color: var(--card-border); }
 .deck-viewport { overflow: hidden; transition: height .3s ease; }
 .deck-slide { flex: 0 0 100%; min-width: 0; padding: 0 1px 4px; }
 .deck-surface { min-height: 390px; border: 1px solid var(--card-border); background: var(--card-finish); border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow-deck); }

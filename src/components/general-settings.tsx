@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { roundOn, setRound } from "@/lib/display";
-import { savePreferences, usePreferences, type Preferences } from "@/lib/preferences";
+import { savePreferences, usePreferences, THEME_OPTIONS, type Preferences } from "@/lib/preferences";
 import { Check } from "lucide-react";
 
 export function GeneralSettings() {
@@ -24,9 +24,10 @@ export function GeneralSettings() {
     {toggle("Show reserve value on home screen", "showReserve")}
     {heading("Theme")}
     {toggle("Automatically switch light/dark mode", "autoTheme")}
-    <div className="space-y-2 py-3" role="radiogroup" aria-label="Theme">
-      {[{ id: "default", label: "Default", note: "Fresh and bright" }, { id: "dark", label: "Dark", note: "Black with Orion purple" }, { id: "moonlight", label: "Moonlight", note: "A touch of moon" }, { id: "royal", label: "Royal", note: "Royal purple" }].map((theme) => <Button key={theme.id} variant="outline" role="radio" aria-checked={prefs.theme === theme.id} disabled={prefs.autoTheme} onClick={() => savePreferences({ theme: theme.id })} className={`h-20 w-full justify-start gap-4 rounded-lg px-4 ${prefs.theme === theme.id ? "border-primary ring-1 ring-primary" : ""}`}><span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-foreground">{prefs.theme === theme.id && <Check size={13} />}</span><span className="flex-1 text-left"><span className="block text-sm font-semibold">{theme.label}</span><span className="block text-xs text-muted-foreground">{theme.note}</span></span><span className={`theme-swatch theme-swatch-${theme.id}`}>Aa</span></Button>)}
+    <div className="grid grid-cols-2 gap-2 py-3" role="radiogroup" aria-label="Theme">
+      {THEME_OPTIONS.map((theme) => <Button key={theme.id} variant="outline" role="radio" aria-checked={prefs.theme === theme.id} disabled={prefs.autoTheme} onClick={() => savePreferences({ theme: theme.id })} className={`h-24 min-w-0 w-full flex-col gap-2 rounded-lg px-2 ${prefs.theme === theme.id ? "border-primary ring-1 ring-primary" : ""}`}><span className={`theme-swatch theme-swatch-${theme.id}`}>{prefs.theme === theme.id ? <Check size={18} /> : "Aa"}</span><span className="text-xs font-semibold">{theme.label}</span></Button>)}
     </div>
+    {prefs.theme === "custom" && <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 py-3"><label htmlFor="custom-theme-color" className="text-sm">Custom color</label><div className="flex items-center gap-3"><span className="font-mono text-xs text-muted-foreground">{prefs.customColor.toUpperCase()}</span><input id="custom-theme-color" aria-label="Custom color" type="color" value={prefs.customColor} disabled={prefs.autoTheme} onChange={(event) => savePreferences({ customColor: event.target.value })} className="h-11 w-14 cursor-pointer rounded-md border border-input bg-background p-1 disabled:opacity-50" /></div></div>}
     {heading("Transactions & Events")}
     {toggle("Hide spam/scam events", "hideSpam")}
     <p className="py-2 text-xs text-muted-foreground">Hides incoming transfers from accounts on your blocked list. This is not live scam screening.</p>

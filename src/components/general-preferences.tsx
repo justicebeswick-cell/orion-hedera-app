@@ -6,9 +6,12 @@ export function GeneralPreferences() {
   const prefs = usePreferences();
   useEffect(() => {
     const media = window.matchMedia("(prefers-color-scheme: light)");
-    const update = () => { document.documentElement.dataset["theme"] = resolvedTheme(prefs, media.matches); };
+    const update = () => {
+      document.documentElement.style.setProperty("--custom-color", prefs.customColor);
+      document.documentElement.dataset["theme"] = resolvedTheme(prefs, media.matches);
+    };
     update(); media.addEventListener("change", update); return () => media.removeEventListener("change", update);
-  }, [prefs.theme, prefs.autoTheme]);
+  }, [prefs.theme, prefs.autoTheme, prefs.customColor]);
   useEffect(() => {
     const controller = new AbortController();
     if (prefs.currency === "USD") return;

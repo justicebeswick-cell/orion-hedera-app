@@ -1,5 +1,9 @@
 # Roadmap
 
+## Expanded color themes
+- [x] Add purple shades, blue and custom color choices in General Settings
+- [x] Verify color persistence, shared card/action colors and phone/desktop layout; 18 preference checks passed
+
 ## Fingerprint unlock repair
 - [x] Bind fingerprint codes to the encrypted wallet and verify old seals before use
 - [x] Save new/imported keys before fingerprint setup; 19 checks and simulated phone unlock/recovery passed without deleting keys
