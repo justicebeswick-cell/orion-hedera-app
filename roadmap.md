@@ -182,3 +182,5 @@
 - [x] Verify phone layout and build
 - [x] Make the wallet name / copy card on Home smaller too
 - [x] Compact balance card: "Total balance" at the very top, balances raised into one upper row, card height cut to just around the figures
+- [x] Balance card: remove "Total balance" label, bring USD and HBAR figures closer and higher
+- [x] Balance card: figures back apart (justify-between), wallet name card moved back on top
