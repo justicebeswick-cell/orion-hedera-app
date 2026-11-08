@@ -108,8 +108,7 @@ function Home() {
   const parts = total !== null && rate.data ? fmtUsdParts(total * rate.data) : null;
   const hbarText = total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—";
   const effChars = (parts ? parts.main.length : 1) + (parts ? parts.frac.length * 0.6 : 0) + hbarText.length;
-  const usdSize = effChars <= 16 ? "text-[clamp(1.35rem,7vw,2.35rem)]" : effChars <= 20 ? "text-[clamp(1.2rem,5.8vw,2rem)]" : effChars <= 24 ? "text-[clamp(1.05rem,4.9vw,1.7rem)]" : "text-[clamp(0.95rem,4.2vw,1.45rem)]";
-  const hbarSize = effChars <= 16 ? "text-[clamp(1.05rem,5vw,1.5rem)]" : effChars <= 20 ? "text-[clamp(0.95rem,4.2vw,1.3rem)]" : effChars <= 24 ? "text-[clamp(0.85rem,3.6vw,1.1rem)]" : "text-[clamp(0.8rem,3.1vw,0.95rem)]";
+  const numSize = effChars <= 18 ? "text-[clamp(1.1rem,5.2vw,1.85rem)]" : effChars <= 22 ? "text-[clamp(1rem,4.6vw,1.6rem)]" : effChars <= 26 ? "text-[clamp(0.9rem,4vw,1.35rem)]" : "text-[clamp(0.8rem,3.4vw,1.15rem)]";
 
   return (
     <Shell title="Home">
@@ -154,14 +153,14 @@ function Home() {
           <span className="relative block">
             <span className="flex items-end justify-between gap-5">
               <span className="min-w-0 text-left">
-                <span className={`block truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light leading-none tracking-tight text-transparent tnum ${usdSize}`}>
+                <span className={`block truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light leading-none tracking-tight text-transparent tnum ${numSize}`}>
                   {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.6em] font-extralight">{parts.frac}</span> : null}</> : "—"}
                 </span>
                 <span className="mt-1 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">US dollars</span>
               </span>
               <span className="min-w-0 text-right">
-                <span className={`flex items-center justify-end gap-2 font-medium leading-none tnum text-foreground/90 ${hbarSize}`}>
-                  <HbarLogo size={16} /><span className="truncate">{hbarText}</span>
+                <span className={`flex items-center justify-end gap-2 leading-none tnum ${numSize}`}>
+                  <HbarLogo size={16} /><span className="truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light text-transparent">{hbarText.split(".")[0]}{hbarText.includes(".") ? <span className="text-[0.6em] font-extralight">.{hbarText.split(".")[1]}</span> : null}</span>
                 </span>
                 <span className="mt-1 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">HBAR + tokens</span>
               </span>

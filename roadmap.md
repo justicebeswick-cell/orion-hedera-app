@@ -186,3 +186,4 @@
 - [x] Balance card: figures back apart (justify-between), wallet name card moved back on top
 - [x] Balance card: transparent fill blending into dark purple background (soft glow only)
 - [x] Wallet name card and balance card: gap tightened (mb-5 to mb-2, 8px)
+- [x] Balance card: USD and HBAR figures same size, matching light weight, gradient and small decimals
