@@ -184,3 +184,4 @@
 - [x] Compact balance card: "Total balance" at the very top, balances raised into one upper row, card height cut to just around the figures
 - [x] Balance card: remove "Total balance" label, bring USD and HBAR figures closer and higher
 - [x] Balance card: figures back apart (justify-between), wallet name card moved back on top
+- [x] Balance card: transparent fill blending into dark purple background (soft glow only)

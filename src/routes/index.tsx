@@ -148,7 +148,7 @@ function Home() {
         </DialogContent>
       </Dialog>
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-5 block overflow-hidden rounded-[var(--card-radius)] border border-primary/25 px-5 pb-3 pt-2 transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 28%, transparent), transparent 70%), var(--card)" }}>
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-5 block overflow-hidden rounded-[var(--card-radius)] border border-primary/15 px-5 pb-3 pt-2 transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 72%)" }}>
           <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
           <span aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-32 w-48 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl transition-opacity duration-500 group-hover:opacity-80" />
           <span className="relative block">
