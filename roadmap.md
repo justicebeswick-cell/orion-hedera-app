@@ -1,5 +1,9 @@
 # Roadmap
 
+## Light theme color fidelity
+- [x] Preserve the dark-mode logo, purple accents and colored card finishes; change only page-neutral contrast
+- [x] Verify identical logo and chromatic tokens in light/dark, readable phone/desktop Settings and 18 preference tests
+
 ## Platinum Orion rings and incoming NFT
 - [x] Apply approved platinum-silver rings and refresh icons; phone logo and build verified
 - [x] Check HashPack NFT error: recipient active with unlimited automatic associations; screenshot token lookup returns 404, so collection eligibility remains unverified

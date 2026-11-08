@@ -66,11 +66,11 @@
   --card: oklch(0.16 0.028 296);            /* purple ink */
   --graphite: oklch(0.22 0 0);             /* neutral raised surface */
   --foreground: oklch(0.98 0 0);           /* clean white */
-  --card-foreground: var(--foreground);
+  --card-foreground: oklch(0.98 0 0);
   --popover: var(--card);
-  --popover-foreground: var(--foreground);
+  --popover-foreground: var(--card-foreground);
   --primary: oklch(0.5 0.25 298);           /* picture violet #7428D8 */
-  --primary-foreground: var(--foreground);
+  --primary-foreground: oklch(0.98 0 0);
   --signal: var(--foreground);            /* secondary accents are white */
   --flare: var(--foreground);
   --success: oklch(0.78 0.15 163);          /* #34D399 */
@@ -81,25 +81,28 @@
   --accent: var(--graphite);
   --accent-foreground: var(--foreground);
   --destructive: oklch(0.64 0.22 15);       /* #F43F5E */
-  --destructive-foreground: var(--foreground);
+  --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(1 0 0 / 16%);
   --input: oklch(1 0 0 / 22%);
   --ring: var(--primary);
 }
 
 :root[data-theme="default"] {
-  --background: oklch(0.98 0.003 298);
-  --foreground: oklch(0.18 0.01 298);
-  --card: oklch(0.95 0.015 298);
-  --graphite: oklch(0.92 0.008 298);
-  --muted-foreground: oklch(0.43 0.015 298);
-  --border: oklch(0.25 0.03 298 / 20%);
-  --input: oklch(0.25 0.03 298 / 28%);
-  --card-border: var(--border);
-  --card-finish: linear-gradient(135deg, oklch(0.94 0.04 298), var(--card));
-  --primary-foreground: oklch(0.99 0 0);
-  --success: oklch(0.46 0.13 163);
-  --destructive: oklch(0.5 0.21 15);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.18 0 0);
+  --graphite: oklch(0.94 0 0);
+  --muted-foreground: oklch(0.43 0 0);
+  --border: oklch(0 0 0 / 16%);
+  --input: oklch(0 0 0 / 22%);
+}
+/* Purple surfaces keep their dark-mode finish and readable neutral contrast. */
+:root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, [class~="bg-card/95"], .bg-popover, .launch-screen) {
+  --foreground: var(--card-foreground);
+  --graphite: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --border: oklch(1 0 0 / 16%);
+  --input: oklch(1 0 0 / 22%);
+  color: var(--foreground);
 }
 :root[data-theme="moonlight"] { --background: oklch(0.2 0.018 298); --card: oklch(0.26 0.025 298); --graphite: oklch(0.3 0.014 298); }
 :root[data-theme="royal"] { --background: oklch(0.16 0.065 298); --card: oklch(0.25 0.11 298); --graphite: oklch(0.27 0.045 298); }
@@ -125,11 +128,8 @@
 :root[data-theme="default"] .orion-lettering { filter: invert(1); }
 /* White theme: the white Hedera H in "Hello" turns black so it stays visible. */
 :root[data-theme="default"] .hello-hbar-h { filter: invert(1); }
-/* White theme: turn the silver logo rings black while keeping the purple ball purple. */
-:root[data-theme="default"] .orion-logo { filter: invert(0.88) hue-rotate(180deg); }
-/* The launch screen is always black, so keep the white lettering and silver rings there. */
-:root[data-theme="default"] .launch-screen .orion-lettering,
-:root[data-theme="default"] .launch-screen .orion-logo { filter: none; }
+/* Brand artwork is identical in both themes; only white lettering adapts. */
+:root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, .bg-popover, .launch-screen) .orion-lettering { filter: none; }
 
 @layer base {
   * { border-color: var(--color-border); }
