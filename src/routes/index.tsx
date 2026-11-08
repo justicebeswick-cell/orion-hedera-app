@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { listSavedAccounts, rememberAccount, renameSavedAccount } from "@/lib/keystore";
+import { PortfolioChart } from "@/components/portfolio-chart";
 import { HomeAssets } from "@/components/home-assets";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
@@ -116,22 +117,7 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-7 block overflow-hidden text-center">
-          <span aria-hidden className="bloom pointer-events-none absolute inset-0" />
-          <span className="relative block">
-            <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">Portfolio</span>
-            <span className="mt-3 block text-5xl font-semibold leading-none tnum sm:text-6xl">
-              {parts ? <>{parts.main}{parts.frac ? <span className="text-2xl font-medium text-muted-foreground sm:text-3xl">{parts.frac}</span> : null}</> : "—"}
-            </span>
-            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground tnum">
-              ≈ {total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"} ℏ · HBAR + your HTS tokens
-            </span>
-          </span>
-        </Link>
-      )}
-
-      <div className="home-account mb-4 flex items-center gap-3 rounded-lg bg-secondary p-4">
+      <div className="home-account mb-6 flex items-center gap-3 rounded-lg bg-secondary p-4">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
           <span className="block break-words text-lg font-semibold">{walletName || id}</span>
           <span className="mt-1 block text-xs text-muted-foreground">{walletName ? id : watchOnly ? "Watch-only" : "My Hedera wallet"}</span>
@@ -158,6 +144,22 @@ function Home() {
           </form>
         </DialogContent>
       </Dialog>
+      {prefs.showWorth && (
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-2 block overflow-hidden text-center">
+          <span aria-hidden className="bloom pointer-events-none absolute inset-0" />
+          <span className="relative block">
+            <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">Portfolio</span>
+            <span className="mt-2 block text-4xl font-semibold leading-none tracking-tight tnum">
+              {parts ? <>{parts.main}{parts.frac ? <span className="text-xl font-medium text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
+            </span>
+            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground tnum">
+              ≈ {total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—"} ℏ · HBAR + your HTS tokens
+            </span>
+          </span>
+        </Link>
+      )}
+      {prefs.showWorth && <div className="mb-6"><PortfolioChart totalHbar={total} /></div>}
+
       <div className="mb-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
         <Button asChild variant="swap" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
