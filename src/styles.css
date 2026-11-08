@@ -123,6 +123,13 @@
 .theme-swatch-blue { background: oklch(0.5 0.2 255); color: oklch(0.98 0 0); }
 .theme-swatch-custom { background: color-mix(in oklab, var(--custom-color, #7a3fd6) 60%, oklch(0 0 0)); color: oklch(0.98 0 0); }
 :root[data-theme="default"] .orion-lettering { filter: invert(1); }
+/* White theme: the white Hedera H in "Hello" turns black so it stays visible. */
+:root[data-theme="default"] .hello-hbar-h { filter: invert(1); }
+/* White theme: turn the silver logo rings black while keeping the purple ball purple. */
+:root[data-theme="default"] .orion-logo { filter: invert(0.88) hue-rotate(180deg); }
+/* The launch screen is always black, so keep the white lettering and silver rings there. */
+:root[data-theme="default"] .launch-screen .orion-lettering,
+:root[data-theme="default"] .launch-screen .orion-logo { filter: none; }
 
 @layer base {
   * { border-color: var(--color-border); }

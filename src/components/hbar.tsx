@@ -1,10 +1,10 @@
-/** The ℏ symbol in white, used for HBAR amounts across the app. */
+/** The ℏ symbol, used for HBAR amounts across the app. Follows the theme text color (white on dark, black on white). */
 export function HbarLogo({ size = 20, className = "" }: { size?: number; className?: string }) {
   return (
     <span
       role="img"
       aria-label="HBAR"
-      style={{ fontSize: size, lineHeight: 1, color: "#ffffff" }}
+      style={{ fontSize: size, lineHeight: 1, color: "var(--foreground)" }}
       className={`inline-block shrink-0 font-semibold ${className}`}
     >
       ℏ

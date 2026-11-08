@@ -18,7 +18,7 @@ import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "luci
 const logoSrcSet = `${logo96.url} 96w, ${logo144.url} 144w, ${logo192.url} 192w, ${logo288.url} 288w, ${logo384.url} 384w, ${logo576.url} 576w, ${logo768.url} 768w`;
 
 export function AurionLogo({ className = "", sizes = "48px" }: { className?: string; sizes?: string }) {
-  return <img sizes={sizes} srcSet={logoSrcSet} src={logo384.url} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className={`shrink-0 object-contain ${className}`} />;
+  return <img sizes={sizes} srcSet={logoSrcSet} src={logo384.url} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className={`orion-logo shrink-0 object-contain ${className}`} />;
 }
 
 const dock = [
