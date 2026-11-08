@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { listSavedAccounts, rememberAccount, renameSavedAccount } from "@/lib/keystore";
-import { PortfolioChart } from "@/components/portfolio-chart";
 import { HomeAssets } from "@/components/home-assets";
 import { Shell, AurionLogo } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
@@ -145,7 +144,7 @@ function Home() {
         </DialogContent>
       </Dialog>
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-2 block overflow-hidden text-center">
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance relative mb-7 block overflow-hidden text-center">
           <span aria-hidden className="bloom pointer-events-none absolute inset-0" />
           <span className="relative block">
             <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-muted-foreground">Portfolio</span>
@@ -158,7 +157,6 @@ function Home() {
           </span>
         </Link>
       )}
-      {prefs.showWorth && <div className="mb-6"><PortfolioChart totalHbar={total} /></div>}
 
       <div className="mb-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
