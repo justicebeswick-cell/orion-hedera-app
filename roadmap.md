@@ -9,7 +9,7 @@
 - [x] Make surrounding rings white; preserve the original purple ball and transparent background
 - [x] Refresh shared logo, app icons and favicon
 - [x] Verify phone logo and successful build
-- [ ] Publish logo and color theme changes — publishing approval was interrupted by new messages
+- [x] Publishing requested for platinum-silver logo, icons and color theme changes
 
 ## Expanded color themes
 - [x] Add purple shades, blue and custom color choices in General Settings
