@@ -1,5 +1,10 @@
 # Roadmap
 
+## White Orion rings
+- [x] Make surrounding rings white; preserve the original purple ball and transparent background
+- [x] Refresh shared logo, app icons and favicon
+- [x] Verify phone logo and successful build; request publishing of logo and color theme changes
+
 ## Expanded color themes
 - [x] Add purple shades, blue and custom color choices in General Settings
 - [x] Verify color persistence, shared card/action colors and phone/desktop layout; 18 preference checks passed
