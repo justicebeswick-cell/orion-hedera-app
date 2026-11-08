@@ -57,7 +57,7 @@
   --card-radius: 1.75rem;
   --card-border: oklch(1 0 0 / 20%);
   --send-finish: linear-gradient(135deg, oklch(0.59 0.22 298), oklch(0.48 0.23 298));
-  --receive-finish: linear-gradient(135deg, oklch(0.49 0.12 160), oklch(0.37 0.09 164));
+  --receive-finish: linear-gradient(135deg, #3dcca5, #41d9a0);
   /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:
     radial-gradient(120% 90% at 6% 0%, oklch(0.42 0.21 300 / 55%) 0%, transparent 60%),
