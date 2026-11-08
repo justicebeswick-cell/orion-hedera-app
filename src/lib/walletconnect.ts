@@ -15,7 +15,7 @@ export async function getConnector() {
     const sdk = await import("@hiero-ledger/sdk");
     const wc = await import("@hashgraph/hedera-wallet-connect");
     const c = new wc.DAppConnector(
-      { name: "Orion", description: "A Hashgraph Wallet on Hedera mainnet", url: window.location.origin, icons: [`${window.location.origin}/icon-192-v24.png`] },
+      { name: "Orion", description: "A Hashgraph Wallet on Hedera mainnet", url: window.location.origin, icons: [`${window.location.origin}/icon-192-v25.png`] },
       sdk.LedgerId.MAINNET,
       projectId,
       Object.values(wc.HederaJsonRpcMethod),
