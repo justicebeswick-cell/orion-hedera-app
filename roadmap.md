@@ -1,5 +1,6 @@
 # Roadmap
 
+- [x] Deepen Blue theme's Send button to royal blue; verified finish and prepared for publishing.
 - [x] Restore the purple sphere/orbit logo shown in the reference, including loading mark and icons.
 - [x] Make logo, Send, Swap and app accents follow preset/custom themes; verified Blue, purple presets, Custom and light mode.
 

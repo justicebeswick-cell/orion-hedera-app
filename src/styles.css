@@ -119,7 +119,10 @@
 :root[data-theme="amethyst"] { --primary: oklch(0.5 0.24 310); }
 :root[data-theme="lavender"] { --primary: oklch(0.54 0.19 295); }
 :root[data-theme="plum"] { --primary: oklch(0.47 0.22 330); }
-:root[data-theme="blue"] { --primary: oklch(0.5 0.2 255); }
+:root[data-theme="blue"] {
+  --primary: oklch(0.5 0.2 255);
+  --send-finish: var(--action-sheen), linear-gradient(135deg, oklch(from var(--primary) 0.49 0.23 264), oklch(from var(--primary) 0.40 0.20 264));
+}
 :root[data-theme="custom"] { --primary: color-mix(in oklab, var(--custom-color, #7a3fd6) 60%, oklch(0 0 0)); }
 :root:is([data-theme="amethyst"], [data-theme="lavender"], [data-theme="plum"], [data-theme="blue"], [data-theme="custom"]) {
   --card: color-mix(in oklab, var(--primary) 16%, var(--background));
