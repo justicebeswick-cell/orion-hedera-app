@@ -1,13 +1,6 @@
-import { THEME_ICON_PALETTE } from "./theme-icon-palette";
-
 /** Installed shortcuts need fetchable URLs, not document-lifetime blobs/data URLs. */
-export function themeIconPaths(theme: string, target: [number, number, number]) {
-  const exact = THEME_ICON_PALETTE.find((entry) => entry.name === theme);
-  const distance = (rgb: [number, number, number]) => rgb.reduce((sum, value, i) => sum + (value - (target[i] ?? 0)) ** 2, 0);
-  const nearest = THEME_ICON_PALETTE.reduce((best, entry) => distance(entry.rgb) < distance(best.rgb) ? entry : best);
-  const name = exact?.name ?? nearest.name;
-  const base = `/theme-icons/${theme === "default" ? "v37" : "v35"}/${name}`;
-  return { manifest: `${base}.webmanifest`, apple: `${base}-180.png`, favicon: `${base}-64.png` };
+export function themeIconPaths(_theme: string, _target: [number, number, number]) {
+  return { manifest: "/orion-refined/manifest-v38.webmanifest", apple: "/theme-icons/v37/default-180.png", favicon: "/theme-icons/v37/default-64.png" };
 }
 
 function primaryRgb(): [number, number, number] | null {

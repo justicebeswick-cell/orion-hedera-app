@@ -1,27 +1,16 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import sphere from "@/assets/orion-logo/orion-theme-sphere.png.asset.json";
-import rings from "@/assets/orion-logo/orion-orbit-rings-v2.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false }: { className?: string; sizes?: string; orbit?: boolean }) {
-  const filterId = `orion-tint-${useId().replace(/:/g, "")}`;
   return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <svg viewBox="0 0 768 768" aria-hidden="true" className="orion-sphere h-full w-full text-primary">
-      <defs><filter id={filterId} colorInterpolationFilters="sRGB">
-        <feColorMatrix type="saturate" values="0" />
-        <feFlood floodColor="currentColor" result="tint" />
-        <feBlend in="tint" in2="SourceGraphic" mode="color" />
-        <feComposite in2="SourceGraphic" operator="in" />
-      </filter></defs>
-      <image href={sphere.url} width="768" height="768" filter={`url(#${filterId})`} />
-    </svg>
-    <img src={rings.url} sizes={sizes} alt="" aria-hidden="true" width={768} height={768} className={`orion-orbit-rings absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : ""}`} />
+    <img src="/orion-refined/sphere-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="h-full w-full object-contain" />
+    <img src="/orion-refined/rings-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : ""}`} />
   </span>;
 }
 

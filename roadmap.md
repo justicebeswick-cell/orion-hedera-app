@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Apply the refined black sphere and white rings throughout the app, loading screen, favicon and installed icon.
+
 - [x] Refine white-theme icon with smooth slender rings and satin-black sphere; permanent v37 icons and matching favicon; not yet published.
 
 - [x] Make white-theme home-screen icon black with a black sphere and white rings; in-app colors unchanged, Chrome resources verified; not yet published.
