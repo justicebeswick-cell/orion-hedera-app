@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Remove loading-logo square background and center perfect circular rings for a smooth orbit; installed icon unchanged.
+
 - [x] Apply the refined black sphere and white rings throughout the app, loading screen, favicon and installed icon.
 
 - [x] Refine white-theme icon with smooth slender rings and satin-black sphere; permanent v37 icons and matching favicon; not yet published.
