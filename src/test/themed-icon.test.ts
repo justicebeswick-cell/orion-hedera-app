@@ -11,9 +11,18 @@ it("uses permanent blue URLs for Chrome shortcut installation", () => {
 });
 
 it("keeps each preset paired with its own icon set", () => {
-  for (const theme of ["default", "dark", "moonlight", "royal", "amethyst", "lavender", "plum", "blue"]) {
+  for (const theme of ["dark", "moonlight", "royal", "amethyst", "lavender", "plum", "blue"]) {
     expect(themeIconPaths(theme, [255, 0, 0]).manifest).toBe(`/theme-icons/v35/${theme}.webmanifest`);
   }
+});
+
+it("uses the black sphere and white rings icon set only for the white theme", () => {
+  expect(themeIconPaths("default", [137, 68, 230])).toEqual({
+    manifest: "/theme-icons/v36/default.webmanifest",
+    apple: "/theme-icons/v36/default-180.png",
+    favicon: "/theme-icons/v36/default-64.png",
+  });
+  expect(themeIconPaths("dark", [122, 31, 218]).manifest).toBe("/theme-icons/v35/dark.webmanifest");
 });
 
 it("maps custom colors to permanent nearest-color icons", () => {

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Make white-theme home-screen icon black with a black sphere and white rings; in-app colors unchanged, Chrome resources verified; not yet published.
+
 - [x] Repair Chrome shortcut saving with permanent manifests and theme icons; Chrome parses Blue without errors, all icon downloads succeed, theme survives reload; real phone saving awaits publishing/device check.
 
 - [x] Deepen Blue theme's Send button to royal blue; verified finish and prepared for publishing.
