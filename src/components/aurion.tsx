@@ -3,14 +3,14 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import logo96 from "@/assets/orion-logo/orion-bright-rings-96.png.asset.json";
-import logo144 from "@/assets/orion-logo/orion-bright-rings-144.png.asset.json";
-import logo192 from "@/assets/orion-logo/orion-bright-rings-192.png.asset.json";
-import logo288 from "@/assets/orion-logo/orion-bright-rings-288.png.asset.json";
-import logo384 from "@/assets/orion-logo/orion-bright-rings-384.png.asset.json";
-import logo576 from "@/assets/orion-logo/orion-bright-rings-576.png.asset.json";
-import logo768 from "@/assets/orion-logo/orion-bright-rings-768.png.asset.json";
-import lightLogo from "@/assets/orion-logo/orion-light-black-rings.png";
+import logo96 from "@/assets/orion-logo/orion-eclipse-96.png.asset.json";
+import logo144 from "@/assets/orion-logo/orion-eclipse-144.png.asset.json";
+import logo192 from "@/assets/orion-logo/orion-eclipse-192.png.asset.json";
+import logo288 from "@/assets/orion-logo/orion-eclipse-288.png.asset.json";
+import logo384 from "@/assets/orion-logo/orion-eclipse-384.png.asset.json";
+import logo576 from "@/assets/orion-logo/orion-eclipse-576.png.asset.json";
+import logo768 from "@/assets/orion-logo/orion-eclipse-768.png.asset.json";
+import lightLogo from "@/assets/orion-logo/orion-eclipse-light-768.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
@@ -19,7 +19,7 @@ import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "luci
 const logoSrcSet = `${logo96.url} 96w, ${logo144.url} 144w, ${logo192.url} 192w, ${logo288.url} 288w, ${logo384.url} 384w, ${logo576.url} 576w, ${logo768.url} 768w`;
 
 export function AurionLogo({ className = "", sizes = "48px" }: { className?: string; sizes?: string }) {
-  return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`}><img sizes={sizes} srcSet={logoSrcSet} src={logo384.url} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className="orion-logo h-full w-full object-contain" /><img src={lightLogo} alt="" aria-hidden="true" width={768} height={768} className="orion-light-logo absolute inset-0 hidden h-full w-full object-contain" /></span>;
+  return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`}><img sizes={sizes} srcSet={logoSrcSet} src={logo384.url} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className="orion-logo h-full w-full object-contain" /><img src={lightLogo.url} alt="" aria-hidden="true" width={768} height={768} className="orion-light-logo absolute inset-0 hidden h-full w-full object-contain" /></span>;
 }
 
 const dock = [
