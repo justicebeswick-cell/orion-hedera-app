@@ -9,8 +9,8 @@ import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "luci
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false }: { className?: string; sizes?: string; orbit?: boolean }) {
   return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <img src={orbit ? "/orion-refined/launch-sphere-v39.png" : "/orion-refined/sphere-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="h-full w-full object-contain" />
-    <img src={orbit ? "/orion-refined/launch-rings-v39.png" : "/orion-refined/rings-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : ""}`} />
+    <img src={orbit ? "/orion-refined/launch-sphere-v39.png" : "/orion-refined/sphere-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`h-full w-full object-contain ${orbit ? "" : "orion-static-sphere"}`} />
+    <img src={orbit ? "/orion-refined/launch-rings-v39.png" : "/orion-refined/rings-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : "orion-orbit-rings"}`} />
   </span>;
 }
 

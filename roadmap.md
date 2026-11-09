@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Remove the in-app light-mode logo box with a circular sphere mask and contrasting rings; dark mode, launch and installed icon unchanged.
+
 - [x] Remove loading-logo square background and center perfect circular rings for a smooth orbit; installed icon unchanged.
 
 - [x] Apply the refined black sphere and white rings throughout the app, loading screen, favicon and installed icon.

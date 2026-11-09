@@ -140,6 +140,7 @@
 .theme-swatch-custom { background: color-mix(in oklab, var(--custom-color, #7a3fd6) 60%, oklch(0 0 0)); color: oklch(0.98 0 0); }
 :root[data-theme="default"] .orion-lettering { filter: invert(1) drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
 :root[data-theme="default"] .orion-orbit-rings { filter: invert(1); }
+:root[data-theme="default"] .orion-static-sphere { mask-image: url("/orion-refined/light-sphere-mask-v40.png"); mask-size: contain; mask-repeat: no-repeat; mask-position: center; }
 :root[data-theme="default"] .launch-screen .orion-orbit-rings { filter: none; }
 /* White theme: the white Hedera H in "Hello" turns black so it stays visible. */
 :root[data-theme="default"] .hello-hbar-h { filter: invert(1); }
