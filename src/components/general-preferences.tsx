@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { usePreferences, resolvedTheme } from "@/lib/preferences";
 import { setCurrencyRates } from "@/lib/display-currency";
+import { applyThemedIcon } from "@/lib/themed-icon";
 
 export function GeneralPreferences() {
   const prefs = usePreferences();
@@ -9,10 +10,10 @@ export function GeneralPreferences() {
     const update = () => {
       document.documentElement.style.setProperty("--custom-color", prefs.customColor);
       document.documentElement.dataset["theme"] = resolvedTheme(prefs, media.matches);
+      applyThemedIcon();
     };
     update();
-    const iconTimer = window.setTimeout(() => { import("@/lib/themed-icon").then((m) => m.applyThemedIcon()).catch(() => {}); }, 300);
-    media.addEventListener("change", update); return () => { window.clearTimeout(iconTimer); media.removeEventListener("change", update); };
+    media.addEventListener("change", update); return () => { media.removeEventListener("change", update); };
   }, [prefs.theme, prefs.autoTheme, prefs.customColor]);
   useEffect(() => {
     const controller = new AbortController();
