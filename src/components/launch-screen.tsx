@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
-import orbitRings from "@/assets/orion-logo/orion-orbit-rings.png.asset.json";
+import orbitRings from "@/assets/orion-logo/orion-orbit-rings-v2.png.asset.json";
 import orbitSphere from "@/assets/orion-logo/orion-orbit-sphere.png.asset.json";
 import { OrionName } from "@/components/orion-name";
 
