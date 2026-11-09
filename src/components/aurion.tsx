@@ -47,7 +47,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
     <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
       <header className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <AurionLogo className="h-12 w-12" crisp={title === "Home"} />
+          <AurionLogo className="h-12 w-12" crisp />
           <div>
           <Button variant="ghost"
             onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}
