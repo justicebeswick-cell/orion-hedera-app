@@ -7,7 +7,17 @@ import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
-export function AurionLogo({ className = "", sizes = "48px", orbit = false }: { className?: string; sizes?: string; orbit?: boolean }) {
+export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
+  if (crisp) return <span className={`orion-logo-frame orion-home-logo relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
+    <svg viewBox="0 0 1024 1024" className="relative h-full w-full" aria-hidden="true">
+      <image href="/orion-refined/launch-sphere-v39.png" width="1024" height="1024" />
+      <g className="orion-home-rings" fill="none" strokeWidth="16">
+        <circle cx="512" cy="512" r="381" />
+        <circle cx="512" cy="512" r="320" />
+      </g>
+      <circle className="orion-home-node" cx="512" cy="131" r="29" />
+    </svg>
+  </span>;
   return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
     <img src={orbit ? "/orion-refined/launch-sphere-v39.png" : "/orion-refined/sphere-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`h-full w-full object-contain ${orbit ? "" : "orion-static-sphere"}`} />
     <img src={orbit ? "/orion-refined/launch-rings-v39.png" : "/orion-refined/rings-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : "orion-orbit-rings"}`} />
@@ -37,7 +47,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
     <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
       <header className="mb-6 flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <AurionLogo className="h-12 w-12" />
+          <AurionLogo className="h-12 w-12" crisp={title === "Home"} />
           <div>
           <Button variant="ghost"
             onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}

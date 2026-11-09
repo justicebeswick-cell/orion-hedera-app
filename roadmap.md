@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Sharpen Home logo with resolution-independent circular rings and a theme-matched glow; loading screen and phone icons unchanged.
+
 - [x] Remove the in-app light-mode logo box with a circular sphere mask and contrasting rings; dark mode, launch and installed icon unchanged.
 
 - [x] Remove loading-logo square background and center perfect circular rings for a smooth orbit; installed icon unchanged.
