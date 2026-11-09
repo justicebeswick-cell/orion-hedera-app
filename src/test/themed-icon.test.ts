@@ -18,9 +18,9 @@ it("keeps each preset paired with its own icon set", () => {
 
 it("uses the black sphere and white rings icon set only for the white theme", () => {
   expect(themeIconPaths("default", [137, 68, 230])).toEqual({
-    manifest: "/theme-icons/v36/default.webmanifest",
-    apple: "/theme-icons/v36/default-180.png",
-    favicon: "/theme-icons/v36/default-64.png",
+    manifest: "/theme-icons/v37/default.webmanifest",
+    apple: "/theme-icons/v37/default-180.png",
+    favicon: "/theme-icons/v37/default-64.png",
   });
   expect(themeIconPaths("dark", [122, 31, 218]).manifest).toBe("/theme-icons/v35/dark.webmanifest");
 });
