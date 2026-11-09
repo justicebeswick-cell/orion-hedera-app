@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
-import launchLogo from "@/assets/orion-logo/orion-eclipse-768.png.asset.json";
+import launchLogo from "@/assets/orion-logo/orion-eclipse-purple-768.png.asset.json";
 import { OrionName } from "@/components/orion-name";
 
 export function LaunchScreen() {
