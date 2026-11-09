@@ -1,5 +1,9 @@
 # Roadmap
 
+## Mirror delay warning
+- [x] Check latest ingested blocks and bypass reused mirror/time-reference cache entries without using the device clock
+- [x] Verify fresh mainnet reads (about 2 seconds behind), no Home warning, and six regression checks including genuine four-minute delays
+
 ## Loading orbit
 - [x] Animate the loading logo rings through one smooth orbit around the stationary purple sphere
 - [x] Verify the orbit finishes before dismissal and respects reduced motion
