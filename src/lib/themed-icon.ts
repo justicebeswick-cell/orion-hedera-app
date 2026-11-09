@@ -30,7 +30,7 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
 export function recolorPixels(data: Uint8ClampedArray, target: [number, number, number]) {
   const [th, ts] = rgbToHsl(...target);
   for (let i = 0; i < data.length; i += 4) {
-    const [, s, l] = rgbToHsl(data[i], data[i + 1], data[i + 2]);
+    const [, s, l] = rgbToHsl(data[i]!, data[i + 1]!, data[i + 2]!);
     if (s < 0.2 || l < 0.04) continue;
     const [r, g, b] = hslToRgb(th, Math.min(1, ts * (s / 0.8)), l);
     data[i] = r; data[i + 1] = g; data[i + 2] = b;
@@ -46,8 +46,8 @@ function primaryRgb(): [number, number, number] {
   const c = document.createElement("canvas"); c.width = c.height = 1;
   const ctx = c.getContext("2d")!;
   ctx.fillStyle = color; ctx.fillRect(0, 0, 1, 1);
-  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-  return [r, g, b];
+  const d = ctx.getImageData(0, 0, 1, 1).data;
+  return [d[0]!, d[1]!, d[2]!];
 }
 
 let source: Promise<HTMLImageElement> | null = null;
