@@ -1,25 +1,28 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
-import logo96 from "@/assets/orion-logo/orion-eclipse-purple-96.png.asset.json";
-import logo144 from "@/assets/orion-logo/orion-eclipse-purple-144.png.asset.json";
-import logo192 from "@/assets/orion-logo/orion-eclipse-purple-192.png.asset.json";
-import logo288 from "@/assets/orion-logo/orion-eclipse-purple-288.png.asset.json";
-import logo384 from "@/assets/orion-logo/orion-eclipse-purple-384.png.asset.json";
-import logo576 from "@/assets/orion-logo/orion-eclipse-purple-576.png.asset.json";
-import logo768 from "@/assets/orion-logo/orion-eclipse-purple-768.png.asset.json";
-import lightLogo from "@/assets/orion-logo/orion-eclipse-purple-light-768.png.asset.json";
+import sphere from "@/assets/orion-logo/orion-theme-sphere.png.asset.json";
+import rings from "@/assets/orion-logo/orion-orbit-rings-v2.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
 
-// Pre-sized copies keep the fine texture crisp; the browser picks the one matching display size × screen density.
-const logoSrcSet = `${logo96.url} 96w, ${logo144.url} 144w, ${logo192.url} 192w, ${logo288.url} 288w, ${logo384.url} 384w, ${logo576.url} 576w, ${logo768.url} 768w`;
-
-export function AurionLogo({ className = "", sizes = "48px" }: { className?: string; sizes?: string }) {
-  return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`}><img sizes={sizes} srcSet={logoSrcSet} src={logo384.url} alt="Orion logo" width={768} height={768} fetchPriority="high" decoding="async" className="orion-logo h-full w-full object-contain" /><img src={lightLogo.url} alt="" aria-hidden="true" width={768} height={768} className="orion-light-logo absolute inset-0 hidden h-full w-full object-contain" /></span>;
+export function AurionLogo({ className = "", sizes = "48px", orbit = false }: { className?: string; sizes?: string; orbit?: boolean }) {
+  const filterId = `orion-tint-${useId().replace(/:/g, "")}`;
+  return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
+    <svg viewBox="0 0 768 768" aria-hidden="true" className="orion-sphere h-full w-full text-primary">
+      <defs><filter id={filterId} colorInterpolationFilters="sRGB">
+        <feColorMatrix type="saturate" values="0" />
+        <feFlood floodColor="currentColor" result="tint" />
+        <feBlend in="tint" in2="SourceGraphic" mode="color" />
+        <feComposite in2="SourceGraphic" operator="in" />
+      </filter></defs>
+      <image href={sphere.url} width="768" height="768" filter={`url(#${filterId})`} />
+    </svg>
+    <img src={rings.url} sizes={sizes} alt="" aria-hidden="true" width={768} height={768} className={`orion-orbit-rings absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : ""}`} />
+  </span>;
 }
 
 const dock = [

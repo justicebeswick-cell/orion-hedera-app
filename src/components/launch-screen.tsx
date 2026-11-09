@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
-import launchLogo from "@/assets/orion-logo/orion-eclipse-purple-768.png.asset.json";
+import { AurionLogo } from "@/components/aurion";
 import { OrionName } from "@/components/orion-name";
 
 export function LaunchScreen() {
@@ -16,7 +16,7 @@ export function LaunchScreen() {
     <div className={`launch-screen ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening Orion">
       <div className="launch-brand">
         <div className="launch-logo relative" role="img" aria-label="Orion logo">
-          <img src={launchLogo.url} alt="" className="h-full w-full object-contain" width={768} height={768} />
+          <AurionLogo className="h-full w-full" sizes="148px" orbit />
         </div>
         <div className="launch-wordmark">
           <div className="launch-name"><OrionName className="mx-auto w-32" /></div>
