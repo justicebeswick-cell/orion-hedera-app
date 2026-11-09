@@ -1,6 +1,6 @@
 /** Installed shortcuts need fetchable URLs, not document-lifetime blobs/data URLs. */
 export function themeIconPaths(_theme: string, _target: [number, number, number]) {
-  return { manifest: "/orion-refined/manifest-v38.webmanifest", apple: "/theme-icons/v37/default-180.png", favicon: "/theme-icons/v37/default-64.png" };
+  return { manifest: "/orion-refined/manifest-v39.webmanifest", apple: "/theme-icons/v38/default-180.png", favicon: "/theme-icons/v38/default-64.png" };
 }
 
 function primaryRgb(): [number, number, number] | null {
