@@ -36,7 +36,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
   return <>
     <div className="unlock-backdrop" aria-hidden="true">
       <div className="mx-auto max-w-xl px-5 pt-8 opacity-70">
-        <div className="mb-8 flex items-center gap-3"><AurionLogo className="h-12 w-12" /><OrionName className="w-32" /></div>
+        <div className="mb-8 flex items-center gap-3"><AurionLogo className="h-12 w-12" crisp /><OrionName className="w-32" /></div>
         <div className="h-20 rounded-lg bg-secondary" />
         <div className="my-5 grid grid-cols-3 gap-2">{[ArrowUpRight, ArrowLeftRight, ArrowDownLeft].map((Icon, i) => <div key={i} className="flex h-12 items-center justify-center rounded-lg bg-primary"><Icon /></div>)}</div>
         {[0, 1, 2, 3].map((i) => <div key={i} className="my-6 flex items-center gap-4"><span className="h-12 w-12 rounded-lg bg-primary/40" /><span className="h-4 w-28 rounded bg-muted" /><span className="ml-auto h-4 w-20 rounded bg-muted" /></div>)}
@@ -44,7 +44,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
     </div>
     <div className="unlock-glass" role="dialog" aria-modal="true" aria-label="Unlock Orion">
       <motion.div initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto flex min-h-full w-full max-w-xs flex-col items-center justify-center">
-        <div className="flex items-center gap-2"><AurionLogo className="h-12 w-12" /><h1><OrionName className="w-44" /></h1></div>
+        <div className="flex items-center gap-2"><AurionLogo className="h-12 w-12" crisp /><h1><OrionName className="w-44" /></h1></div>
         <p className="mt-1 text-xs text-muted-foreground">A Hashgraph Wallet</p>
         <p className="mt-8 text-sm font-medium">{busy ? "Unlocking…" : length ? "Enter your device code" : "Enter your existing passphrase"}</p>
         {length ? <>
