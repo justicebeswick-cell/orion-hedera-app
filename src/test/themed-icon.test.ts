@@ -5,23 +5,23 @@ import { themeIconPaths } from "@/lib/themed-icon";
 
 it("uses permanent refined artwork URLs for Chrome shortcut installation", () => {
   expect(themeIconPaths("blue", [0, 93, 209])).toEqual({
-    manifest: "/orion-refined/manifest-v39.webmanifest",
-    apple: "/theme-icons/v38/default-180.png",
-    favicon: "/theme-icons/v38/default-64.png",
+    manifest: "/orion-refined/manifest-v40.webmanifest",
+    apple: "/theme-icons/v40/default-180.png",
+    favicon: "/theme-icons/v40/default-64.png",
   });
 });
 
 it("keeps the approved black and white icon across every preset", () => {
   for (const theme of ["dark", "moonlight", "royal", "amethyst", "lavender", "plum", "blue"]) {
-    expect(themeIconPaths(theme, [255, 0, 0]).manifest).toBe("/orion-refined/manifest-v39.webmanifest");
+    expect(themeIconPaths(theme, [255, 0, 0]).manifest).toBe("/orion-refined/manifest-v40.webmanifest");
   }
 });
 
 it("uses the same black sphere and white rings in light and dark themes", () => {
   expect(themeIconPaths("default", [137, 68, 230])).toEqual({
-    manifest: "/orion-refined/manifest-v39.webmanifest",
-    apple: "/theme-icons/v38/default-180.png",
-    favicon: "/theme-icons/v38/default-64.png",
+    manifest: "/orion-refined/manifest-v40.webmanifest",
+    apple: "/theme-icons/v40/default-180.png",
+    favicon: "/theme-icons/v40/default-64.png",
   });
   expect(themeIconPaths("dark", [122, 31, 218])).toEqual(themeIconPaths("default", [137, 68, 230]));
 });
@@ -32,13 +32,13 @@ it("keeps custom app accents from changing the approved icon", () => {
 
 it("serves the smaller logo mark from files the browser can fetch", () => {
   const manifest = JSON.parse(
-    readFileSync(resolve("public/orion-refined/manifest-v39.webmanifest"), "utf8"),
+    readFileSync(resolve("public/orion-refined/manifest-v40.webmanifest"), "utf8"),
   ) as { icons: { src: string }[] };
   expect(manifest.icons.map((i) => i.src)).toEqual([
-    "/theme-icons/v38/default-192.png",
-    "/theme-icons/v38/default-512.png",
-    "/theme-icons/v38/default-192-maskable.png",
-    "/theme-icons/v38/default-512-maskable.png",
+    "/theme-icons/v40/default-192.png",
+    "/theme-icons/v40/default-512.png",
+    "/theme-icons/v40/default-192-maskable.png",
+    "/theme-icons/v40/default-512-maskable.png",
   ]);
   for (const icon of manifest.icons) {
     expect(existsSync(resolve("public", icon.src.replace(/^\//, ""))), icon.src).toBe(true);
