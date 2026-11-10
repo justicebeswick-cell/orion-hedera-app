@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Supply transparent circular launch artwork for the phone-generated startup screen; keep installed maskable tile artwork and Orion's animated launch screen. Actual Android splash selection requires a phone check after publication/reinstallation.
 
 - [x] Sharpen Home logo with resolution-independent circular rings and a theme-matched glow; loading screen and phone icons unchanged.
 
