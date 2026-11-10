@@ -22,3 +22,4 @@
 - [x] Refine Eclipse Star logo: sleeker, purple crescent; updated app artwork + v31 icons
 - [x] Thicker white ring + bigger purple crescent; rolled through app artwork + v32 icons
 - [x] Neon hash purple (#41149b→#793be3), crescent = 1/3 of circle; v33 icons
+- [ ] Use user's uploaded picture as app icon (sharp, all sizes) — awaiting confirmation of crop
