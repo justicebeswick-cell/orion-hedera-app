@@ -46,9 +46,9 @@ export function ClaimRewards({ accountId, pendingReward, compact = false }: { ac
         aria-label={`Claim rewards${pendingReward === undefined ? "" : `: ${hbar(pendingReward)} HBAR`}`}
         onClick={() => { setError(""); setResult(null); setOpen(true); }}>
         <Sparkles size={16} className="text-primary" />
-        {compact && <span className="flex-1 text-sm">Claim rewards</span>}
+        {compact && <span className="flex-1 text-sm">Claim rewards<span className="block text-[11px] text-muted-foreground">Rewards build up daily and pay out on your next transaction, or claim them here.</span></span>}
         <span className={`${compact ? "" : "mt-2 block"} break-words text-sm font-semibold tnum`}>{pendingReward === undefined ? "—" : `${hbar(pendingReward)} ℏ`}</span>
-        {!compact && <span className="mt-0.5 block text-xs text-muted-foreground">Claim rewards</span>}
+        {!compact && <span className="mt-0.5 block text-xs text-muted-foreground">Claim rewards · pays out on your next transaction</span>}
       </Button>
       <Dialog open={open} onOpenChange={(value) => { if (!busy) { setOpen(value); setPass(""); } }}>
         <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-2xl">

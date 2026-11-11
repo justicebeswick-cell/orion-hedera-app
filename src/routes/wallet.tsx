@@ -54,13 +54,13 @@ function Wallet() {
       <div className="mb-4 grid grid-cols-3 gap-2">
         {(["create", "import", "watch"] as const).map((m) => (
           <button key={m} onClick={() => setMode(m)} className={`btn-ghost py-2 text-xs ${mode === m ? "border-primary text-primary" : ""}`}>
-            {m === "create" ? "Create new" : m === "import" ? "I have a wallet" : "Watch only"}
+            {m === "create" ? "Create new" : m === "import" ? "I have a wallet" : "Hardware / watch"}
           </button>
         ))}
       </div>
       <p className="mb-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
         {mode === "watch"
-          ? "Watch only reads balances. To send, stake or use Face ID / fingerprint, create a wallet or import one here."
+          ? "Connect a Ledger, Tangem or other cold wallet by its 0.0 account ID or 0x address. No keys or phrases are needed. Orion tracks balances, tokens and staking rewards, and prepares unsigned payments for your device to sign."
           : "Face ID / fingerprint signing works once the wallet's key is saved on this device. Wallets connected through HashPack sign in HashPack instead."}
       </p>
       {mode === "create" && <Create onPending={setPending} />}

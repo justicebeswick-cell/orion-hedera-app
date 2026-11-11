@@ -38,6 +38,10 @@ export function HomeAssets({ accountId }: { accountId: string }) {
   return <>
     {query.isPending && <div className="h-16 animate-pulse bg-muted/20" />}
     {query.isError && <p role="alert" className="py-4 text-sm text-destructive">Token balances unavailable.</p>}
+    {query.data?.length === 0 && <Link to="/vault" search={{ section: "swap" }} className="home-asset text-sm text-muted-foreground">
+      <span className="flex-1">No custom tokens yet. <span className="text-primary">Explore HTS assets</span></span>
+      <ChevronRight size={14} className="shrink-0" />
+    </Link>}
     {query.data?.map((token) => <Link key={token.token_id} to="/vault" search={{ section: "nft" in token && token.nft ? "nfts" : "holdings" }} className="home-asset">
       <AssetLogo key={icons.get(token.token_id) ?? token.token_id} symbol={token.symbol} icon={icons.get(token.token_id)} />
       <span className="min-w-0 flex-1"><span className="block truncate font-semibold">{token.symbol}</span><span className="block truncate text-xs text-muted-foreground">{token.name}</span></span>

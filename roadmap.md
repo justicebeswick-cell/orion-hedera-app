@@ -32,5 +32,8 @@
 - [x] Multi-account Ed25519 + ECDSA from one seed, protected key export (mainnet only, no testnet switch)
 - [x] HCS audit memo on sends (user pays per memo) + verified badge in history
 - [ ] Studio: two sections, AI and dApp browser with WalletConnect approvals
-- [ ] Watch-only cold accounts (Ledger/Tangem) with unsigned payload QR
+- [x] Watch-only cold accounts (Ledger/Tangem) with unsigned payload QR
 - [x] Studio: create and mint NFTs, and create your own tokens
+- [x] Home: friendly empty token state; HBAR row links to history
+- [x] Claim rewards: helper text for 0.00 ħ
+- [x] Bottom nav: glowing active indicator

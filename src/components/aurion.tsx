@@ -81,8 +81,8 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             <Link
               key={d.to}
               to={d.to}
-              className="flex flex-col items-center gap-1.5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-primary" }}
+              className="dock-link relative flex flex-col items-center gap-1.5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "dock-active text-primary font-medium", "aria-current": "page" }}
               activeOptions={{ exact: true }}
             >
               <d.icon size={20} strokeWidth={1.6} />{d.label}
@@ -134,8 +134,8 @@ export function Label({ children }: { children: ReactNode }) {
  * Signs with the connected wallet or the device key. `run` receives the passphrase
  * (empty for wallets) and returns a transaction id.
  */
-export function SignButton({ accountId, verb, disabled, run, done }: {
-  accountId: string | null; verb: string; disabled?: boolean;
+export function SignButton({ accountId, verb, disabled, run, done, unsigned }: {
+  accountId: string | null; verb: string; disabled?: boolean; unsigned?: (() => Promise<string>) | undefined;
   run: (pass: string) => Promise<string>; done: (txId: string) => ReactNode;
 }) {
   const [mode, setMode] = useState<import("@/lib/signer").SignMode>({ kind: "none" });
@@ -156,9 +156,10 @@ export function SignButton({ accountId, verb, disabled, run, done }: {
   );
   if (mode.kind === "none")
     return (
-      <p className="text-sm text-muted-foreground">
-        This account is watch-only on this device. <Link to="/wallet" className="text-signal">Create or connect a wallet</Link> to sign.
-      </p>
+      <div className="text-sm text-muted-foreground">
+        <p>This account is watch-only on this device. <Link to="/wallet" className="text-signal">Create or connect a wallet</Link> to sign here.</p>
+        {unsigned && accountId && <UnsignedPayload build={unsigned} />}
+      </div>
     );
   const go = async (bio = false) => {
     setState("busy"); setMsg("");
@@ -257,6 +258,28 @@ export function SealRing({ children }: { children: ReactNode }) {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: reduce ? 0 : 0.42, duration: 0.25 }}>
         {children}
       </motion.div>
+    </div>
+  );
+}
+
+/** Watch-only accounts: build an unsigned transaction for a hardware signer. Nothing is signed here. */
+function UnsignedPayload({ build }: { build: () => Promise<string> }) {
+  const [hex, setHex] = useState<string | null>(null);
+  const [err, setErr] = useState("");
+  const [QR, setQR] = useState<null | typeof import("qrcode.react").QRCodeSVG>(null);
+  return (
+    <div className="mt-3">
+      <button className="btn-ghost w-full" onClick={async () => {
+        setErr("");
+        try { setHex(await build()); const m = await import("qrcode.react"); setQR(() => m.QRCodeSVG); } catch (e) { setErr((e as Error).message); }
+      }}>Prepare unsigned transaction</button>
+      {hex && <div className="mt-3 space-y-2">
+        {QR && hex.length < 2600 && <div className="mx-auto w-fit rounded-xl bg-white p-3"><QR value={hex} size={200} /></div>}
+        <textarea readOnly className="field h-24 font-mono text-[10px]" value={hex} />
+        <button className="btn-ghost w-full py-2 text-xs" onClick={() => navigator.clipboard.writeText(hex)}>Copy payload</button>
+        <p className="text-[11px]">Hedera transaction bytes (hex), valid for about 2 minutes. Sign with a tool that supports Hedera, such as your Ledger's Hedera app, then submit it.</p>
+      </div>}
+      {err && <p className="mt-2 text-xs text-destructive">{err}</p>}
     </div>
   );
 }

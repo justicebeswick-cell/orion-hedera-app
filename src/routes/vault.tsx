@@ -24,7 +24,7 @@ import { fmtAmount, fmtUsd } from "@/lib/display";
 import { heldTokens } from "@/lib/portfolio";
 import { REFRESH_MS } from "@/lib/refresh";
 import { EVM_RE, isHbarRecipient } from "@/lib/recipient";
-import { sendHbar, sendToken, armSwitch, deleteSchedule, signMode, writeAuditRecord } from "@/lib/signer";
+import { sendHbar, sendToken, armSwitch, deleteSchedule, signMode, writeAuditRecord, unsignedHbarTransfer } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
@@ -349,7 +349,7 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
           <span>Write an audit record to Hedera. You pay a small extra network fee (under $0.01; the first one also opens your record topic).</span>
         </label>
       )}
-      <SignButton accountId={id} disabled={!ok} verb={ok ? `Send ${n} ℏ` : "Send"} run={async (pass) => {
+      <SignButton accountId={id} disabled={!ok} unsigned={ok ? () => unsignedHbarTransfer(id, EVM_RE.test(to.trim()) ? to.trim().toLowerCase() : to.trim(), n, memo) : undefined} verb={ok ? `Send ${n} ℏ` : "Send"} run={async (pass) => {
         const dest = EVM_RE.test(to.trim()) ? to.trim().toLowerCase() : to.trim();
         const block = await checkSend(id, dest, n, { allowNewAccount: true });
         if (block) { audit({ action: "blocked", detail: `${id} → ${dest} ${n} ℏ · ${block}`, ok: false }); throw new Error(block); }

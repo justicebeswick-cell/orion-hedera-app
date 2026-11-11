@@ -405,3 +405,18 @@ export async function createAndMintNft(from: string, c: { name: string; symbol: 
     return { tokenId, serial: rc.serials[0]?.toString() ?? "" };
   } catch (e) { throw wrap("NFT mint", e); } finally { client.close(); }
 }
+
+/** Unsigned HBAR transfer bytes (hex) for an external/hardware signer. */
+export async function unsignedHbarTransfer(from: string, to: string, amountHbar: number, memo: string) {
+  const sdk = await import("@hashgraph/sdk");
+  const client = sdk.Client.forMainnet();
+  try {
+    const tx = new sdk.TransferTransaction()
+      .addHbarTransfer(from, new sdk.Hbar(-amountHbar)).addHbarTransfer(to, new sdk.Hbar(amountHbar))
+      .setTransactionMemo(memo).setMaxTransactionFee(new sdk.Hbar(2))
+      .setTransactionId(sdk.TransactionId.generate(from))
+      .setNodeAccountIds([new sdk.AccountId(3)])
+      .freezeWith(client);
+    return Array.from(tx.toBytes(), (b) => b.toString(16).padStart(2, "0")).join("");
+  } finally { client.close(); }
+}

@@ -334,3 +334,9 @@
   transition: opacity 900ms cubic-bezier(.22,1,.36,1), transform 900ms cubic-bezier(.22,1,.36,1), filter 900ms cubic-bezier(.22,1,.36,1); }
 .hello-word.is-on { opacity: 1; transform: translateY(0); filter: blur(0); }
 @media (prefers-reduced-motion: reduce) { .hello-word { transform: none; filter: none; transition: opacity 400ms; } }
+
+.dock-active::before {
+  content: ""; position: absolute; top: 0; left: 50%; width: 28px; height: 3px; transform: translateX(-50%);
+  border-radius: 0 0 4px 4px; background: var(--primary); box-shadow: 0 0 12px 2px color-mix(in oklab, var(--primary) 70%, transparent);
+}
+.dock-active svg { filter: drop-shadow(0 0 6px color-mix(in oklab, var(--primary) 65%, transparent)); }

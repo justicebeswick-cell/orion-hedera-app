@@ -128,7 +128,7 @@ function Home() {
       <div className="home-account mb-2 flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
           <span className="block break-words text-base font-semibold leading-tight">{walletName || id}</span>
-          <span className="mt-0.5 block text-[11px] text-muted-foreground">{walletName ? id : watchOnly ? "Watch-only" : "My Hedera wallet"}</span>
+          <span className="mt-0.5 block text-[11px] text-muted-foreground">{walletName ? (watchOnly ? `${id} · Cold storage` : id) : watchOnly ? "Cold storage · watch-only" : "My Hedera wallet"}</span>
         </Link>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Name wallet" onClick={() => { setNameDraft(walletName); setEditingName(true); }}><Pencil size={13} /></Button>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Copy account ID" onClick={async () => { try { await navigator.clipboard.writeText(id); toast.success("Account ID copied"); } catch { toast.error("Copy failed"); } }}><Copy size={13} /></Button>
@@ -181,12 +181,12 @@ function Home() {
         <Button asChild variant="receive" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
       <div className="mb-2 flex items-center justify-between">
-        <div className="flex gap-1"><Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens <span className="tnum text-muted-foreground">{tokenCount.data ?? "—"}</span></Link></Button>
+        <div className="flex gap-1"><Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens{tokenCount.data ? <span className="tnum text-muted-foreground">{tokenCount.data}</span> : null}</Link></Button>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}><ImageIcon size={16} />NFTs</Link></Button></div>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
       </div>
       {acct.isError && <p className="py-4 text-xs text-destructive">{(acct.error as Error).message}</p>}
-      <Link to="/vault" search={{ section: "holdings" }} className="home-asset pt-6">
+      <Link to="/vault" search={{ section: "market" }} aria-label="HBAR price chart and history" className="home-asset pt-6">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center text-primary"><HbarLogo size={32} /></span>
         <span className="shrink-0"><span className="block font-semibold">HBAR</span><span className="block text-xs text-muted-foreground">Hedera</span></span>
         <span className="min-w-0 flex-1 text-right"><span className="block text-sm font-semibold tnum [overflow-wrap:anywhere] sm:text-lg">{acct.data ? hbar(acct.data.tinybar) : "—"} ℏ</span>{prefs.showPrices && <span className="block text-xs text-muted-foreground tnum">{rate.data ? `${usd(rate.data)} per HBAR` : "—"}</span>}</span>
