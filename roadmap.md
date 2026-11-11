@@ -6,7 +6,7 @@
 - [x] Center the larger ORION lettering above the main welcome logo, with the greeting beneath.
 - [x] Remove the welcome-page header branding and enlarge the main ORION lettering.
 - [x] Remove the welcome-page logo's black box and match Home's transparent logo and selected-theme halo.
-- [ ] Publish the welcome logo refinement and WalletConnect configuration.
+- [x] Request publication of the welcome logo refinement and WalletConnect configuration; deployment completion not yet verified.
 - [x] Sharpen the phone icon using Home's circular ring geometry at high resolution, with the mark about 60% of the tile; unlock-screen logos use Home's crisp transparent rendering.
 - [x] Supply transparent circular launch artwork for the phone-generated startup screen; keep installed maskable tile artwork and Orion's animated launch screen. Actual Android splash selection requires a phone check after publication/reinstallation.
 
