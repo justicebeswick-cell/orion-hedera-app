@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Panel, Label, SignButton } from "@/components/aurion";
 import { createAndMintNft, createFungibleToken, signMode } from "@/lib/signer";
 import { audit } from "@/lib/guard";
+import { uploadNftMedia } from "@/lib/nft-upload.functions";
 
 const HASHSCAN = "https://hashscan.io/mainnet";
 const META_RE = /^(ipfs:\/\/|https:\/\/)\S+$/;
@@ -28,6 +29,23 @@ function MintNft({ id }: { id: string }) {
   const [name, setName] = useState(""); const [symbol, setSymbol] = useState("");
   const [max, setMax] = useState("100"); const [royalty, setRoyalty] = useState("0");
   const [meta, setMeta] = useState("");
+  const [desc, setDesc] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [upBusy, setUpBusy] = useState(false);
+  const [upErr, setUpErr] = useState("");
+  const onFile = async (f: File | undefined) => {
+    if (!f) return;
+    setUpErr(""); setUpBusy(true);
+    try {
+      if (f.size > 5 * 1024 * 1024) throw new Error("Picture must be under 5 MB.");
+      const buf = new Uint8Array(await f.arrayBuffer());
+      let bin = ""; for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+      const origin = location.hostname === "localhost" || location.hostname.includes("preview") ? "https://hedera-trust-vault.lovable.app" : location.origin;
+      const r = await uploadNftMedia({ data: { image: btoa(bin), type: f.type, name: name.trim() || f.name, description: desc.trim(), origin } });
+      setMeta(r.metadata); setPreview(URL.createObjectURL(f));
+    } catch (e) { setUpErr((e as Error).message); }
+    setUpBusy(false);
+  };
   const reuse = /^0\.0\.\d+$/.test(existing.trim());
   const r = Number(royalty), m = Number(max);
   const metaOk = META_RE.test(meta.trim()) && new TextEncoder().encode(meta.trim()).length <= 100;
@@ -43,8 +61,15 @@ function MintNft({ id }: { id: string }) {
           <label className="text-xs text-muted-foreground">Royalty %<input className="field tnum" inputMode="decimal" value={royalty} onChange={(e) => setRoyalty(e.target.value)} /></label>
         </div>
       </>}
-      <input className="field" placeholder="Metadata link (ipfs://… or https://…)" value={meta} onChange={(e) => setMeta(e.target.value)} />
-      <p className="text-xs text-muted-foreground">Link to your NFT's metadata JSON, max 100 characters. Network fees apply: about $1 to create a collection, $0.02 per mint.</p>
+      <input className="field" maxLength={500} placeholder="Description (optional)" value={desc} onChange={(e) => setDesc(e.target.value)} />
+      <label className="btn-ghost flex cursor-pointer items-center justify-center gap-2">
+        <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" onChange={(e) => onFile(e.target.files?.[0])} />
+        {upBusy ? "Uploading…" : preview ? "Change picture" : "Upload picture"}
+      </label>
+      {preview && <img src={preview} alt="NFT preview" className="mx-auto max-h-48 rounded-xl" />}
+      {upErr && <p className="text-xs text-destructive">{upErr}</p>}
+      <input className="field text-xs" placeholder="Or paste a metadata link (ipfs://… or https://…)" value={meta} onChange={(e) => { setMeta(e.target.value); setPreview(null); }} />
+      <p className="text-xs text-muted-foreground">Uploaded pictures are public once minted. Up to 5 MB. Network fees apply: about $1 to create a collection, $0.02 per mint.</p>
       <SignButton accountId={id} disabled={!ok} verb={reuse ? "Mint NFT" : "Create collection and mint"} run={async (pass) => {
         try {
           const res = await createAndMintNft(id, { name: name.trim(), symbol: symbol.trim(), maxSupply: m, royaltyPct: r, metadata: meta.trim(), ...(reuse ? { tokenId: existing.trim() } : {}) }, pass);

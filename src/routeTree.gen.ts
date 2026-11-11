@@ -29,6 +29,7 @@ import { Route as ApiMoonpaySignRouteImport } from './routes/api/moonpay-sign'
 import { Route as ApiStudioRouteImport } from './routes/api/studio'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
+import { Route as ApiPublicNftFileRouteImport } from './routes/api/public/nft/$file'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -130,6 +131,11 @@ const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
   path: '/studio/$threadId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicNftFileRoute = ApiPublicNftFileRouteImport.update({
+  id: '/api/public/nft/$file',
+  path: '/api/public/nft/$file',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/': typeof StudioIndexRoute
+  '/api/public/nft/$file': typeof ApiPublicNftFileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio': typeof StudioIndexRoute
+  '/api/public/nft/$file': typeof ApiPublicNftFileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/': typeof StudioIndexRoute
+  '/api/public/nft/$file': typeof ApiPublicNftFileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio/'
+    | '/api/public/nft/$file'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio'
+    | '/api/public/nft/$file'
   id:
     | '__root__'
     | '/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio/'
+    | '/api/public/nft/$file'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -288,6 +300,7 @@ export interface RootRouteChildren {
   ApiStudioRoute: typeof ApiStudioRoute
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioIndexRoute: typeof StudioIndexRoute
+  ApiPublicNftFileRoute: typeof ApiPublicNftFileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioThreadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/nft/$file': {
+      id: '/api/public/nft/$file'
+      path: '/api/public/nft/$file'
+      fullPath: '/api/public/nft/$file'
+      preLoaderRoute: typeof ApiPublicNftFileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -456,6 +476,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiStudioRoute: ApiStudioRoute,
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioIndexRoute: StudioIndexRoute,
+  ApiPublicNftFileRoute: ApiPublicNftFileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
