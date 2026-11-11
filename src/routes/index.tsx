@@ -91,9 +91,9 @@ function Home() {
       <Shell title="Home" hideBranding>
         <div className="relative mb-10 flex min-h-[18rem] items-center justify-center">
           <div className="relative w-full text-center">
-            <div className="mx-auto mb-8 flex w-full max-w-sm items-center justify-center gap-3 sm:gap-5">
+            <div className="mx-auto mb-7 flex w-full max-w-sm flex-col items-center justify-center gap-5">
+              <OrionName className="relative w-40 sm:w-48" />
               <AurionLogo className="h-28 w-28" sizes="112px" crisp />
-              <OrionName className="relative w-40 min-w-0 sm:w-48" />
             </div>
             <HelloGreeting />
             <p className="mt-5 text-sm text-muted-foreground">Prove it. Agree it. Hold it. On Hedera.</p>
