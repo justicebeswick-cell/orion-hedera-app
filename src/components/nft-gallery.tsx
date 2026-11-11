@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Panel, Label, SignButton } from "@/components/aurion";
 import { RecipientField } from "@/components/contacts";
 import { ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
+import { getTokenInfo, royaltyPercent } from "@/lib/airdrops";
 import { getNfts, getNftMetadata, type Nft } from "@/lib/nfts";
 import { audit } from "@/lib/guard";
 import { REFRESH_MS } from "@/lib/refresh";
@@ -57,6 +58,7 @@ function NftDetails({ nft, accountId }: { nft: Nft; accountId: string }) {
     <DialogDescription>{nft.token_id} · Serial #{nft.serial_number}</DialogDescription>
     <Artwork image={meta.data?.image ?? null} name={name} className="mx-auto w-full max-w-72" />
     {meta.data?.description && <p className="whitespace-pre-wrap break-words text-sm text-muted-foreground">{meta.data.description}</p>}
+    <TokenFacts tokenId={nft.token_id} serial={nft.serial_number} />
     <Button asChild variant="ghost" className="justify-start"><a href={`${HASHSCAN}/token/${nft.token_id}/${nft.serial_number}`} target="_blank" rel="noreferrer"><ExternalLink size={15} />View on HashScan</a></Button>
     {!sending ? <Button onClick={() => setSending(true)}><ArrowUpRight size={17} />Send NFT</Button> : <div className="space-y-4 border-t border-border pt-4">
       {!reviewed ? <><RecipientField value={to} self={accountId} onChange={setTo} /><Button className="w-full" disabled={!valid} onClick={() => setReviewed(true)}>Review transfer</Button></> : <>
@@ -77,4 +79,23 @@ function NftDetails({ nft, accountId }: { nft: Nft; accountId: string }) {
       </>}
     </div>}
   </>;
+}
+function TokenFacts({ tokenId, serial }: { tokenId: string; serial: number }) {
+  const q = useQuery({ queryKey: ["token-info", tokenId], queryFn: () => getTokenInfo(tokenId), staleTime: 3600000 });
+  if (q.isPending) return <div className="h-28 animate-pulse rounded-lg bg-secondary" />;
+  if (q.isError) return <p className="text-xs text-destructive">{q.error.message}</p>;
+  const t = q.data, royalties = t.custom_fees?.royalty_fees ?? [];
+  const row = (k: string, v: string) => <div className="flex justify-between gap-3 py-1.5"><dt className="text-muted-foreground">{k}</dt><dd className="break-all text-right font-mono">{v}</dd></div>;
+  const flag = (k: unknown) => (k ? "Yes" : "No");
+  return <dl className="divide-y divide-border rounded-lg border border-border px-3 text-xs">
+    {row("Collection", `${t.name} (${t.symbol})`)}
+    {row("Serial", `#${serial}`)}
+    {row("Creator / treasury", t.treasury_account_id ?? "—")}
+    {royalties.length === 0 ? row("Royalty", "None") : royalties.map((r, i) => <div key={i}>{row(`Royalty ${royalties.length > 1 ? i + 1 : ""}`.trim(), `${royaltyPercent(r.amount).toFixed(2)}% → ${r.collector_account_id}`)}</div>)}
+    {(t.custom_fees?.fixed_fees ?? []).map((f, i) => <div key={`f${i}`}>{row("Fixed fee", `${f.denominating_token_id ? f.amount + " units " + f.denominating_token_id : f.amount / 1e8 + " HBAR"} → ${f.collector_account_id}`)}</div>)}
+    {row("Pausable", t.pause_key ? `Yes · ${t.pause_status === "PAUSED" ? "Paused" : "Active"}` : "No")}
+    {row("KYC required", flag(t.kyc_key))}
+    {row("Freezable", flag(t.freeze_key))}
+    {row("Admin can wipe", flag(t.wipe_key))}
+  </dl>;
 }

@@ -282,3 +282,51 @@ export async function postAgentMessage(from: string, topicId: string, message: s
     return r.transactionId.toString();
   } catch (e) { throw wrap("Topic message", e); } finally { client.close(); }
 }
+
+type AnySdk = typeof import("@hashgraph/sdk");
+/** Run one transaction with whichever signer this device has; requires a SUCCESS receipt. */
+async function signAndRun(from: string, passphrase: string, primitive: string, build: (sdk: AnySdk) => { freezeWithSigner: Function; execute: Function }) {
+  const mode = signMode(from);
+  if (mode.kind === "none") throw new Error(`${primitive}: connect a signing wallet first.`);
+  try {
+    if (mode.kind === "wallet") {
+      const { getWcSigner } = await import("./walletconnect");
+      const signer = await getWcSigner(from);
+      if (!signer) throw new Error("Wallet session ended. Reconnect your wallet.");
+      const h = (await import("@hiero-ledger/sdk")) as unknown as AnySdk;
+      const tx = await build(h).freezeWithSigner(signer);
+      const r = await tx.executeWithSigner(signer);
+      const rc = await r.getReceiptWithSigner(signer);
+      if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
+      return r.transactionId.toString() as string;
+    }
+    const sdk = await import("@hashgraph/sdk");
+    const key = await deviceKey(from, passphrase);
+    const client = sdk.Client.forMainnet().setOperator(from, key);
+    try {
+      const r = await build(sdk).execute(client);
+      const rc = await r.getReceipt(client);
+      if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
+      return r.transactionId.toString() as string;
+    } finally { client.close(); }
+  } catch (e) { throw wrap(primitive, e); }
+}
+
+/** Accept pending airdrops: one claim associates the token and moves the balance in. */
+export function claimAirdrops(from: string, items: { sender_id: string; token_id: string; serial_number: number | null }[], passphrase: string) {
+  if (items.length === 0 || items.length > 10) throw new Error("Token claim: choose 1 to 10 tokens.");
+  return signAndRun(from, passphrase, "Token claim", (s) => {
+    const tx = new s.TokenClaimAirdropTransaction();
+    for (const a of items) {
+      const senderId = s.AccountId.fromString(a.sender_id), receiverId = s.AccountId.fromString(from), tokenId = s.TokenId.fromString(a.token_id);
+      tx.addPendingAirdropId(a.serial_number ? new s.PendingAirdropId({ senderId, receiverId, nftId: new s.NftId(tokenId, a.serial_number) }) : new s.PendingAirdropId({ senderId, receiverId, tokenId }));
+    }
+    return tx.setMaxTransactionFee(new s.Hbar(2)) as never;
+  });
+}
+
+/** Account setting: -1 = accept any incoming token automatically, 0 = ask first. */
+export function setAutoAssociations(from: string, unlimited: boolean, passphrase: string) {
+  return signAndRun(from, passphrase, "Account update", (s) =>
+    new s.AccountUpdateTransaction().setAccountId(from).setMaxAutomaticTokenAssociations(unlimited ? -1 : 0).setMaxTransactionFee(new s.Hbar(2)) as never);
+}

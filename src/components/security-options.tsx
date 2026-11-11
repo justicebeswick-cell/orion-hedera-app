@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AutoAssociate } from "@/components/auto-associate";
 import { Switch } from "@/components/ui/switch";
 import { useSecurityPreferences, saveSecurityPreferences, type SecurityPreferences } from "@/lib/security-preferences";
 
@@ -10,6 +11,8 @@ export function SecurityOptions() {
     <h2 className="-mx-5 mt-4 bg-secondary px-5 py-3 text-sm font-semibold">Additional security</h2>
     <div className="flex min-h-16 items-center justify-between gap-4 text-sm"><span>Erase data after 10 failed attempts</span><Switch aria-label="Erase data after 10 failed attempts" checked={false} disabled /></div>
     <p className="pb-4 text-xs text-destructive">Automatic erasure is unavailable: it could permanently remove your only wallet key. Your encrypted wallet is never deleted after failed attempts.</p>
+    <h2 className="-mx-5 mt-4 bg-secondary px-5 py-3 text-sm font-semibold">Tokens</h2>
+    <AutoAssociate />
     <h2 className="-mx-5 mt-4 bg-secondary px-5 py-3 text-sm font-semibold">Other</h2>
     <div className="flex min-h-16 items-center justify-between gap-4 text-sm"><span>Hide balance</span><Switch aria-label="Hide balance" checked={prefs.hideBalance} onCheckedChange={(hideBalance) => saveSecurityPreferences({ hideBalance })} /></div>
   </div>;

@@ -11,6 +11,7 @@ import { NftGallery } from "@/components/nft-gallery";
 import { HbarMarket } from "@/components/hbar-market";
 import { HbarEtf } from "@/components/hbar-etf";
 import { BuyHbar } from "@/components/buy-hbar";
+import { IncomingTokens } from "@/components/incoming-tokens";
 import { VaultDeck } from "@/components/vault-deck";
 import { RecipientField, ContactsPanel } from "@/components/contacts";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,7 @@ function Vault() {
 
   return (
     <Shell title="Vault">
+      <IncomingTokens accountId={id} />
       <VaultDeck activeKey={section} pages={[
         { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
