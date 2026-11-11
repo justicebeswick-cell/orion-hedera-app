@@ -330,3 +330,33 @@ export function setAutoAssociations(from: string, unlimited: boolean, passphrase
   return signAndRun(from, passphrase, "Account update", (s) =>
     new s.AccountUpdateTransaction().setAccountId(from).setMaxAutomaticTokenAssociations(unlimited ? -1 : 0).setMaxTransactionFee(new s.Hbar(2)) as never);
 }
+
+/**
+ * HCS audit record: writes a short note about a send to the user's own Hedera topic.
+ * The user pays the tiny network fee. The topic is created once per account and only
+ * this account's key can write to it. Device-key accounts only.
+ */
+const TOPIC_KEY = (id: string) => `aurion.auditTopic.${id}`;
+export async function writeAuditRecord(from: string, record: { txId: string; to: string; amount: string }, passphrase: string) {
+  if (signMode(from).kind !== "device") throw new Error("Audit records need a device key");
+  const sdk = await import("@hashgraph/sdk");
+  const key = await deviceKey(from, passphrase);
+  const client = sdk.Client.forMainnet().setOperator(from, key);
+  try {
+    let topic = localStorage.getItem(TOPIC_KEY(from));
+    if (!topic) {
+      const r = await new sdk.TopicCreateTransaction().setSubmitKey(key.publicKey).setAdminKey(key.publicKey)
+        .setTopicMemo("orion:audit:v1").setMaxTransactionFee(new sdk.Hbar(5)).execute(client);
+      const rc = await r.getReceipt(client);
+      if (rc.status.toString() !== "SUCCESS" || !rc.topicId) throw new Error(rc.status.toString());
+      topic = rc.topicId.toString();
+      localStorage.setItem(TOPIC_KEY(from), topic);
+    }
+    const r = await new sdk.TopicMessageSubmitTransaction().setTopicId(topic)
+      .setMessage(JSON.stringify({ v: 1, ...record, at: new Date().toISOString() }))
+      .setMaxTransactionFee(new sdk.Hbar(1)).execute(client);
+    const rc = await r.getReceipt(client);
+    if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
+    return { topic, seq: rc.topicSequenceNumber?.toString() ?? "" };
+  } catch (e) { throw wrap("Audit record", e); } finally { client.close(); }
+}

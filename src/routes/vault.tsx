@@ -23,7 +23,7 @@ import { fmtAmount, fmtUsd } from "@/lib/display";
 import { heldTokens } from "@/lib/portfolio";
 import { REFRESH_MS } from "@/lib/refresh";
 import { EVM_RE, isHbarRecipient } from "@/lib/recipient";
-import { sendHbar, sendToken, armSwitch, deleteSchedule } from "@/lib/signer";
+import { sendHbar, sendToken, armSwitch, deleteSchedule, signMode, writeAuditRecord } from "@/lib/signer";
 import { audit, checkSend, getLimits, setLimits, readAudit, type AuditEntry } from "@/lib/guard";
 import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
@@ -331,6 +331,9 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const [to, setTo] = useState("");
   const [amt, setAmt] = useState("");
   const [memo, setMemo] = useState("");
+  const [record, setRecord] = useState(false);
+  const [hcs, setHcs] = useState<{ topic: string; seq: string } | null>(null);
+  const [hcsErr, setHcsErr] = useState("");
   const n = Number(amt);
   const ok = isHbarRecipient(to) && Number.isFinite(n) && n > 0;
   return (
@@ -339,13 +342,25 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
       {EVM_RE.test(to.trim()) && <p className="text-xs text-muted-foreground">Hedera mainnet only. If this is a new wallet address, this HBAR transfer creates its account. Network fees apply.</p>}
       <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
       <input className="field" maxLength={100} placeholder="Note (public, optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
+      {signMode(id).kind === "device" && (
+        <label className="flex items-start gap-2 text-xs text-muted-foreground">
+          <input type="checkbox" className="mt-0.5" checked={record} onChange={(e) => setRecord(e.target.checked)} />
+          <span>Write an audit record to Hedera. You pay a small extra network fee (under $0.01; the first one also opens your record topic).</span>
+        </label>
+      )}
       <SignButton accountId={id} disabled={!ok} verb={ok ? `Send ${n} ℏ` : "Send"} run={async (pass) => {
         const dest = EVM_RE.test(to.trim()) ? to.trim().toLowerCase() : to.trim();
         const block = await checkSend(id, dest, n, { allowNewAccount: true });
         if (block) { audit({ action: "blocked", detail: `${id} → ${dest} ${n} ℏ · ${block}`, ok: false }); throw new Error(block); }
         try {
           const txId = await sendHbar(id, dest, n, memo, pass);
-          audit({ action: "send", detail: `${id} → ${dest} ${n} ℏ`, ok: true, txId });
+          setHcs(null); setHcsErr("");
+          let rec: { topic: string; seq: string } | undefined;
+          if (record) {
+            try { const made = await writeAuditRecord(id, { txId, to: dest, amount: String(n) }, pass); rec = made; setHcs(made); }
+            catch (e) { setHcsErr((e as Error).message); }
+          }
+          audit({ action: "send", detail: `${id} → ${dest} ${n} ℏ`, ok: true, txId, ...(rec ? { hcs: rec } : {}) });
           setTimeout(onSent, 4000);
           return txId;
         } catch (e) { audit({ action: "send", detail: `${id} → ${dest} ${n} ℏ · ${(e as Error).message}`, ok: false }); throw e; }
@@ -353,6 +368,8 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
         <>
           <p className="font-semibold text-success">Sent on Hedera</p>
           <a className="mt-1 block break-all text-xs text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${txId}`}>{txId}</a>
+          {hcs && <AuditBadge hcs={hcs} />}
+          {hcsErr && <p className="mt-1 text-xs text-destructive">Sent, but the audit record failed: {hcsErr}</p>}
         </>
       )} />
     </div>
@@ -565,11 +582,20 @@ function EventsPanel() {
               <p className="flex justify-between gap-2"><span className={r.ok ? "text-success" : "text-destructive"}>{title(r.action)}</span><span className="text-muted-foreground tnum">{new Date(r.at).toLocaleString()}</span></p>
               <p className="break-all text-muted-foreground">{r.detail}</p>
               {r.txId && <a className="break-all text-signal" target="_blank" rel="noreferrer" href={`${HASHSCAN}/transaction/${r.txId}`}>{r.txId}</a>}
+              {r.hcs && <AuditBadge hcs={r.hcs} />}
             </li>
           ))}
         </ul>
       )}
       {fees.length > 0 && <p className="mt-3 text-xs text-muted-foreground tnum">Service fees paid: {fmtAmount(feesPaid, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} ℏ over {fees.length} swap{fees.length === 1 ? "" : "s"}</p>}
     </Panel>
+  );
+}
+
+function AuditBadge({ hcs }: { hcs: { topic: string; seq: string } }) {
+  return (
+    <a className="mt-1 inline-flex items-center gap-1 rounded-full border border-success/40 px-2 py-0.5 text-[11px] text-success" target="_blank" rel="noreferrer" href={`${HASHSCAN}/topic/${hcs.topic}`}>
+      ✓ Verified on Hedera · record #{hcs.seq}
+    </a>
   );
 }

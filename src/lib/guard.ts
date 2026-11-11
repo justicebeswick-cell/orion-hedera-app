@@ -17,7 +17,7 @@ export function setLimits(l: Limits) {
   audit({ action: "limits", detail: `Per send ${l.perSend} ℏ · per day ${l.perDay} ℏ`, ok: true });
 }
 
-export type AuditEntry = { at: string; action: string; detail: string; ok: boolean; txId?: string };
+export type AuditEntry = { at: string; action: string; detail: string; ok: boolean; txId?: string; hcs?: { topic: string; seq: string } };
 export function readAudit(): AuditEntry[] {
   try { return JSON.parse(localStorage.getItem(AUDIT) ?? "[]"); } catch { return []; }
 }

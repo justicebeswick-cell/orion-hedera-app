@@ -30,6 +30,7 @@
 - [x] Incoming tokens: pending airdrop card, Accept & Associate, auto-associate setting
 - [x] NFT details: royalties, creator, pause/KYC/freeze flags
 - [x] Multi-account Ed25519 + ECDSA from one seed, protected key export (mainnet only, no testnet switch)
-- [ ] HCS audit memo on sends (user pays per memo) + verified badge in history
+- [x] HCS audit memo on sends (user pays per memo) + verified badge in history
 - [ ] Studio: two sections, AI and dApp browser with WalletConnect approvals
 - [ ] Watch-only cold accounts (Ledger/Tangem) with unsigned payload QR
+- [ ] Studio: create and mint NFTs, and create your own tokens
