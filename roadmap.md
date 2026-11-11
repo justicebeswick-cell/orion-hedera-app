@@ -1,4 +1,8 @@
 # Roadmap
+- [x] Restore normal ORION lettering dimensions while retaining the shared softly shaded O; prevent icon-button sizing from shrinking the lettering.
+- [x] Apply the subtle shaded second O consistently to ORION lettering throughout the app, preserving each screen's size.
+- [x] Enlarge the welcome-page ORION lettering again and move it further up.
+- [x] Refine welcome-page ORION lettering to match the supplied O reference with a subtle shadow; move it higher and slightly widen it.
 - [x] Center the larger ORION lettering above the main welcome logo, with the greeting beneath.
 - [x] Remove the welcome-page header branding and enlarge the main ORION lettering.
 - [x] Remove the welcome-page logo's black box and match Home's transparent logo and selected-theme halo.

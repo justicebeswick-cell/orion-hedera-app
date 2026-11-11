@@ -92,7 +92,7 @@ function Home() {
         <div className="relative mb-10 flex min-h-[18rem] items-center justify-center">
           <div className="relative w-full text-center">
             <div className="mx-auto mb-7 flex w-full max-w-sm flex-col items-center justify-center gap-5">
-              <OrionName className="relative w-40 sm:w-48" />
+              <OrionName className="relative -mt-12 mb-12 w-64 sm:w-72" />
               <AurionLogo className="h-28 w-28" sizes="112px" crisp />
             </div>
             <HelloGreeting />
