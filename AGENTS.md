@@ -38,6 +38,7 @@
 - Exchange names and official destinations are paired in one browser-safe registry; keep rows in registry order during refresh to prevent moving click targets.
 - Optional tap haptics use one root click listener and a browser-safe helper; this covers shared and legacy controls without double vibrations or blocking unsupported browsers.
 - NFTs use paginated mainnet mirror ownership reads and inert HTTPS/IPFS image metadata; transfers recheck ownership and recipient eligibility, sign one serial through the existing signer, and require a SUCCESS receipt before reporting success.
+- NFT receiving uses a shared numbered-account readiness check and explicit collection association in Receive and NFTs; use the existing signer with a SUCCESS receipt, never silently change on-chain receiving settings.
 - Brand-name displays use shared OrionName artwork with an instance-unique SVG mask across the header, welcome, launch, unlock and public shell; one renderer keeps the lettering consistent without cross-instance mask collisions.
 - The welcome page uses Shell's optional hideBranding flag and shared logo/wordmark in its main content; other pages retain header branding and the app menu remains accessible.
 - Pact uses one browser-safe PactPanel in Vault and the preserved /pact page, keeping payment checks and signing identical across entry points.

@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Add mainnet NFT receiving checks and signed collection association in Receive and NFTs; 30 related tests pass and public receiving screens verified. A real HashPack transfer into the user's wallet remains unverified without their account/collection and approval.
 - [x] Restore normal ORION lettering dimensions while retaining the shared softly shaded O; prevent icon-button sizing from shrinking the lettering.
 - [x] Apply the subtle shaded second O consistently to ORION lettering throughout the app, preserving each screen's size.
 - [x] Enlarge the welcome-page ORION lettering again and move it further up.

@@ -1,6 +1,7 @@
 import { readKeystoreMeta, unlockKeystore } from "./keystore";
 import { connectedWallet } from "./walletconnect";
 import { preflightNft } from "./nfts";
+import { checkNftAssociation } from "./nft-receive";
 
 export type SignMode = { kind: "wallet"; name: string } | { kind: "device" } | { kind: "none" };
 
@@ -329,6 +330,13 @@ export function claimAirdrops(from: string, items: { sender_id: string; token_id
 export function setAutoAssociations(from: string, unlimited: boolean, passphrase: string) {
   return signAndRun(from, passphrase, "Account update", (s) =>
     new s.AccountUpdateTransaction().setAccountId(from).setMaxAutomaticTokenAssociations(unlimited ? -1 : 0).setMaxTransactionFee(new s.Hbar(2)) as never);
+}
+
+/** Explicit association supports direct NFT transfers from wallets such as HashPack. */
+export async function associateNftCollection(from: string, tokenId: string, passphrase: string) {
+  await checkNftAssociation(from, tokenId);
+  return signAndRun(from, passphrase, "NFT association", (s) =>
+    new s.TokenAssociateTransaction().setAccountId(from).setTokenIds([tokenId]).setMaxTransactionFee(new s.Hbar(2)) as never);
 }
 
 /**

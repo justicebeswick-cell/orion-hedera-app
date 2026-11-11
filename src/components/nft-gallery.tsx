@@ -10,6 +10,7 @@ import { getTokenInfo, royaltyPercent } from "@/lib/airdrops";
 import { getNfts, getNftMetadata, type Nft } from "@/lib/nfts";
 import { audit } from "@/lib/guard";
 import { REFRESH_MS } from "@/lib/refresh";
+import { NftReceive } from "@/components/nft-receive";
 
 function Artwork({ image, name, className = "" }: { image: string | null; name: string; className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -40,6 +41,7 @@ export function NftGallery({ accountId }: { accountId: string }) {
     {!nfts.isPending && !nfts.isError && rows.length === 0 && <div className="py-10 text-center"><ImageIcon className="mx-auto mb-3 text-muted-foreground" /><p className="text-sm">No NFTs in this wallet yet.</p><p className="mt-2 break-all font-mono text-xs text-muted-foreground">{accountId}</p></div>}
     <div className="grid grid-cols-2 gap-x-4 gap-y-6">{rows.map((nft) => <NftTile key={`${nft.token_id}/${nft.serial_number}`} nft={nft} onOpen={() => setSelected(nft)} />)}</div>
     {nfts.hasNextPage && <Button variant="outline" className="mt-5 w-full" disabled={nfts.isFetchingNextPage} onClick={() => nfts.fetchNextPage()}>{nfts.isFetchingNextPage ? "Loading…" : "Load more"}</Button>}
+    <NftReceive key={accountId} accountId={accountId} />
     <Dialog open={!!selected} onOpenChange={(open) => { if (!open) setSelected(null); }}><DialogContent className="max-h-[85dvh] overflow-y-auto">{selected && <NftDetails key={`${selected.token_id}/${selected.serial_number}`} nft={selected} accountId={accountId} />}</DialogContent></Dialog>
   </Panel>;
 }
