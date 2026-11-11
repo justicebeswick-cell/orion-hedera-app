@@ -259,7 +259,7 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
               for (const f of [...chosen].reverse()) {
                 await saveKeystore(f.privHex, p, { publicKey: f.publicKey, evm: f.evm ?? "", accountId: f.id, kind: f.kind, codeLength: p.length as 4 | 6 | 8 });
               }
-              return () => onDone(chosen[0].id);
+              return () => onDone(chosen[0]!.id);
             } finally { setBusy(false); }
           }} />}
         </>
