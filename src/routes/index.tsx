@@ -90,7 +90,7 @@ function Home() {
       <Shell title="Home">
         <div className="relative mb-10 flex min-h-[18rem] items-center justify-center">
           <div className="relative text-center">
-            <AurionLogo className="mx-auto mb-8 h-28 w-28" sizes="112px" />
+            <AurionLogo className="mx-auto mb-8 h-28 w-28" sizes="112px" crisp />
             <HelloGreeting />
             <p className="mt-5 text-sm text-muted-foreground">Prove it. Agree it. Hold it. On Hedera.</p>
           </div>
