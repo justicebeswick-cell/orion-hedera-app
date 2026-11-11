@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Remove the welcome-page header branding and place larger ORION lettering beside its main logo above the greeting.
 - [x] Remove the welcome-page logo's black box and match Home's transparent logo and selected-theme halo.
 - [ ] Publish the welcome logo refinement and WalletConnect configuration.
 - [x] Sharpen the phone icon using Home's circular ring geometry at high resolution, with the mark about 60% of the tile; unlock-screen logos use Home's crisp transparent rendering.

@@ -39,14 +39,14 @@ const groups = [
   { name: "About", items: [{ to: "/about", label: "About" }, { to: "/company", label: "Company" }, { to: "/privacy", label: "Privacy Policy" }, { to: "/terms", label: "User Agreement" }] },
 ] as const;
 
-export function Shell({ title, children }: { title: string; children: ReactNode }) {
+export function Shell({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
     <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
-      <header className="mb-6 flex items-start justify-between">
-        <div className="flex items-center gap-3">
+      <header className={`mb-6 flex items-start ${hideBranding ? "justify-end" : "justify-between"}`}>
+        {!hideBranding && <div className="flex items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
           <div>
           <Button variant="ghost"
@@ -64,7 +64,7 @@ export function Shell({ title, children }: { title: string; children: ReactNode 
             A Hashgraph Wallet
           </p>
           </div>
-        </div>
+        </div>}
         <div className="flex">
           <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
         </div>

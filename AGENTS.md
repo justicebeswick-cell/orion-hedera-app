@@ -39,5 +39,6 @@
 - Optional tap haptics use one root click listener and a browser-safe helper; this covers shared and legacy controls without double vibrations or blocking unsupported browsers.
 - NFTs use paginated mainnet mirror ownership reads and inert HTTPS/IPFS image metadata; transfers recheck ownership and recipient eligibility, sign one serial through the existing signer, and require a SUCCESS receipt before reporting success.
 - Brand-name displays use the shared OrionName artwork to preserve custom lettering across the header, launch, unlock and public shell without changing prose or accessible names.
+- The welcome page uses Shell's optional hideBranding flag and shared logo/wordmark in its main content; other pages retain header branding and the app menu remains accessible.
 - Pact uses one browser-safe PactPanel in Vault and the preserved /pact page, keeping payment checks and signing identical across entry points.
 - General and security display preferences are schema-validated and device-local; the root applies themes, currency conversion and inactivity locks, leaving signing checks unchanged. Custom colors are validated hex values applied only to a root CSS token; preset and custom palettes derive shared card/action colors while preserving brand artwork and readable text.
