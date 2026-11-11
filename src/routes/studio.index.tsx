@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Bot, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
+import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Bot, Compass, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
 import { Shell, Label } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
 import { clearStudio, deleteThread, readThreads, readImages, type SavedImage, type Thread } from "@/lib/studio-threads";
 import { saveToPhone } from "@/components/generation-canvas";
 import { AgentsStudio } from "@/components/studio-agents";
+import { DappBrowser } from "@/components/dapp-browser";
 
 export const Route = createFileRoute("/studio/")({
   head: () => ({
@@ -30,7 +31,7 @@ const starters = [
 
 function Studio() {
   const nav = useNavigate();
-  const [tab, setTab] = useState<"chat" | "agents">("chat");
+  const [tab, setTab] = useState<"chat" | "agents" | "discover">("chat");
   const [threads, setThreads] = useState<Thread[]>([]);
   const [images, setImages] = useState<SavedImage[]>([]);
   const [prompt, setPrompt] = useState("");
@@ -42,9 +43,10 @@ function Studio() {
       <div className="studio-heading mb-7 py-3">
         <h1 className="text-3xl font-light">AI Studio</h1>
       </div>
-      <div className="studio-tabs mb-6 grid grid-cols-2 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
+      <div className="studio-tabs mb-6 grid grid-cols-3 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
         <Button role="tab" aria-selected={tab === "chat"} variant={tab === "chat" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("chat")}><MessagesSquare /> Chat</Button>
         <Button role="tab" aria-selected={tab === "agents"} variant={tab === "agents" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("agents")}><Bot /> Agents</Button>
+        <Button role="tab" aria-selected={tab === "discover"} variant={tab === "discover" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("discover")}><Compass /> Discover</Button>
       </div>
 
       <div hidden={tab !== "chat"} role="tabpanel" aria-label="Chat" className="studio-view">
@@ -81,6 +83,7 @@ function Studio() {
           {images.length > 0 && <section className="mt-6 border-t border-border pt-5"><Label>Created images</Label><div className="grid grid-cols-3 gap-2">{images.map((image) => <Button key={image.id} variant="ghost" className="h-auto overflow-hidden rounded-lg p-0" aria-label={`Save image: ${image.prompt}`} onClick={() => saveToPhone(image.url, image.prompt)}><img src={image.url} alt={image.prompt} className="aspect-square w-full object-cover" /></Button>)}</div></section>}
       </div>
       <div hidden={tab !== "agents"} role="tabpanel" aria-label="Agents" className="studio-view"><AgentsStudio /></div>
+      <div hidden={tab !== "discover"} role="tabpanel" aria-label="Discover" className="studio-view"><DappBrowser /></div>
 
       <Button variant="ghost" size="sm" className="mx-auto mt-8 flex text-muted-foreground hover:text-destructive" onClick={() => {
         if (confirm("Delete all Studio chats and images on this device?")) { clearStudio(); setThreads([]); location.reload(); }

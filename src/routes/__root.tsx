@@ -14,6 +14,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LaunchScreen } from "@/components/launch-screen";
+import { DappApprovals } from "@/components/dapp-approvals";
 import { LockScreen } from "@/components/lock-screen";
 import { needsUnlock } from "@/lib/lock";
 import { Toaster } from "@/components/ui/sonner";
@@ -169,6 +170,7 @@ function RootComponent() {
 
       <Toaster theme="dark" position="top-center" />
       <LaunchScreen />
+      <DappApprovals />
     </QueryClientProvider>
   );
 }

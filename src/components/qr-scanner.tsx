@@ -9,7 +9,7 @@ export function parseAccountFromQr(text: string, allowEvm = false): string | nul
 }
 
 /** Full-screen camera scanner. Calls onResult with the account ID found. */
-export function QrScanner({ onResult, onClose, allowEvm = false }: { onResult: (account: string) => void; onClose: () => void; allowEvm?: boolean }) {
+export function QrScanner({ onResult, onClose, allowEvm = false, raw = false }: { onResult: (account: string) => void; onClose: () => void; allowEvm?: boolean; raw?: boolean }) {
   const video = useRef<HTMLVideoElement>(null);
   const [err, setErr] = useState("");
   const cb = useRef(onResult); cb.current = onResult;
@@ -36,7 +36,7 @@ export function QrScanner({ onResult, onClose, allowEvm = false }: { onResult: (
             const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const code = jsQR(img.data, img.width, img.height);
             if (code?.data) {
-              const acct = parseAccountFromQr(code.data, allowEvm);
+              const acct = raw ? code.data : parseAccountFromQr(code.data, allowEvm);
               if (acct) { cb.current(acct); return; }
               setErr(allowEvm ? "That QR code has no Hedera account ID or 0x address." : "That QR code has no Hedera account ID.");
             }
