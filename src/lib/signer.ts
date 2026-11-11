@@ -360,3 +360,48 @@ export async function writeAuditRecord(from: string, record: { txId: string; to:
     return { topic, seq: rc.topicSequenceNumber?.toString() ?? "" };
   } catch (e) { throw wrap("Audit record", e); } finally { client.close(); }
 }
+
+/** Create a fungible HTS token with this account as treasury. Device key only. Returns token ID. */
+export async function createFungibleToken(from: string, t: { name: string; symbol: string; decimals: number; supply: number }, passphrase: string) {
+  const sdk = await import("@hashgraph/sdk");
+  const key = await deviceKey(from, passphrase);
+  const client = sdk.Client.forMainnet().setOperator(from, key);
+  try {
+    const units = BigInt(Math.round(t.supply * 10 ** t.decimals));
+    const r = await new sdk.TokenCreateTransaction().setTokenName(t.name).setTokenSymbol(t.symbol)
+      .setTokenType(sdk.TokenType.FungibleCommon).setDecimals(t.decimals).setInitialSupply(units)
+      .setTreasuryAccountId(from).setAdminKey(key.publicKey).setSupplyKey(key.publicKey)
+      .setMaxTransactionFee(new sdk.Hbar(30)).execute(client);
+    const rc = await r.getReceipt(client);
+    if (rc.status.toString() !== "SUCCESS" || !rc.tokenId) throw new Error(rc.status.toString());
+    return rc.tokenId.toString();
+  } catch (e) { throw wrap("Token create", e); } finally { client.close(); }
+}
+
+/** Create an NFT collection (optional royalty %) and mint the first NFT with a metadata link. */
+export async function createAndMintNft(from: string, c: { name: string; symbol: string; maxSupply: number; royaltyPct: number; metadata: string; tokenId?: string }, passphrase: string) {
+  const sdk = await import("@hashgraph/sdk");
+  const key = await deviceKey(from, passphrase);
+  const client = sdk.Client.forMainnet().setOperator(from, key);
+  try {
+    let tokenId = c.tokenId;
+    if (!tokenId) {
+      const tx = new sdk.TokenCreateTransaction().setTokenName(c.name).setTokenSymbol(c.symbol)
+        .setTokenType(sdk.TokenType.NonFungibleUnique).setDecimals(0).setInitialSupply(0)
+        .setSupplyType(sdk.TokenSupplyType.Finite).setMaxSupply(c.maxSupply)
+        .setTreasuryAccountId(from).setAdminKey(key.publicKey).setSupplyKey(key.publicKey)
+        .setMaxTransactionFee(new sdk.Hbar(40));
+      if (c.royaltyPct > 0) {
+        tx.setCustomFees([new sdk.CustomRoyaltyFee().setNumerator(Math.round(c.royaltyPct * 100)).setDenominator(10000).setFeeCollectorAccountId(from)]);
+      }
+      const rc = await (await tx.execute(client)).getReceipt(client);
+      if (rc.status.toString() !== "SUCCESS" || !rc.tokenId) throw new Error(rc.status.toString());
+      tokenId = rc.tokenId.toString();
+    }
+    const m = await new sdk.TokenMintTransaction().setTokenId(tokenId).setMetadata([new TextEncoder().encode(c.metadata)])
+      .setMaxTransactionFee(new sdk.Hbar(20)).execute(client);
+    const rc = await m.getReceipt(client);
+    if (rc.status.toString() !== "SUCCESS") throw new Error(rc.status.toString());
+    return { tokenId, serial: rc.serials[0]?.toString() ?? "" };
+  } catch (e) { throw wrap("NFT mint", e); } finally { client.close(); }
+}

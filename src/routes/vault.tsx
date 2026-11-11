@@ -8,6 +8,7 @@ import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, His
 import { PactPanel } from "@/components/pact-panel";
 import { usePreferences, showAuditEvent } from "@/lib/preferences";
 import { NftGallery } from "@/components/nft-gallery";
+import { TokenStudio } from "@/components/token-studio";
 import { HbarMarket } from "@/components/hbar-market";
 import { HbarEtf } from "@/components/hbar-etf";
 import { BuyHbar } from "@/components/buy-hbar";
@@ -59,7 +60,7 @@ function Vault() {
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p></Panel> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} /> },
-        { key: "nfts", label: "NFTs", icon: ImageIcon, content: <NftGallery key={id} accountId={id} /> },
+        { key: "nfts", label: "NFTs", icon: ImageIcon, content: <><NftGallery key={id} accountId={id} /><TokenStudio key={`studio-${id}`} accountId={id} /></> },
         { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },
         { key: "schedule", label: "Payments", icon: CalendarClock, content: <SchedulePanel id={id} /> },

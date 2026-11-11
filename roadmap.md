@@ -33,4 +33,4 @@
 - [x] HCS audit memo on sends (user pays per memo) + verified badge in history
 - [ ] Studio: two sections, AI and dApp browser with WalletConnect approvals
 - [ ] Watch-only cold accounts (Ledger/Tangem) with unsigned payload QR
-- [ ] Studio: create and mint NFTs, and create your own tokens
+- [x] Studio: create and mint NFTs, and create your own tokens
