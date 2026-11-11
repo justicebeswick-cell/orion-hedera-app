@@ -1,7 +1,9 @@
 // Browser-only. HashPack and Blade via WalletConnect on Hedera mainnet.
 import type { DAppConnector, DAppSigner } from "@hashgraph/hedera-wallet-connect";
 
-export const WC_PROJECT_ID = import.meta.env['VITE_WALLETCONNECT_PROJECT_ID'] as string | undefined;
+// Reown project IDs are public identifiers, not signing keys or credentials.
+export const WC_PROJECT_ID = (import.meta.env['VITE_WALLETCONNECT_PROJECT_ID'] as string | undefined)
+  || "49f651ccd8dfb5d62d4bcb580460e1d1";
 const WC_KEY = "aurion.wc";
 
 let connector: DAppConnector | null = null;

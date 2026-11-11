@@ -31,7 +31,7 @@
 - [x] NFT details: royalties, creator, pause/KYC/freeze flags
 - [x] Multi-account Ed25519 + ECDSA from one seed, protected key export (mainnet only, no testnet switch)
 - [x] HCS audit memo on sends (user pays per memo) + verified badge in history
-- [x] Studio Discover dApp browser + WalletConnect approvals (needs WalletConnect project ID)
+- [x] Studio Discover dApp browser + WalletConnect approvals; public Reown project ID configured (real dApp pairing/signing still needs verification)
 - [x] Watch-only cold accounts (Ledger/Tangem) with unsigned payload QR
 - [x] Studio: create and mint NFTs, and create your own tokens
 - [x] Home: friendly empty token state; HBAR row links to history
