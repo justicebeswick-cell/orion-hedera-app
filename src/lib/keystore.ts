@@ -126,18 +126,24 @@ export async function generateWallet() {
   };
 }
 
+export const SCAN_INDEXES = 5;
+export type ImportCandidate = { privHex: string; publicKey: string; evm: string | null; kind: "ecdsa" | "ed25519"; index?: number };
+
 /** Import from a recovery phrase or a raw/DER private key. */
 export async function importWallet(input: string) {
   const { Mnemonic, PrivateKey } = await import("@hashgraph/sdk");
   const t = input.trim();
   const words = t.split(/\s+/);
-  const out: { privHex: string; publicKey: string; evm: string | null; kind: "ecdsa" | "ed25519" }[] = [];
+  const out: ImportCandidate[] = [];
   if (words.length === 12 || words.length === 24) {
     const m = await Mnemonic.fromString(words.join(" "));
-    const e = await m.toStandardECDSAsecp256k1PrivateKey("", 0);
-    const d = await m.toStandardEd25519PrivateKey("", 0);
-    out.push({ privHex: e.toStringRaw(), publicKey: e.publicKey.toStringRaw(), evm: "0x" + e.publicKey.toEvmAddress(), kind: "ecdsa" });
-    out.push({ privHex: d.toStringRaw(), publicKey: d.publicKey.toStringRaw(), evm: null, kind: "ed25519" });
+    // Scan the first few account slots of both key types from the same phrase.
+    for (let i = 0; i < SCAN_INDEXES; i++) {
+      const e = await m.toStandardECDSAsecp256k1PrivateKey("", i);
+      const d = await m.toStandardEd25519PrivateKey("", i);
+      out.push({ privHex: e.toStringRaw(), publicKey: e.publicKey.toStringRaw(), evm: "0x" + e.publicKey.toEvmAddress(), kind: "ecdsa", index: i });
+      out.push({ privHex: d.toStringRaw(), publicKey: d.publicKey.toStringRaw(), evm: null, kind: "ed25519", index: i });
+    }
     try {
       const legacy = await m.toLegacyPrivateKey();
       out.push({ privHex: legacy.toStringRaw(), publicKey: legacy.publicKey.toStringRaw(), evm: null, kind: "ed25519" });

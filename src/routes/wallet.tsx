@@ -6,7 +6,7 @@ import { useAccount } from "@/lib/account";
 import { WC_PROJECT_ID, walletOptions, connectWallet, type WalletOption } from "@/lib/walletconnect";
 import {
   generateWallet, importWallet, saveKeystore, readKeystoreMeta, setKeystoreAccount,
-  findAccountByKey, findAccountByEvm, clearKeystore, type StoredKey,
+  findAccountByKey, findAccountByEvm, clearKeystore, SCAN_INDEXES, type StoredKey, type ImportCandidate,
 } from "@/lib/keystore";
 import { pickCheckPositions } from "@/lib/passphrase";
 import { DeviceCode } from "@/components/device-code";
@@ -199,9 +199,12 @@ function AwaitFunding({ k, onFound }: { k: StoredKey; onFound: (id: string) => v
   );
 }
 
+type Found = ImportCandidate & { id: string };
+
 function Import({ onDone }: { onDone: (id: string) => void }) {
   const [input, setInput] = useState("");
-  const [found, setFound] = useState<{ privHex: string; publicKey: string; evm: string | null; kind: "ecdsa" | "ed25519"; id: string } | null>(null);
+  const [found, setFound] = useState<Found[] | null>(null);
+  const [pick, setPick] = useState<Set<string>>(new Set());
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -209,38 +212,56 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
     setErr(""); setBusy(true);
     try {
       const cands = await importWallet(input);
-      for (const c of cands) {
-        const id = await findAccountByKey(c.publicKey);
-        if (id) { setFound({ ...c, id }); setBusy(false); return; }
-      }
-      setErr("No mainnet account holds this key.");
+      const hits = await Promise.all(cands.map(async (c) => ({ ...c, id: await findAccountByKey(c.publicKey) })));
+      const seen = new Set<string>();
+      const list = hits.filter((h): h is Found => !!h.id && !seen.has(h.id) && !!seen.add(h.id));
+      if (!list.length) setErr("No mainnet account holds this key.");
+      else { setFound(list); setPick(new Set(list.map((l) => l.id))); }
     } catch (e) { setErr((e as Error).message); }
     setBusy(false);
   };
 
+  const chosen = found?.filter((f) => pick.has(f.id)) ?? [];
   return (
     <Panel>
       <Label>Connect an existing wallet</Label>
       {!found ? (
         <>
           <WordBoxes onChange={setInput} />
-          <p className="mt-2 text-xs text-muted-foreground">Read only on this device. Never sent anywhere.</p>
+          <p className="mt-2 text-xs text-muted-foreground">Read only on this device. Never sent anywhere. Phrases are checked for up to {SCAN_INDEXES} accounts of each key type.</p>
           <button className="btn mt-4 w-full" disabled={!input.trim() || busy} onClick={lookup}>
-            {busy ? "Reading mainnet…" : "Find account on mainnet"}
+            {busy ? "Reading mainnet…" : "Find accounts on mainnet"}
           </button>
           {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
         </>
       ) : (
         <>
-          <p className="font-mono text-lg tnum">{found.id}</p>
-          <p className="text-xs text-success">Found on mainnet.</p>
-          <Passphrase busy={busy} cta="Save key on this device" onSubmit={async (p) => {
+          <p className="mb-2 text-xs text-success">{found.length === 1 ? "Found 1 account on mainnet." : `Found ${found.length} accounts on mainnet. Pick which to add.`}</p>
+          <ul className="mb-3 space-y-2">
+            {found.map((f) => (
+              <li key={f.id}>
+                <label className="flex items-center gap-3 rounded-xl border border-border/60 p-3 text-sm">
+                  <input type="checkbox" checked={pick.has(f.id)} onChange={(e) => {
+                    const n = new Set(pick); if (e.target.checked) n.add(f.id); else n.delete(f.id); setPick(n);
+                  }} />
+                  <span className="font-mono tnum">{f.id}</span>
+                  <span className="ml-auto text-[11px] text-muted-foreground">
+                    {f.kind === "ecdsa" ? "ECDSA" : "Ed25519"}{f.index === undefined ? " · legacy" : ` · #${f.index}`}
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+          {chosen.length > 0 && <Passphrase busy={busy} cta={chosen.length > 1 ? `Save ${chosen.length} keys on this device` : "Save key on this device"} onSubmit={async (p) => {
             setBusy(true);
             try {
-              await saveKeystore(found.privHex, p, { publicKey: found.publicKey, evm: found.evm ?? "", accountId: found.id, kind: found.kind, codeLength: p.length as 4 | 6 | 8 });
-              return () => onDone(found.id);
+              // Save the first pick last so it becomes the active wallet.
+              for (const f of [...chosen].reverse()) {
+                await saveKeystore(f.privHex, p, { publicKey: f.publicKey, evm: f.evm ?? "", accountId: f.id, kind: f.kind, codeLength: p.length as 4 | 6 | 8 });
+              }
+              return () => onDone(chosen[0].id);
             } finally { setBusy(false); }
-          }} />
+          }} />}
         </>
       )}
     </Panel>
