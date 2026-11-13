@@ -44,7 +44,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
-    <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6">
+    <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6 sm:max-w-2xl lg:max-w-4xl lg:px-8">
       <header className={`mb-6 flex items-start ${hideBranding ? "justify-end" : "justify-between"}`}>
         {!hideBranding && <div className="flex items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
@@ -76,7 +76,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
       </footer>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
-        <div className="mx-auto grid max-w-xl grid-cols-5">
+        <div className="mx-auto grid max-w-xl grid-cols-5 sm:max-w-2xl lg:max-w-4xl">
           {dock.map((d) => (
             <Link
               key={d.to}
