@@ -5,7 +5,7 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
-import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings, ArrowUpRight, ArrowDownLeft, ScanLine } from "lucide-react";
+import { Home, Wallet, Layers, Handshake, X, Bot, Settings, ArrowUpRight, ArrowDownLeft, ScanLine } from "lucide-react";
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
   if (crisp) return <span className={`orion-logo-frame orion-home-logo relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
@@ -58,16 +58,13 @@ export function Shell({ title, children, hideBranding = false }: { title: string
             onClick={() => setOpen(true)}
             aria-label="Orion — open menu"
           >
-            <OrionName className={["Home", "Vault", "Stake", "Studio", "Settings"].includes(title) ? "w-20" : "w-32"} />
+            <OrionName className={["Home", "Vault", "Stake", "Studio", "Settings"].includes(title) ? "w-[4.5rem]" : "w-28"} />
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             A Hashgraph Wallet
           </p>
           </div>
         </div>}
-        <div className="col-start-2 flex shrink-0">
-          <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
-        </div>
       </header>
       <main key={title} className="shell-content w-full min-w-0 max-w-full">{children}</main>
       <footer className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
