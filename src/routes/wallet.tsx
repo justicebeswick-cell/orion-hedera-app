@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Shell, Panel, Label, BindAccount } from "@/components/aurion";
 import { useAccount } from "@/lib/account";
-import { WC_PROJECT_ID, walletOptions, connectWallet, type WalletOption } from "@/lib/walletconnect";
 import {
   generateWallet, importWallet, saveKeystore, readKeystoreMeta, setKeystoreAccount,
   findAccountByKey, findAccountByEvm, clearKeystore, SCAN_INDEXES, type StoredKey, type ImportCandidate,
@@ -62,10 +61,10 @@ function Wallet() {
       <p className="mb-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
         {mode === "watch"
           ? "Connect a Ledger, Tangem or other cold wallet by its 0.0 account ID or 0x address. No keys or phrases are needed. Orion tracks balances, tokens and staking rewards, and prepares unsigned payments for your device to sign."
-          : "Face ID / fingerprint signing works once the wallet's key is saved on this device. Wallets connected through HashPack sign in HashPack instead."}
+          : "Face ID / fingerprint signing works once the wallet's key is saved on this device."}
       </p>
       {mode === "create" && <Create onPending={setPending} />}
-      {mode === "import" && <><ExternalWallets onDone={done} /><Import onDone={done} /></>}
+      {mode === "import" && <Import onDone={done} />}
       {mode === "watch" && <BindAccount onBind={done} />}
     </Shell>
   );
@@ -272,42 +271,6 @@ function Import({ onDone }: { onDone: (id: string) => void }) {
           }} />}
         </>
       )}
-    </Panel>
-  );
-}
-
-function ExternalWallets({ onDone }: { onDone: (id: string) => void }) {
-  const [opts, setOpts] = useState<WalletOption[] | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [err, setErr] = useState("");
-  useEffect(() => {
-    if (!WC_PROJECT_ID) return;
-    walletOptions().then(setOpts).catch((e) => setErr((e as Error).message));
-  }, []);
-
-  return (
-    <Panel className="mb-4">
-      <Label>HashPack or Blade</Label>
-      {!WC_PROJECT_ID ? (
-        <p className="text-sm text-muted-foreground">WalletConnect is not set up for this app yet.</p>
-      ) : (
-        <div className="grid grid-cols-2 gap-2">
-          {(opts ?? [{ id: "hashpack", name: "HashPack", installed: false }, { id: "blade", name: "Blade", installed: false }]).map((o) => (
-            <button key={o.name} className="btn-ghost flex-col py-3" disabled={!opts || !!busy}
-              onClick={async () => {
-                setBusy(o.name); setErr("");
-                try { onDone(await connectWallet(o)); }
-                catch (e) { setErr((e as Error).message || "Connection cancelled"); }
-                setBusy(null);
-              }}>
-              <span>{busy === o.name ? "Waiting…" : o.name}</span>
-              <span className="text-[10px] text-muted-foreground">{o.installed ? "Extension" : "Scan with app"}</span>
-            </button>
-          ))}
-        </div>
-      )}
-      {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
-      <p className="mt-3 text-xs text-muted-foreground">Keys stay in your wallet. Every change is approved there.</p>
     </Panel>
   );
 }

@@ -16,7 +16,6 @@ import { ContactsPanel } from "@/components/contacts";
 import { AdvancedSettings } from "@/components/advanced-settings";
 import { SecurityCheck } from "@/components/security-check";
 import { SecurityOptions } from "@/components/security-options";
-import { ThirdPartyApps } from "@/components/third-party-apps";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -41,7 +40,7 @@ function Row({ k, v }: { k: string; v: string }) {
   );
 }
 
-type Category = "General" | "Accounts" | "Advanced" | "Security" | "Address book" | "Third party apps";
+type Category = "General" | "Accounts" | "Advanced" | "Security" | "Address book";
 
 function Settings() {
   const [category, setCategory] = useState<Category | null>(null);
@@ -66,7 +65,6 @@ function Settings() {
         <div className="py-3">
           <SettingsItem icon={Activity} label="Advanced" onClick={() => setCategory("Advanced")} />
           <SettingsItem icon={Shield} label="Security" onClick={() => setCategory("Security")} />
-          <SettingsItem icon={Wallet} label="Third party apps" onClick={() => setCategory("Third party apps")} />
         </div>
         <div className="pt-3">
           <SettingsLink icon={CircleHelp} label="About Orion" to="/about" />
@@ -121,7 +119,6 @@ function Settings() {
         {category === "General" && <GeneralSettings />}
         {category === "Address book" && <ContactsPanel unframed />}
         {category === "Advanced" && <AdvancedSettings />}
-        {category === "Third party apps" && <ThirdPartyApps />}
 
         {category === "Advanced" && <Panel>
           <Label>Send limits (HBAR)</Label>
