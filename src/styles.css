@@ -15,7 +15,7 @@
 @theme inline {
   --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-display: "Cormorant Garamond", "Sora", ui-serif, Georgia, serif;
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-brand: "Montserrat", "Sora", ui-sans-serif, sans-serif;
   --font-receipt: "Optima", "Optima Alt", "Cormorant Garamond", sans-serif;
   --radius-sm: calc(var(--radius) - 6px);
@@ -56,6 +56,8 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --app-gutter: 1.25rem;
+  --motion-fast: 160ms;
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
   --logo-halo: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 42%, transparent), transparent);
   --logo-ring-ink: oklch(1 0 0);
   --launch: oklch(0 0 0);
@@ -180,6 +182,10 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: 0;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
   /* Keep entry, recovery text, and legal documents copyable. */
@@ -191,6 +197,15 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+}
+/* Refine shared wallet typography without touching artwork or receipt lettering. */
+.app-shell :is(h1, h2, h3) { font-family: var(--font-sans); font-weight: 500; line-height: 1.25; text-wrap: balance; }
+.app-shell :is(p, span, h1, h2, h3, button, a) { letter-spacing: 0; }
+.app-shell :is(p, li) { overflow-wrap: break-word; }
+.app-shell :is(button, a, input, textarea, [role="tab"]) { transition-duration: var(--motion-fast); transition-timing-function: var(--motion-ease); }
+.app-shell :is(button, a, input, textarea, [role="tab"]):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+@media (max-width: 767px) {
+  .app-shell :is(input:not([type="checkbox"]):not([type="radio"]), textarea, select) { font-size: 16px; }
 }
 @media (hover: none) {
   :is(button, a[href], [role="button"], [role="tab"], [role="switch"], [role="checkbox"]):not(:disabled):not([aria-disabled="true"]):active { opacity: .8; }
@@ -282,6 +297,7 @@
   color: var(--color-foreground);
   outline: none;
   &:focus { border-color: var(--color-primary); }
+  transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
 }
 @utility btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -373,8 +389,8 @@
 .node-logo { padding: 0; border-radius: 0; }
 .node-logo-image { background: transparent; }
 .receipt-label { font-weight: 300; font-variation-settings: "wght" 300, "FLAR" 100; }
-.shell-content { width: 100%; max-width: 100%; min-width: 0; animation: page-enter .28s ease both; }
-@keyframes page-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.shell-content { width: 100%; max-width: 100%; min-width: 0; animation: page-enter .22s var(--motion-ease) both; }
+@keyframes page-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; } .launch-screen { animation: none; } }
 
 /* AI Studio generation effect */
@@ -411,7 +427,7 @@
 .studio-message { animation: studio-reveal .3s ease both; overflow-wrap: anywhere; }
 @keyframes studio-reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .studio-view:not([hidden]), .studio-message { animation: none; } .studio-starter:hover { transform: none; } }
-.hello-line { display: flex; justify-content: center; align-items: baseline; gap: 0.35em; font-size: 2.6rem; font-weight: 300; letter-spacing: -0.01em; }
+.hello-line { display: flex; justify-content: center; align-items: baseline; gap: 0.35em; font-size: 2.6rem; font-weight: 300; letter-spacing: 0; }
 .hello-hbar-h { display: block; margin-right: 0.045em; transform: translateY(0.018em); user-select: none; }
 .hello-word-slot { position: relative; display: inline-block; text-align: left; }
 .hello-word { position: absolute; left: 0; top: 0; opacity: 0; transform: translateY(0.45em); filter: blur(6px); color: var(--primary);

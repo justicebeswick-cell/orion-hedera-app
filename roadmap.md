@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Refine shared typography, focus and motion without changing the approved layout; strengthen new-wallet encryption and preserve legacy access. Phone/desktop creation, backup, save and reload verified; physical iPhone performance and independent security audit remain unverified.
 - [x] Fix optional QR scan preview errors; preview builds cleanly, 30 regression checks pass, and Receive/Send/QR navigation works without browser runtime errors.
 - [x] Apply uploaded adaptive edge-to-edge brief: floating glass dock, 680px/4:5 automatic side rail, dock shortcuts and two-pane Home; verified 390/640/641/890px widths without horizontal overflow. Physical iOS/device rendering still requires Mac/Xcode testing.
 - [x] Verify installed Capacitor core/CLI/iOS/Haptics; retain safe-area header spacing and touch styles, add full bottom inset to navigation, use the bounce-free Orion controller on iOS scene launches, and test light feedback for navigation/address-copy/confirmation controls.

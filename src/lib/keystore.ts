@@ -6,22 +6,39 @@ const KS = "aurion.keystore";
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)) as Uint8Array<ArrayBuffer>;
 
-async function deriveKey(pass: string, salt: Uint8Array) {
+export const KEYSTORE_KDF = Object.freeze({ parallelism: 1, iterations: 4, memorySize: 65536, hashLength: 32 });
+const LEGACY_KDF = { ...KEYSTORE_KDF, iterations: 3 };
+const ENVELOPE_AAD = new TextEncoder().encode("Orion keystore v2:argon2id:m65536:t4:p1:aes256gcm");
+
+function requireSecureCrypto() {
+  if (typeof crypto === "undefined" || !crypto.subtle || typeof crypto.getRandomValues !== "function") {
+    throw new Error("Secure wallet creation requires HTTPS and device cryptography support.");
+  }
+}
+
+async function deriveKey(pass: string, salt: Uint8Array, version: 1 | 2) {
   const { argon2id } = await import("hash-wasm");
   const raw = await argon2id({
-    password: pass, salt, parallelism: 1, iterations: 3, memorySize: 65536, hashLength: 32, outputType: "binary",
+    password: pass, salt, ...(version === 1 ? LEGACY_KDF : KEYSTORE_KDF), outputType: "binary",
   });
-  return crypto.subtle.importKey("raw", raw as Uint8Array<ArrayBuffer>, "AES-GCM", false, ["encrypt", "decrypt"]);
+  try {
+    return await crypto.subtle.importKey("raw", raw as Uint8Array<ArrayBuffer>, "AES-GCM", false, ["encrypt", "decrypt"]);
+  } finally { if (raw instanceof Uint8Array) raw.fill(0); }
 }
 
 export type StoredKey = { publicKey: string; evm: string; accountId: string | null; kind?: "ecdsa" | "ed25519"; codeLength?: 4 | 6 | 8 };
 
 export async function saveKeystore(privHex: string, pass: string, meta: StoredKey) {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
+  requireSecureCrypto();
+  const salt = crypto.getRandomValues(new Uint8Array(32));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveKey(pass, salt);
-  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(privHex)));
-  localStorage.setItem(KS, JSON.stringify({ v: 1, salt: b64(salt), iv: b64(iv), ct: b64(ct), ...meta }));
+  const key = await deriveKey(pass, salt, 2);
+  const plaintext = new TextEncoder().encode(privHex);
+  let ct: Uint8Array;
+  try {
+    ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: ENVELOPE_AAD, tagLength: 128 }, key, plaintext));
+  } finally { plaintext.fill(0); }
+  localStorage.setItem(KS, JSON.stringify({ ...meta, v: 2, salt: b64(salt), iv: b64(iv), ct: b64(ct) }));
   rememberKeystore();
   markUnlocked(); // just created or imported — no lock screen this session
 }
@@ -39,7 +56,7 @@ export function rememberAccount(id: string) {
   const all = readSaved();
   const cur = localStorage.getItem(KS);
   const curId = cur ? JSON.parse(cur).accountId : null;
-  all[id] = { id, label: all[id]?.label ?? "", added: Date.now(), blob: curId === id ? cur! : all[id]?.blob };
+  all[id] = { id, label: all[id]?.label ?? "", added: Date.now(), blob: curId === id && cur ? cur : all[id]?.blob };
   localStorage.setItem(SAVED, JSON.stringify(all));
 }
 function rememberKeystore() {
@@ -79,11 +96,13 @@ export function setKeystoreAccount(accountId: string) {
 export async function unlockKeystore(pass: string): Promise<string> {
   const s = JSON.parse(localStorage.getItem(KS) ?? "null");
   if (!s) throw new Error("No key on this device");
-  const key = await deriveKey(pass, unb64(s.salt));
+  requireSecureCrypto();
+  if (s.v !== 1 && s.v !== 2) throw new Error("Unsupported encrypted wallet version");
+  const key = await deriveKey(pass, unb64(s.salt), s.v);
   try {
-    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(s.iv) }, key, unb64(s.ct));
+    const pt = new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(s.iv), tagLength: 128, ...(s.v === 2 ? { additionalData: ENVELOPE_AAD } : {}) }, key, unb64(s.ct)));
     markUnlocked();
-    return new TextDecoder().decode(pt);
+    try { return new TextDecoder().decode(pt); } finally { pt.fill(0); }
   } catch {
     throw new Error("Wrong passphrase");
   }
@@ -115,8 +134,10 @@ export async function changeDeviceCode(current: string, code: string) {
 
 /** New ECDSA key from a fresh 24-word phrase. */
 export async function generateWallet() {
+  requireSecureCrypto();
   const { Mnemonic } = await import("@hashgraph/sdk");
   const m = await Mnemonic.generate();
+  if (m.toString().trim().split(/\s+/).length !== 24) throw new Error("Recovery phrase generation failed");
   const pk = await m.toStandardECDSAsecp256k1PrivateKey("", 0);
   return {
     phrase: m.toString(),

@@ -1,0 +1,3 @@
+# Wallet security
+- New encrypted wallets use versioned AES-256-GCM with authenticated version context, 32-byte random salts and Argon2id (64 MiB, four passes); retain legacy v1 three-pass reads without silent rewrites so existing wallets remain accessible.
+- Generate SDK BIP-39 24-word recovery phrases (256-bit entropy) only with Web Crypto available; never substitute weak randomness or expose key material to the server.

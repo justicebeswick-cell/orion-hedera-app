@@ -10,6 +10,7 @@ import {
 } from "@/lib/keystore";
 import { pickCheckPositions } from "@/lib/passphrase";
 import { DeviceCode } from "@/components/device-code";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/wallet")({
   head: () => ({
@@ -103,7 +104,14 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
         <p className="text-sm text-muted-foreground">
           A key is made on this device. The account appears on mainnet when it receives its first HBAR.
         </p>
-        <button className="btn mt-4 w-full" onClick={async () => setW(await generateWallet())}>Generate key</button>
+        <Button className="mt-4 min-h-11 w-full" disabled={busy} onClick={async () => {
+          if (busy) return;
+          setBusy(true); setSaveErr("");
+          try { setW(await generateWallet()); }
+          catch (e) { setSaveErr(e instanceof Error ? e.message : "Could not create your wallet. Please try again."); }
+          finally { setBusy(false); }
+        }}>{busy ? "Creating wallet…" : "Generate key"}</Button>
+        {saveErr && <p role="alert" className="mt-3 text-sm text-destructive">{saveErr}</p>}
       </Panel>
     );
 
@@ -147,7 +155,7 @@ function BackupCheck({ words, onPass }: { words: string[]; onPass: () => void })
   const [err, setErr] = useState(false);
   const check = () => {
     const norm = (s: string) => (s ?? "").normalize("NFKD").toLowerCase().replace(/[^a-z]/g, "");
-    const good = pos.every((p, i) => norm(vals[i]!) === norm(words[p]!));
+    const good = pos.every((p, i) => !!words[p] && norm(vals[i] ?? "") === norm(words[p] ?? ""));
     if (good) onPass(); else setErr(true);
   };
   return (
