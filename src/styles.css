@@ -174,11 +174,26 @@
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
   body {
+    overscroll-behavior-y: none;
+    -webkit-user-select: none;
+    user-select: none;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
+  /* Keep entry, recovery text, and legal documents copyable. */
+  input, textarea, [contenteditable="true"], .select-text, article {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  button, a, [role="button"], [role="tab"], [role="switch"], [role="checkbox"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+@media (hover: none) {
+  :is(button, a[href], [role="button"], [role="tab"], [role="switch"], [role="checkbox"]):not(:disabled):not([aria-disabled="true"]):active { opacity: .8; }
 }
 
 .app-shell {
@@ -232,11 +247,13 @@
 :root[data-dock="side"] .dock-link.dock-active { background: color-mix(in oklab, var(--primary) 16%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 28%, transparent), 0 0 22px color-mix(in oklab, var(--primary) 22%, transparent); }
 
 .home-asset { display: flex; align-items: center; gap: .85rem; padding-top: 1rem; padding-bottom: 1rem; transition: opacity .2s; }
-.home-asset:hover { opacity: .8; }
+.home-asset:active { opacity: .8; }
+@media (hover: hover) { .home-asset:hover { opacity: .8; } }
 .unlock-backdrop { position: fixed; inset: 0; background: var(--background); overflow: hidden; }
 .unlock-glass { position: fixed; inset: 0; z-index: 60; background: color-mix(in oklab, var(--background) 52%, transparent); backdrop-filter: blur(18px); overflow-y: auto; padding: max(2rem, var(--safe-top)) max(1.5rem, var(--safe-right)) max(1.5rem, var(--safe-bottom)) max(1.5rem, var(--safe-left)); }
 .unlock-key { height: 72px; width: 100%; border-radius: 50%; background: transparent; font-size: 1.8rem; font-weight: 400; }
-.unlock-key:hover { background: color-mix(in oklab, var(--foreground) 8%, transparent); }
+.unlock-key:active { background: color-mix(in oklab, var(--foreground) 8%, transparent); }
+@media (hover: hover) { .unlock-key:hover { background: color-mix(in oklab, var(--foreground) 8%, transparent); } }
 .unlock-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--foreground); background: transparent; }
 .unlock-dot-filled { background: var(--foreground); }
 

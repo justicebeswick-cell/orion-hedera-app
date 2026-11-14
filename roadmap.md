@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Prepare Capacitor iOS/Android projects, native tap haptics, biometric-bound iOS Keychain unlock and mobile touch styles; 19 related tests pass. Mac setup and production limitations are in IOS-SETUP.md.
+- [ ] Compile/sign wrapper and verify Face ID, startup artwork, permissions and full-window layout on a physical iPhone — requires the user's Mac/Xcode and device. Native Android biometric unlock and broader secure-storage migration are not implemented.
 - [x] Reinforce full-width document, wallet/public shells and main content, dynamic viewport height, safe-area edges and matching theme backgrounds; verified 466px/890px, rotation, 1280px, simulated cutouts and Vault navigation. Physical iPhone standalone confirmation awaits publication/device check.
 - [x] Apply full-bleed folded/unfolded Home Screen layout, translucent iOS status bar, and four-sided safe areas without changing wallet behavior; verified 466px/890px layouts, rotation, simulated cutouts and Vault navigation. Physical iOS standalone rendering awaits publication and a device check.
 - [x] Add mainnet NFT receiving checks and signed collection association in Receive and NFTs; 30 related tests pass and public receiving screens verified. A real HashPack transfer into the user's wallet remains unverified without their account/collection and approval.
@@ -51,6 +53,6 @@
 
 ## Nov 14
 - [x] Side tab bar blends into the iPhone Duo strip (no divider, glass fade, iOS-style active pill)
-- [ ] Draw content under the OS strip — not possible for a web app on the home screen; needs a native iOS app
+- [ ] Confirm wrapper layout around the OS strip on the physical iPhone — requires Mac/Xcode/device testing; OS-protected areas cannot be overridden.
 
-- [ ] Connect a custom domain to Orion (waiting on user: which domain)
+- [x] Custom domain chosen and registered: orion-hedera.app; configured as the hosted wrapper origin. Availability must be checked before device installation.

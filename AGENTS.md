@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 ## AURION decisions
+- Capacitor uses the hosted HTTPS origin, not static dist, for server-backed features; external sites stay outside its bridge. Native iOS biometric codes use ThisDeviceOnly Keychain with biometryCurrentSet and wallet-revision checks; only markers enter localStorage, preserving encrypted wallet storage and code recovery.
 - Document, wallet/public shells, main content and dock use 100% width/max-width and dynamic viewport height; body and primary shells share the background token and four-sided safe-area tokens protect controls, preventing foldable letterboxing without wallet-state changes. Keep readable article/modal widths internal and manifest-only installability without app-shell service workers.
 - Public company and legal pages use a shared browser-safe PublicSite shell and route-specific metadata; keep the wallet first screen unchanged and unapproved legal disclosures explicitly in draft state.
 - Card surfaces share the global card-finish, card-border, card-radius and shadow tokens through panel/card-surface/hero-card/stat-tile and the Vault deck; this keeps the app-wide card design consistent without changing layouts or interactions.

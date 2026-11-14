@@ -3,9 +3,10 @@
 // That secret encrypts the device passphrase. Nothing leaves this device.
 
 import { unlockKeystore } from "./keystore";
+import { isNativeIos, nativeBiometricVault } from "./native";
 
 const BIO = "aurion.bio";
-type Stored = { credId: string; salt: string; iv: string; ct: string; walletBinding?: string };
+type Stored = { credId: string; salt: string; iv: string; ct: string; walletBinding?: string; native?: boolean };
 const RESET = "Fingerprint is linked to an old code or another wallet. Enter this wallet's code, then enable biometrics again in Settings → Security.";
 
 // Salt and IV identify the encrypted key, including code rotations, without storing keys.
@@ -27,11 +28,20 @@ export function bioEnrolled(): boolean {
   if (typeof localStorage === "undefined") return false;
   const seal = storedSeal();
   const binding = walletBinding();
-  return !!seal && !!binding && (!seal.walletBinding || seal.walletBinding === binding);
+  return !!seal && !!binding && (!seal.native || isNativeIos()) && (!seal.walletBinding || seal.walletBinding === binding);
 }
-export function bioRemove() { localStorage.removeItem(BIO); }
+export function bioRemove() {
+  localStorage.removeItem(BIO);
+  if (isNativeIos()) void nativeBiometricVault.remove().catch(() => {});
+}
 
 export async function bioAvailable(): Promise<boolean> {
+  if (isNativeIos()) {
+    try {
+      const { BiometricAuth } = await import('@aparajita/capacitor-biometric-auth');
+      return (await BiometricAuth.checkBiometry()).strongBiometryIsAvailable;
+    } catch { return false; }
+  }
   if (typeof window === "undefined" || !window.PublicKeyCredential) return false;
   try { return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); } catch { return false; }
 }
@@ -46,6 +56,16 @@ export async function bioEnroll(passphrase: string) {
   await unlockKeystore(passphrase);
   const binding = walletBinding();
   if (!binding) throw new Error("Save this wallet's key before enabling biometrics.");
+  if (isNativeIos()) {
+    await nativeBiometricVault.enroll({ code: passphrase, binding });
+    if (walletBinding() !== binding) {
+      await nativeBiometricVault.remove();
+      throw new Error(RESET);
+    }
+    // Public marker only. No code or secret is stored in localStorage.
+    localStorage.setItem(BIO, JSON.stringify({ native: true, walletBinding: binding, credId: '', salt: '', iv: '', ct: '' } satisfies Stored));
+    return;
+  }
   const salt = crypto.getRandomValues(new Uint8Array(32));
   const cred = (await navigator.credentials.create({
     publicKey: {
@@ -92,6 +112,14 @@ export async function bioPassphrase(): Promise<string> {
   if (!s) throw new Error("Biometrics not set up on this device");
   const binding = walletBinding();
   if (!binding || (s.walletBinding && s.walletBinding !== binding)) throw new Error(RESET);
+  if (s.native) {
+    if (!isNativeIos()) throw new Error(RESET);
+    const result = await nativeBiometricVault.unlock();
+    if (walletBinding() !== binding || result.binding !== binding) throw new Error(RESET);
+    try { await unlockKeystore(result.code); } catch { throw new Error(RESET); }
+    if (walletBinding() !== binding) throw new Error(RESET);
+    return result.code;
+  }
   const prf = await evalPrf(unb64(s.credId), unb64(s.salt));
   let passphrase: string;
   try {
