@@ -10,6 +10,7 @@ import {
 import { pickCheckPositions } from "@/lib/passphrase";
 import { DeviceCode } from "@/components/device-code";
 import { Button } from "@/components/ui/button";
+import { ThirdPartyApps } from "@/components/third-party-apps";
 
 export const Route = createFileRoute("/wallet")({
   head: () => ({
@@ -64,7 +65,7 @@ function Wallet() {
           : "Face ID / fingerprint signing works once the wallet's key is saved on this device."}
       </p>
       {mode === "create" && <Create onPending={setPending} />}
-      {mode === "import" && <Import onDone={done} />}
+      {mode === "import" && <><Panel className="mb-4"><Label>Connect a wallet app</Label><ThirdPartyApps /></Panel><Import onDone={done} /></>}
       {mode === "watch" && <BindAccount onBind={done} />}
     </Shell>
   );

@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Restore third-party wallet connections and verify the real QR pairing dialog; owner/domain/device checklist added in WALLETCONNECT-SETUP.md.
+- [ ] Verify WalletConnect project ownership, domain allowlist, wallet-approved pairing/signing/reconnect and native iOS return — requires the owner's Reown account, wallet approval and physical iPhone.
 - [x] Refine shared typography, focus and motion without changing the approved layout; strengthen new-wallet encryption and preserve legacy access. Phone/desktop creation, backup, save and reload verified; physical iPhone performance and independent security audit remain unverified.
 - [x] Fix optional QR scan preview errors; preview builds cleanly, 30 regression checks pass, and Receive/Send/QR navigation works without browser runtime errors.
 - [x] Apply uploaded adaptive edge-to-edge brief: floating glass dock, 680px/4:5 automatic side rail, dock shortcuts and two-pane Home; verified 390/640/641/890px widths without horizontal overflow. Physical iOS/device rendering still requires Mac/Xcode testing.
