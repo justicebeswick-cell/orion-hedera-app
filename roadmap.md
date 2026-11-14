@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Apply uploaded adaptive edge-to-edge brief: floating glass dock, 680px/4:5 automatic side rail, dock shortcuts and two-pane Home; verify browser layout. Physical iOS 27.3/device rendering requires Mac/Xcode testing.
+- [x] Fix optional QR scan preview errors; preview builds cleanly, 30 regression checks pass, and Receive/Send/QR navigation works without browser runtime errors.
+- [x] Apply uploaded adaptive edge-to-edge brief: floating glass dock, 680px/4:5 automatic side rail, dock shortcuts and two-pane Home; verified 390/640/641/890px widths without horizontal overflow. Physical iOS/device rendering still requires Mac/Xcode testing.
 - [x] Verify installed Capacitor core/CLI/iOS/Haptics; retain safe-area header spacing and touch styles, add full bottom inset to navigation, use the bounce-free Orion controller on iOS scene launches, and test light feedback for navigation/address-copy/confirmation controls.
 - [x] Prepare Capacitor iOS/Android projects, native tap haptics, biometric-bound iOS Keychain unlock and mobile touch styles; 19 related tests pass. Mac setup and production limitations are in IOS-SETUP.md.
 - [ ] Compile/sign wrapper and verify Face ID, startup artwork, permissions and full-window layout on a physical iPhone — requires the user's Mac/Xcode and device. Native Android biometric unlock and broader secure-storage migration are not implemented.
