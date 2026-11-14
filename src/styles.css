@@ -51,6 +51,11 @@
 }
 
 :root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --app-gutter: 1.25rem;
   --logo-halo: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 42%, transparent), transparent);
   --logo-ring-ink: oklch(1 0 0);
   --launch: oklch(0 0 0);
@@ -156,6 +161,14 @@
 
 @layer base {
   * { border-color: var(--color-border); }
+  html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+  }
+  html, body { background-color: var(--color-background); }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -164,10 +177,22 @@
   }
 }
 
+.app-shell {
+  padding: calc(1.5rem + var(--safe-top)) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
+}
+.app-dock { padding-left: var(--safe-left); padding-right: var(--safe-right); }
+.app-safe-screen {
+  padding-top: max(1.5rem, var(--safe-top));
+  padding-right: max(var(--app-gutter), var(--safe-right));
+  padding-bottom: max(1.5rem, var(--safe-bottom));
+  padding-left: max(var(--app-gutter), var(--safe-left));
+}
+@media (min-width: 1024px) { :root { --app-gutter: 2rem; } }
+
 .home-asset { display: flex; align-items: center; gap: .85rem; padding-top: 1rem; padding-bottom: 1rem; transition: opacity .2s; }
 .home-asset:hover { opacity: .8; }
 .unlock-backdrop { position: fixed; inset: 0; background: var(--background); overflow: hidden; }
-.unlock-glass { position: fixed; inset: 0; z-index: 60; background: color-mix(in oklab, var(--background) 52%, transparent); backdrop-filter: blur(18px); overflow-y: auto; padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(1.5rem, env(safe-area-inset-bottom)); }
+.unlock-glass { position: fixed; inset: 0; z-index: 60; background: color-mix(in oklab, var(--background) 52%, transparent); backdrop-filter: blur(18px); overflow-y: auto; padding: max(2rem, var(--safe-top)) max(1.5rem, var(--safe-right)) max(1.5rem, var(--safe-bottom)) max(1.5rem, var(--safe-left)); }
 .unlock-key { height: 72px; width: 100%; border-radius: 50%; background: transparent; font-size: 1.8rem; font-weight: 400; }
 .unlock-key:hover { background: color-mix(in oklab, var(--foreground) 8%, transparent); }
 .unlock-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--foreground); background: transparent; }
@@ -250,7 +275,7 @@
 
 /* Card corners stay consistent when a control's base variant sets a radius. */
 .panel, .card-surface, .stat-tile { border-radius: var(--card-radius); }
-.launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; overflow: hidden; }
+.launch-screen { position: fixed; inset: 0; z-index: 100; background: var(--launch); display: grid; place-items: center; overflow: hidden; padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left); }
 .launch-screen::before { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(40% 32% at 50% 44%, oklch(0.4 0.18 305 / 38%) 0%, transparent 70%);
   animation: launch-breathe 3.2s ease-in-out infinite; }

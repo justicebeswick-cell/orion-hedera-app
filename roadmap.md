@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Apply full-bleed folded/unfolded Home Screen layout, translucent iOS status bar, and four-sided safe areas without changing wallet behavior; verified 466px/890px layouts, rotation, simulated cutouts and Vault navigation. Physical iOS standalone rendering awaits publication and a device check.
 - [x] Add mainnet NFT receiving checks and signed collection association in Receive and NFTs; 30 related tests pass and public receiving screens verified. A real HashPack transfer into the user's wallet remains unverified without their account/collection and approval.
 - [x] Restore normal ORION lettering dimensions while retaining the shared softly shaded O; prevent icon-button sizing from shrinking the lettering.
 - [x] Apply the subtle shaded second O consistently to ORION lettering throughout the app, preserving each screen's size.

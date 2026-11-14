@@ -44,9 +44,9 @@ export function Shell({ title, children, hideBranding = false }: { title: string
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
-    <div className="mx-auto min-h-screen max-w-xl px-5 pb-32 pt-6 sm:max-w-2xl lg:max-w-4xl lg:px-8">
-      <header className={`mb-6 flex items-start ${hideBranding ? "justify-end" : "justify-between"}`}>
-        {!hideBranding && <div className="flex items-center gap-3">
+    <div className="app-shell min-h-dvh w-full">
+      <header className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+        {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
           <div>
           <Button variant="ghost"
@@ -65,7 +65,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
           </p>
           </div>
         </div>}
-        <div className="flex">
+        <div className="col-start-2 flex shrink-0">
           <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
         </div>
       </header>
@@ -76,7 +76,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
       </footer>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
-        <div className="mx-auto grid max-w-xl grid-cols-5 sm:max-w-2xl lg:max-w-4xl">
+        <div className="app-dock grid w-full grid-cols-5">
           {dock.map((d) => (
             <Link
               key={d.to}
@@ -91,7 +91,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
         </div>
       </nav>
       {open && (
-        <div className="fixed inset-0 z-50 bg-background/80 p-5 backdrop-blur" onClick={() => setOpen(false)}>
+        <div className="app-safe-screen fixed inset-0 z-50 overflow-y-auto bg-background/80 p-5 backdrop-blur" onClick={() => setOpen(false)}>
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
