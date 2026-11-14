@@ -52,3 +52,5 @@
 ## Nov 14
 - [x] Side tab bar blends into the iPhone Duo strip (no divider, glass fade, iOS-style active pill)
 - [ ] Draw content under the OS strip — not possible for a web app on the home screen; needs a native iOS app
+
+- [ ] Connect a custom domain to Orion (waiting on user: which domain)
