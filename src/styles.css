@@ -202,7 +202,8 @@
   min-width: 0;
   min-height: 100dvh;
   background-color: var(--background);
-  padding: calc(1.5rem + var(--safe-top)) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
+  /* Use the top safe area once, rather than adding a second blank band. */
+  padding: max(0.5rem, var(--safe-top)) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
 }
 .app-dock { width: 100%; max-width: 100%; min-width: 0; padding-left: var(--safe-left); padding-right: var(--safe-right); }
 .app-safe-screen {
