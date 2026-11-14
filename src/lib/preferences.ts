@@ -27,8 +27,8 @@ export function usePreferences() {
 }
 export function resolvedTheme(prefs: Preferences, light: boolean) { return prefs.autoTheme ? light ? "default" : "dark" : prefs.theme; }
 export function showAuditEvent(action: string, prefs: Preferences) { return !(prefs.hideFees && action === "swap fee"); }
-/** Explicit choices win; Auto follows the wide or unfolded viewport, not device names. */
-export function resolveDock(choice: Preferences["dock"], width: number, height: number): "bottom" | "side" {
+/** Side rail wins when chosen, or on "auto" when a narrow screen reports a large right-only inset (iPhone Duo outer display). */
+export function resolveDock(choice: Preferences["dock"], width: number, insetLeft: number, insetRight: number): "bottom" | "side" {
   if (choice !== "auto") return choice;
-  return width >= 680 || (height > 0 && width / height > 4 / 5) ? "side" : "bottom";
+  return width <= 440 && insetRight >= 20 && insetRight - insetLeft >= 12 ? "side" : "bottom";
 }

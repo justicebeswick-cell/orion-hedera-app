@@ -19,12 +19,16 @@ export function GeneralPreferences() {
     media.addEventListener("change", update); return () => { media.removeEventListener("change", update); };
   }, [prefs.theme, prefs.autoTheme, prefs.customColor]);
   useEffect(() => {
+    const probe = document.createElement("div");
+    probe.style.cssText = "position:fixed;visibility:hidden;pointer-events:none;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)";
+    document.body.appendChild(probe);
     const update = () => {
-      document.documentElement.dataset["dock"] = resolveDock(prefs.dock, window.innerWidth, window.innerHeight);
+      const style = getComputedStyle(probe);
+      document.documentElement.dataset["dock"] = resolveDock(prefs.dock, window.innerWidth, parseFloat(style.paddingLeft) || 0, parseFloat(style.paddingRight) || 0);
     };
     update();
     window.addEventListener("resize", update); window.visualViewport?.addEventListener("resize", update);
-    return () => { window.removeEventListener("resize", update); window.visualViewport?.removeEventListener("resize", update); };
+    return () => { window.removeEventListener("resize", update); window.visualViewport?.removeEventListener("resize", update); probe.remove(); };
   }, [prefs.dock]);
   useEffect(() => {
     const controller = new AbortController();

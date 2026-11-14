@@ -129,8 +129,6 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      <div className="home-dashboard">
-      <section aria-label="Wallet assets">
       <div className="home-account mb-2 flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
           <span className="block break-words text-base font-semibold leading-tight">{walletName || id}</span>
@@ -159,7 +157,7 @@ function Home() {
         </DialogContent>
       </Dialog>
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-5 block overflow-hidden rounded-[var(--card-radius)] border border-primary/15 px-5 pb-3 pt-2 transition-transform duration-300 active:scale-[0.99]">
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-5 block overflow-hidden rounded-[var(--card-radius)] border border-primary/15 px-5 pb-3 pt-2 transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 72%)" }}>
           <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
           <span aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-32 w-48 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl transition-opacity duration-500 group-hover:opacity-80" />
           <span className="relative block">
@@ -205,9 +203,7 @@ function Home() {
         <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
       </div>
       <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
-      </section>
-      <section className="home-activity" aria-label="Recent activity">
-      <div className="home-activity-heading mb-3 mt-9 flex items-center justify-between">
+      <div className="mb-3 mt-9 flex items-center justify-between">
         <h2 className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</h2>
         <Button variant="ghost" size="icon" aria-label="Refresh activity" disabled={txs.isFetching} onClick={() => txs.refetch()}>
           <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
@@ -230,14 +226,12 @@ function Home() {
                 <p className="font-receipt receipt-label text-lg leading-tight text-foreground">{received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}</p>
                 <p className="mt-1 break-words font-mono text-[10px] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
-              <span className={`min-w-0 max-w-[48%] break-words text-right font-sans text-sm font-medium tnum ${received ? "text-success" : "text-muted-foreground"}`}>
+              <span className={`shrink-0 whitespace-nowrap text-right font-sans text-sm font-medium tnum sm:text-lg ${received ? "text-success" : "text-muted-foreground"}`}>
                 {received ? "+" : ""}{hbar(n)} ℏ
               </span>
             </a>
           );
         })}
-      </div>
-      </section>
       </div>
       <Button variant="outline" onClick={signOut} className="mt-9 w-full text-muted-foreground">
         Sign out
