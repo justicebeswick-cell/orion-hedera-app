@@ -35,6 +35,7 @@ export function GeneralSettings() {
     {toggle("Hide Service Fee events", "hideFees")}
     {heading("Miscellaneous")}
     {toggle("Haptic feedback", "haptics")}
+    <div className="flex min-h-16 items-center justify-between gap-5"><span className="min-w-0 text-sm">Tab bar<span className="block text-xs text-muted-foreground">Side suits the iPhone Duo outer screen.</span></span><Select value={prefs.dock} onValueChange={(dock) => savePreferences({ dock: dock as Preferences["dock"] })}><SelectTrigger aria-label="Tab bar" className="w-28 shrink-0"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="auto">Auto</SelectItem><SelectItem value="bottom">Bottom</SelectItem><SelectItem value="side">Side</SelectItem></SelectContent></Select></div>
     <p className="py-2 text-xs text-muted-foreground">Vibration depends on your device. iPhone browsers may not support it.</p>
   </div>;
 }

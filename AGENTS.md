@@ -44,3 +44,4 @@
 - The welcome page uses Shell's optional hideBranding flag and shared logo/wordmark in its main content; other pages retain header branding and the app menu remains accessible.
 - Pact uses one browser-safe PactPanel in Vault and the preserved /pact page, keeping payment checks and signing identical across entry points.
 - General and security display preferences are schema-validated and device-local; the root applies themes, currency conversion and inactivity locks, leaving signing checks unchanged. Custom colors are validated hex values applied only to a root CSS token; preset and custom palettes derive shared card/action colors while preserving brand artwork and readable text.
+- The tab bar switches to a right-side rail via root data-dock (device-local Tab bar preference; Auto uses a narrow-screen right-only inset), and theme-color mirrors the computed page background as hex; Safari paints the iPhone Duo side strip with that colour and keeps content out of it.
