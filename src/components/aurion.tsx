@@ -5,7 +5,7 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
-import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings } from "lucide-react";
+import { Home, Wallet, Layers, Handshake, Grid2X2, X, Bot, Settings, ArrowUpRight, ArrowDownLeft, ScanLine } from "lucide-react";
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
   if (crisp) return <span className={`orion-logo-frame orion-home-logo relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
@@ -75,19 +75,24 @@ export function Shell({ title, children, hideBranding = false }: { title: string
         <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
       </footer>
-      <nav aria-label="Main" className="app-dock-nav fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
+      <nav aria-label="Main" className="app-dock-nav fixed z-40">
         <div className="app-dock grid w-full max-w-full grid-cols-5">
           {dock.map((d) => (
             <Link
               key={d.to}
               to={d.to}
-              className="dock-link relative flex flex-col items-center gap-1.5 pb-[calc(1rem+var(--safe-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+              className="dock-link relative flex flex-col items-center gap-1.5 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "dock-active text-primary font-medium", "aria-current": "page" }}
               activeOptions={{ exact: true }}
             >
               <d.icon size={20} strokeWidth={1.6} />{d.label}
             </Link>
           ))}
+        </div>
+        <div className="dock-shortcuts" aria-label="Wallet actions">
+          <Button asChild variant="send" size="icon" className="dock-action" title="Send"><Link to="/vault" search={{ section: "send" }} aria-label="Send"><ArrowUpRight size={20} /></Link></Button>
+          <Button asChild variant="receive" size="icon" className="dock-action" title="Receive"><Link to="/vault" search={{ section: "receive" }} aria-label="Receive"><ArrowDownLeft size={20} /></Link></Button>
+          <Button asChild variant="ghost" size="icon" className="dock-action" title="Scan QR code"><Link to="/vault" search={{ section: "send", scan: true }} aria-label="Scan QR code"><ScanLine size={20} /></Link></Button>
         </div>
       </nav>
       {open && (

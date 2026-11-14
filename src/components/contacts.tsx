@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { BookUser, Trash2, Pencil, UserPlus, ScanLine } from "lucide-react";
 import { QrScanner } from "@/components/qr-scanner";
 import { Button } from "@/components/ui/button";
@@ -7,10 +7,11 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { removeContact, saveContact, useContacts, type Contact } from "@/lib/contacts";
 
 /** "To" field with saved contacts one tap away, and a quick save for new accounts. */
-export function RecipientField({ value, onChange, self, allowEvm = false }: { value: string; onChange: (v: string) => void; self?: string; allowEvm?: boolean }) {
+export function RecipientField({ value, onChange, self, allowEvm = false, autoScan = false }: { value: string; onChange: (v: string) => void; self?: string; allowEvm?: boolean; autoScan?: boolean }) {
   const contacts = useContacts().filter((c) => c.account !== self);
   const [naming, setNaming] = useState(false);
   const [scan, setScan] = useState(false);
+  useEffect(() => { if (autoScan) setScan(true); }, [autoScan]);
   const [name, setName] = useState("");
   const v = value.trim();
   const match = contacts.find((c) => c.account === v);

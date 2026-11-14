@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { parseQrRecipient } from "@/lib/recipient";
+import { Button } from "@/components/ui/button";
 
 /** Pull a Hedera account ID (0.0.x) out of a scanned QR payload, e.g. "hedera:0.0.123" or a HashScan URL. */
 export function parseAccountFromQr(text: string, allowEvm = false): string | null {
@@ -52,8 +53,8 @@ export function QrScanner({ onResult, onClose, allowEvm = false, raw = false }: 
   }, [allowEvm]);
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 p-6 backdrop-blur">
-      <button type="button" aria-label="Close scanner" onClick={onClose} className="absolute right-4 top-4 rounded-full p-2 text-muted-foreground hover:text-foreground"><X size={22} /></button>
+    <div className="app-safe-screen fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 backdrop-blur">
+      <Button type="button" variant="ghost" size="icon" aria-label="Close scanner" onClick={onClose} className="absolute right-[calc(1rem+var(--safe-right))] top-[calc(1rem+var(--safe-top))] text-muted-foreground"><X size={22} /></Button>
       <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-3xl border border-primary/60">
         <video ref={video} playsInline muted className="h-full w-full object-cover" />
         <div className="pointer-events-none absolute inset-8 rounded-2xl border-2 border-primary/80" />

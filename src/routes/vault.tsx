@@ -31,7 +31,7 @@ import { useEffect } from "react";
 import { HBAR, LP_FEE, SERVICE_FEE, TREASURY, executeSwap, fmtUnits, listTokens, quote, toUnits, tokenBalance, type Step, type SwapToken } from "@/lib/swap";
 
 export const Route = createFileRoute("/vault")({
-  validateSearch: (search: Record<string, unknown>): { section?: string | undefined } => ({ section: typeof search["section"] === "string" ? search["section"] : undefined }),
+  validateSearch: (search: Record<string, unknown>): { section?: string | undefined; scan?: boolean } => ({ section: typeof search["section"] === "string" ? search["section"] : undefined, scan: search["scan"] === true || search["scan"] === "true" ? true : undefined }),
   head: () => ({
     meta: [
       { title: "Vault — Orion" },
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/vault")({
 });
 
 function Vault() {
-  const { section } = Route.useSearch();
+  const { section, scan } = Route.useSearch();
   const { id, ready, bind } = useAccount();
   const [copied, setCopied] = useState(false);
   const acct = useQuery({ queryKey: ["acct", id], queryFn: () => { if (!id) throw new Error("No account selected"); return getAccount(id); }, enabled: !!id, retry: false, refetchInterval: REFRESH_MS });
@@ -57,7 +57,7 @@ function Vault() {
     <Shell title="Vault">
       <IncomingTokens accountId={id} />
       <VaultDeck activeKey={section} pages={[
-        { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} onSent={() => acct.refetch()} /></Panel> },
+        { key: "send", label: "Send", icon: ArrowUpRight, content: <Panel><Label>Send HBAR</Label><SendForm id={id} scan={scan} onSent={() => acct.refetch()} /></Panel> },
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p><NftReceive key={id} accountId={id} /></Panel> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} /> },
@@ -329,7 +329,7 @@ function ClprCard() {
   );
 }
 
-function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
+function SendForm({ id, onSent, scan }: { id: string; onSent: () => void; scan?: boolean }) {
   const [to, setTo] = useState("");
   const [amt, setAmt] = useState("");
   const [memo, setMemo] = useState("");
@@ -340,7 +340,7 @@ function SendForm({ id, onSent }: { id: string; onSent: () => void }) {
   const ok = isHbarRecipient(to) && Number.isFinite(n) && n > 0;
   return (
     <div className="space-y-3">
-      <RecipientField value={to} onChange={setTo} self={id} allowEvm />
+      <RecipientField value={to} onChange={setTo} self={id} allowEvm autoScan={scan} />
       {EVM_RE.test(to.trim()) && <p className="text-xs text-muted-foreground">Hedera mainnet only. If this is a new wallet address, this HBAR transfer creates its account. Network fees apply.</p>}
       <div className="relative"><input className="field tnum pr-10" inputMode="decimal" placeholder="Amount ℏ" value={amt} onChange={(e) => setAmt(e.target.value)} /><HbarLogo size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" /></div>
       <input className="field" maxLength={100} placeholder="Note (public, optional)" value={memo} onChange={(e) => setMemo(e.target.value)} />
