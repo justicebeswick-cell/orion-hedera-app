@@ -438,4 +438,4 @@
 .dock-active svg { filter: drop-shadow(0 0 6px color-mix(in oklab, var(--primary) 65%, transparent)); }
 /* Side rail: the active marker becomes a vertical bar on the rail's inner edge. */
 :root[data-dock="side"] .dock-active::before { display: none; }
-:root[data-dock="side"] .welcome-wordmark { width: min(14rem, calc(100% - 3rem)); }
+:root[data-dock="side"] .welcome-wordmark { max-width: calc(100% - 3rem); }
