@@ -81,7 +81,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
             <Link
               key={d.to}
               to={d.to}
-              className="dock-link relative flex flex-col items-center gap-1.5 pb-[max(1rem,var(--safe-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+              className="dock-link relative flex flex-col items-center gap-1.5 pb-[calc(1rem+var(--safe-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "dock-active text-primary font-medium", "aria-current": "page" }}
               activeOptions={{ exact: true }}
             >

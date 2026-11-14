@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Verify installed Capacitor core/CLI/iOS/Haptics; retain safe-area header spacing and touch styles, add full bottom inset to navigation, use the bounce-free Orion controller on iOS scene launches, and test light feedback for navigation/address-copy/confirmation controls.
 - [x] Prepare Capacitor iOS/Android projects, native tap haptics, biometric-bound iOS Keychain unlock and mobile touch styles; 19 related tests pass. Mac setup and production limitations are in IOS-SETUP.md.
 - [ ] Compile/sign wrapper and verify Face ID, startup artwork, permissions and full-window layout on a physical iPhone — requires the user's Mac/Xcode and device. Native Android biometric unlock and broader secure-storage migration are not implemented.
 - [x] Reinforce full-width document, wallet/public shells and main content, dynamic viewport height, safe-area edges and matching theme backgrounds; verified 466px/890px, rotation, 1280px, simulated cutouts and Vault navigation. Physical iPhone standalone confirmation awaits publication/device check.

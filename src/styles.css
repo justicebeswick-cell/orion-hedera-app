@@ -236,7 +236,6 @@
   border: 0;
   background: linear-gradient(to right, transparent, color-mix(in oklab, var(--background) 70%, transparent) 35%, var(--background) 85%);
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   box-shadow: none;
 }
 :root[data-dock="side"] .app-dock {

@@ -1,4 +1,4 @@
-/** Optional browser haptics; unsupported devices remain fully functional. */
+/** One light impact per control tap: native Capacitor, browser vibration fallback. */
 import { getPreferences } from "./preferences";
 import { isNativeApp, nativeTapHaptic } from "./native";
 export function tapHaptic() {
@@ -11,6 +11,6 @@ export function tapHaptic() {
 export function handleHapticClick(event: MouseEvent) {
   if (!event.isTrusted || !(event.target instanceof Element)) return;
   const control = event.target.closest('button, a[href], [role="button"], [role="tab"], [role="switch"], [role="checkbox"]');
-  if (!control || control.matches(':disabled, [aria-disabled="true"]')) return;
+  if (!control || control.matches(':disabled, [aria-disabled="true"]') || control.closest('[inert], [aria-disabled="true"]')) return;
   tapHaptic();
 }
