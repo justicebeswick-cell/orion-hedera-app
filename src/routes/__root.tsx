@@ -25,7 +25,7 @@ import { handleHapticClick } from "@/lib/haptics";
 
 function NotFoundComponent() {
   return (
-    <div className="app-safe-screen flex min-h-dvh items-center justify-center bg-background px-4">
+    <div className="app-safe-screen flex min-h-dvh w-full max-w-full items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
@@ -53,7 +53,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="app-safe-screen flex min-h-dvh items-center justify-center bg-background px-4">
+    <div className="app-safe-screen flex min-h-dvh w-full max-w-full items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -119,7 +119,7 @@ function RootShell({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="min-h-dvh w-full max-w-full bg-background">
         {children}
         <Scripts />
       </body>

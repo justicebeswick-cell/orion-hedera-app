@@ -18,7 +18,7 @@ export function publicHead(title: string, description: string) {
 }
 
 export function PublicSite({ children }: { children: ReactNode }) {
-  return <div className="app-safe-screen mx-auto min-h-dvh max-w-5xl px-5 sm:px-10">
+  return <div className="app-safe-screen min-h-dvh w-full max-w-full bg-background px-5 sm:px-10">
     <header className="flex flex-wrap items-center justify-between gap-4 border-b py-6">
       <Link to="/company" className="flex items-center gap-3" aria-label="Orion company website">
         <AurionLogo className="h-12 w-12" />

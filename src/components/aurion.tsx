@@ -44,7 +44,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
-    <div className="app-shell min-h-dvh w-full">
+    <div className="app-shell min-h-dvh w-full max-w-full bg-background">
       <header className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
@@ -69,14 +69,14 @@ export function Shell({ title, children, hideBranding = false }: { title: string
           <Button variant="ghost" size="icon" title="All apps" aria-label="All apps" onClick={() => setOpen(true)}><Grid2X2 /></Button>
         </div>
       </header>
-      <main key={title} className="shell-content">{children}</main>
+      <main key={title} className="shell-content w-full min-w-0 max-w-full">{children}</main>
       <footer className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
         <Link to="/company" className="hover:text-foreground">Company</Link>
         <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
       </footer>
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
-        <div className="app-dock grid w-full grid-cols-5">
+        <div className="app-dock grid w-full max-w-full grid-cols-5">
           {dock.map((d) => (
             <Link
               key={d.to}
