@@ -58,7 +58,7 @@ export function Shell({ title, children, hideBranding = false }: { title: string
             onClick={() => setOpen(true)}
             aria-label="Orion — open menu"
           >
-            <OrionName className={["Home", "Vault", "Stake", "Studio", "Settings"].includes(title) ? "w-[4.5rem]" : "w-28"} />
+            <OrionName className={["Home", "Vault", "Stake", "Studio", "Settings"].includes(title) ? "w-14" : "w-24"} />
           </Button>
           <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
             A Hashgraph Wallet
