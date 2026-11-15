@@ -56,7 +56,7 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --app-gutter: 1.25rem;
-  --dock-bottom-clearance: max(12px, var(--safe-bottom));
+  --dock-bottom-clearance: max(16px, var(--safe-bottom));
   --dock-material: color-mix(in oklab, var(--background) 60%, transparent);
   --motion-fast: 160ms;
   --motion-ease: cubic-bezier(.22, 1, .36, 1);
@@ -176,6 +176,9 @@
     overscroll-behavior: none;
   }
   html, body, #root { background-color: var(--launch); height: 100%; overflow-x: hidden; }
+  /* Full-bleed override: the document itself never insets or tints; the wallet
+     shell and dock own safe-area clearance so content paints under system UI. */
+  html, body, #root, .app { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; background-color: #000000 !important; overflow-x: hidden !important; }
   html { scroll-padding-top: var(--safe-top); scroll-padding-bottom: calc(6rem + var(--dock-bottom-clearance)); }
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
@@ -228,9 +231,10 @@
 }
 .app-dock-nav {
   border: 0;
-  background: var(--dock-material);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  left: 0; right: 0; bottom: 0;
+  background: transparent;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   padding-bottom: var(--dock-bottom-clearance);
 }
 .dock-link { min-width: 0; }
