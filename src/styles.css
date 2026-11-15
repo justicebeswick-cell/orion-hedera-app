@@ -172,15 +172,15 @@
     min-height: 100dvh;
     overscroll-behavior: none;
   }
-  html, body, #root { background-color: var(--background); height: 100%; overflow-x: hidden; }
+  html, body, #root { background-color: var(--launch); height: 100%; overflow-x: hidden; }
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
   body {
-    padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+    padding: 0;
     overscroll-behavior-y: none;
     -webkit-user-select: none;
     user-select: none;
-    background-color: var(--color-background);
+    background-color: var(--launch);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-size: 14px;
@@ -216,15 +216,17 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-height: calc(100dvh - var(--safe-top) - var(--safe-bottom));
+  min-height: 100dvh;
   background-color: var(--background);
-  /* Body owns the four safe areas; don't add them again to flowing content. */
-  padding: 0 var(--app-gutter) 8rem;
+  /* Paint edge-to-edge; only the controls/content are inset from system areas. */
+  padding: var(--safe-top) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
 }
 .app-dock-nav {
   border: 0;
-  background: var(--background);
-  padding-bottom: calc(12px + var(--safe-bottom));
+  background: transparent;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding-bottom: calc(8px + var(--safe-bottom));
 }
 .dock-link { min-width: 0; }
 .app-dock { width: 100%; max-width: 100%; min-width: 0; padding-left: var(--safe-left); padding-right: var(--safe-right); }
@@ -237,18 +239,14 @@
   padding-bottom: max(1.5rem, var(--safe-bottom));
   padding-left: max(var(--app-gutter), var(--safe-left));
 }
-.app-safe-screen:not(.fixed) {
-  min-height: calc(100dvh - var(--safe-top) - var(--safe-bottom));
-  padding: 1.5rem var(--app-gutter);
-}
 @media (min-width: 1024px) { :root { --app-gutter: 2rem; } }
 
 /* Safe-area values come from the host browser, not assumed device dimensions.
-   Fixed navigation owns its insets independently of the padded document. */
+   Shells and fixed navigation own their insets; the document stays full-bleed. */
 :root[data-dock="side"] { --rail-width: 4.25rem; }
 :root[data-dock="side"] .app-shell {
-  padding-right: calc(var(--rail-width) + 0.25rem);
-  padding-bottom: 2rem;
+  padding-right: calc(var(--rail-width) + 0.25rem + var(--safe-right));
+  padding-bottom: calc(2rem + var(--safe-bottom));
 }
 :root[data-dock="side"] .app-dock-nav {
   left: auto; right: 0; top: 0; bottom: 0;
@@ -260,6 +258,7 @@
   padding-bottom: 0;
   background: linear-gradient(to right, transparent, color-mix(in oklab, var(--background) 70%, transparent) 35%, var(--background) 85%);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: none;
 }
 :root[data-dock="side"] .app-dock {
