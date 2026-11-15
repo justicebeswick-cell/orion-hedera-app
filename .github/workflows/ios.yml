@@ -21,7 +21,7 @@ jobs:
           echo '<html><body><h1>Orion</h1></body></html>' > dist/index.html
           rm -rf ios
           echo "Running cap add..."
-          npx cap add ios --verbose || echo "cap add failed"
+          npx cap add ios || echo "cap add failed"
           echo "Listing ios folder:"
           ls -la ios || echo "ios folder missing"
           npx cap sync ios
