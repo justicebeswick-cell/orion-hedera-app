@@ -463,3 +463,39 @@
 /* Side rail: the active marker becomes a vertical bar on the rail's inner edge. */
 :root[data-dock="side"] .dock-active::before { display: none; }
 :root[data-dock="side"] .welcome-wordmark { width: min(14rem, calc(100% - 3rem)); }
+
+/* ===== iPhone Duo full-bleed override (owner-supplied; wins over all rules above) ===== */
+html, body, #root {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100dvh !important;
+  width: 100% !important;
+  max-width: none !important;
+  background: #000 !important;
+  overflow-x: hidden !important;
+}
+body {
+  padding-top: env(safe-area-inset-top) !important;
+  padding-bottom: env(safe-area-inset-bottom) !important;
+  padding-left: env(safe-area-inset-left) !important;
+  padding-right: env(safe-area-inset-right) !important;
+}
+/* Main container goes edge to edge: no max width or side margins. */
+.app-shell, .shell-content, .app-safe-screen {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+/* Bottom tab bar sits above the home indicator and is never cut off.
+   Scoped to the real tab bar: a catch-all [class*="tab"]/footer selector would
+   also pin amounts (tabular-nums), tab lists and legal footers to the bottom. */
+:root:not([data-dock="side"]) :is(.app-dock-nav, .bottom-nav) {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  z-index: 9999 !important;
+}
