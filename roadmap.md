@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Apply the exact full-screen viewport, single safe-area spacing and seamless bottom toolbar; Home/Settings navigation verified at 390/431/844/890/1280px with simulated four-sided insets, no horizontal clipping and 23 preference tests passing. Request publication; physical Duo confirmation requires the owner's device.
 - [x] Remove third-party wallet connection choices from Settings and recovery again at the owner's request; the code, setup checklist (WALLETCONNECT-SETUP.md) and Reown/QR wiring stay in the repo for a later re-enable.
 - [ ] When re-enabled: verify WalletConnect project ownership, domain allowlist, wallet-approved pairing/signing/reconnect and native iOS return — requires the owner's Reown account, wallet approval and physical iPhone.
 - [x] Refine shared typography, focus and motion without changing the approved layout; strengthen new-wallet encryption and preserve legacy access. Phone/desktop creation, backup, save and reload verified; physical iPhone performance and independent security audit remain unverified.

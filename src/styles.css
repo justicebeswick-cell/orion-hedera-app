@@ -176,6 +176,7 @@
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
   body {
+    padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
     overscroll-behavior-y: none;
     -webkit-user-select: none;
     user-select: none;
@@ -215,11 +216,17 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-height: 100dvh;
+  min-height: calc(100dvh - var(--safe-top) - var(--safe-bottom));
   background-color: var(--background);
-  /* Use the top safe area once, rather than adding a second blank band. */
-  padding: max(0.5rem, var(--safe-top)) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
+  /* Body owns the four safe areas; don't add them again to flowing content. */
+  padding: 0 var(--app-gutter) 8rem;
 }
+.app-dock-nav {
+  border: 0;
+  background: var(--background);
+  padding-bottom: calc(12px + var(--safe-bottom));
+}
+.dock-link { min-width: 0; }
 .app-dock { width: 100%; max-width: 100%; min-width: 0; padding-left: var(--safe-left); padding-right: var(--safe-right); }
 .app-safe-screen {
   width: 100%;
@@ -230,18 +237,18 @@
   padding-bottom: max(1.5rem, var(--safe-bottom));
   padding-left: max(var(--app-gutter), var(--safe-left));
 }
+.app-safe-screen:not(.fixed) {
+  min-height: calc(100dvh - var(--safe-top) - var(--safe-bottom));
+  padding: 1.5rem var(--app-gutter);
+}
 @media (min-width: 1024px) { :root { --app-gutter: 2rem; } }
 
-/* iPhone Duo outer display: Safari keeps page content out of the right-side
-   status/controls strip and paints it with the page background / theme-color,
-   even with viewport-fit=cover. We match that color exactly so the strip
-   blends in, and offer a vertical side rail (data-dock="side") that sits beside
-   it. If Apple later reports the strip as safe-area-inset-right, "Auto" picks
-   the rail on its own and all padding below already respects the inset. */
+/* Safe-area values come from the host browser, not assumed device dimensions.
+   Fixed navigation owns its insets independently of the padded document. */
 :root[data-dock="side"] { --rail-width: 4.25rem; }
 :root[data-dock="side"] .app-shell {
-  padding-right: calc(var(--rail-width) + 0.25rem + var(--safe-right));
-  padding-bottom: calc(2rem + var(--safe-bottom));
+  padding-right: calc(var(--rail-width) + 0.25rem);
+  padding-bottom: 2rem;
 }
 :root[data-dock="side"] .app-dock-nav {
   left: auto; right: 0; top: 0; bottom: 0;
@@ -250,6 +257,7 @@
      the colour the OS paints its strip, so rail + strip read as one surface and
      card glows spill across the boundary. */
   border: 0;
+  padding-bottom: 0;
   background: linear-gradient(to right, transparent, color-mix(in oklab, var(--background) 70%, transparent) 35%, var(--background) 85%);
   backdrop-filter: blur(14px);
   box-shadow: none;
