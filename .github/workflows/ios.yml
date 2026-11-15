@@ -23,10 +23,11 @@ jobs:
 
       - name: Build IPA
         run: |
-          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -archivePath $PWD/build/App.xcarchive archive
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -archivePath $PWD/build/App.xcarchive archive
           xcodebuild -exportArchive -archivePath $PWD/build/App.xcarchive -exportPath $PWD/build -exportOptionsPlist ios/exportOptions.plist
 
       - uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
           path: build/*.ipa
+
