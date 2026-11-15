@@ -13,14 +13,15 @@ jobs:
         with:
           node-version: 22
 
-    - name: Install and build
-  run: |
-    npm ci
-    npm run build
-    mkdir -p dist
-    echo '<html><body><h1>Orion</h1></body></html>' > dist/index.html
-    npx cap add ios || true
-    npx cap sync ios
+      - name: Install and build
+        run: |
+          npm ci
+          npm run build
+          mkdir -p dist
+          echo '<html><body><h1>Orion</h1></body></html>' > dist/index.html
+          npx cap add ios || true
+          npx cap sync ios
+
       - name: Build IPA
         run: |
           xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -archivePath $PWD/build/App.xcarchive archive
@@ -30,5 +31,3 @@ jobs:
         with:
           name: ios-ipa
           path: build/*.ipa
-
-
