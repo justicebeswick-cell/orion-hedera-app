@@ -8,8 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         window = UIWindow(windowScene: windowScene)
-        // Use Orion's full-window, bounce-free bridge on scene-based launches too.
-        window?.rootViewController = OrionViewController()
+        window?.rootViewController = CAPBridgeViewController()
         window?.makeKeyAndVisible()
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
