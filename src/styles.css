@@ -463,3 +463,44 @@
 /* Side rail: the active marker becomes a vertical bar on the rail's inner edge. */
 :root[data-dock="side"] .dock-active::before { display: none; }
 :root[data-dock="side"] .welcome-wordmark { width: min(14rem, calc(100% - 3rem)); }
+
+/* ===== iPhone Duo full-bleed override (owner-supplied; wins over all rules above) ===== */
+/* Root fills the screen. No overflow clipping on html/body: on iOS that turns the
+   body into its own scroll box and can push the fixed tab bar out of view. */
+html, body, #root {
+  height: 100dvh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  background: #000 !important;
+}
+#root { overflow-x: clip; }
+/* Body has no padding, so screens own their safe-area clearance. */
+.app-shell, .app-safe-screen {
+  padding-top: env(safe-area-inset-top) !important;
+  padding-left: calc(var(--app-gutter) + env(safe-area-inset-left)) !important;
+  padding-right: calc(var(--app-gutter) + env(safe-area-inset-right)) !important;
+}
+:root:not([data-dock="side"]) .app-shell {
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom)) !important;
+}
+/* Main container goes edge to edge: no max width or side margins. */
+.app-shell, .shell-content, .app-safe-screen {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+/* Bottom tab bar fixed above the home indicator.
+   Scoped to the real tab bar: a catch-all [class*="tab"]/[class*="nav"] selector would
+   also pin amounts (tabular-nums), Vault section tabs and links to the bottom. */
+:root:not([data-dock="side"]) :is(.app-dock-nav, .bottom-nav) {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  z-index: 10000 !important;
+}
