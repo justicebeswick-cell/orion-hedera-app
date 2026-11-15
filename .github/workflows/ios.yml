@@ -16,7 +16,9 @@ jobs:
       - name: Install and build
         run: |
           npm ci
-          npm run build
+          npm run build 
+          mkdir -p dist
+          echo '<html><body><h1>Orion</h1></body></html>' > dist/index.html
           npx cap sync ios
 
       - name: Build IPA
