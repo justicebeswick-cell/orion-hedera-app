@@ -21,13 +21,34 @@ jobs:
           echo '<html><body><h1>Orion</h1></body></html>' > dist/index.html
           npx cap sync ios
 
+      - name: Install Apple certificate and profile
+        env:
+          IOS_CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
+        run: |
+          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+          PP_PATH=$RUNNER_TEMP/profile.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          echo -n "$IOS_CERTIFICATE" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$IOS_PROVISIONING_PROFILE" | base64 --decode -o $PP_PATH
+
+          security create-keychain -p "" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "" $KEYCHAIN_PATH
+          security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+
       - name: Build IPA
         run: |
-          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -archivePath $PWD/build/App.xcarchive archive
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -archivePath $PWD/build/App.xcarchive archive DEVELOPMENT_TEAM=78PU393GBQ
           xcodebuild -exportArchive -archivePath $PWD/build/App.xcarchive -exportPath $PWD/build -exportOptionsPlist ios/exportOptions.plist
 
       - uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
           path: build/*.ipa
-
