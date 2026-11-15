@@ -56,6 +56,8 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --app-gutter: 1.25rem;
+  --dock-bottom-clearance: max(12px, var(--safe-bottom));
+  --dock-material: color-mix(in oklab, var(--background) 60%, transparent);
   --motion-fast: 160ms;
   --motion-ease: cubic-bezier(.22, 1, .36, 1);
   --logo-halo: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 42%, transparent), transparent);
@@ -162,17 +164,19 @@
 :root[data-theme="default"] .launch-screen .orion-lettering { filter: none; }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * { box-sizing: border-box; border-color: var(--color-border); }
   html, body, #root {
     margin: 0;
     padding: 0;
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    min-height: 100vh;
     min-height: 100dvh;
     overscroll-behavior: none;
   }
   html, body, #root { background-color: var(--launch); height: 100%; overflow-x: hidden; }
+  html { scroll-padding-top: var(--safe-top); scroll-padding-bottom: calc(6rem + var(--dock-bottom-clearance)); }
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
   body {
@@ -216,17 +220,18 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--background);
   /* Paint edge-to-edge; only the controls/content are inset from system areas. */
-  padding: var(--safe-top) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
+  padding: var(--safe-top) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--dock-bottom-clearance)) calc(var(--app-gutter) + var(--safe-left));
 }
 .app-dock-nav {
   border: 0;
-  background: transparent;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding-bottom: calc(8px + var(--safe-bottom));
+  background: var(--dock-material);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding-bottom: var(--dock-bottom-clearance);
 }
 .dock-link { min-width: 0; }
 .app-dock { width: 100%; max-width: 100%; min-width: 0; padding-left: var(--safe-left); padding-right: var(--safe-right); }
@@ -256,13 +261,13 @@
      card glows spill across the boundary. */
   border: 0;
   padding-bottom: 0;
-  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--background) 70%, transparent) 35%, var(--background) 85%);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: linear-gradient(to right, transparent, var(--dock-material));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   box-shadow: none;
 }
 :root[data-dock="side"] .app-dock {
-  display: flex; height: 100%; flex-direction: column; justify-content: center; gap: 0.5rem;
+  display: flex; height: 100%; flex-direction: column; justify-content: safe center; gap: 0.5rem; overflow-y: auto;
   padding: var(--safe-top) var(--safe-right) var(--safe-bottom) 0;
 }
 :root[data-dock="side"] .dock-link { margin: 0 0.35rem; padding: 0.7rem 0.25rem; font-size: 10px; border-radius: 1.1rem; transition: background-color .2s; }
@@ -397,6 +402,7 @@
 .node-logo-image { background: transparent; }
 .receipt-label { font-weight: 300; font-variation-settings: "wght" 300, "FLAR" 100; }
 .shell-content { width: 100%; max-width: 100%; min-width: 0; animation: page-enter .22s var(--motion-ease) both; }
+.shell-content > * { min-width: 0; max-width: 100%; }
 @keyframes page-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; } .launch-screen { animation: none; } }
 
