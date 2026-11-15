@@ -166,24 +166,28 @@
 @layer base {
   * { box-sizing: border-box; border-color: var(--color-border); }
   html, body, #root {
-    margin: 0;
-    padding: 0;
+    height: 100vh;
+    height: 100dvh;
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    min-height: 100vh;
-    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    background: #000;
     overscroll-behavior: none;
+    overflow-x: hidden;
   }
-  html, body, #root { background-color: var(--launch); height: 100%; overflow-x: hidden; }
-  /* Full-bleed override: the document itself never insets or tints; the wallet
-     shell and dock own safe-area clearance so content paints under system UI. */
-  html, body, #root, .app { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; background-color: #000000 !important; overflow-x: hidden !important; }
+  /* Full-bleed override: the document never tints; the wallet shell and dock
+     own safe-area clearance so content paints under system UI. */
+  html, body, #root, .app { margin: 0 !important; width: 100% !important; max-width: none !important; background-color: #000000 !important; overflow-x: hidden !important; }
   html { scroll-padding-top: var(--safe-top); scroll-padding-bottom: calc(6rem + var(--dock-bottom-clearance)); }
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
   body {
-    padding: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
     overscroll-behavior-y: none;
     -webkit-user-select: none;
     user-select: none;
@@ -226,27 +230,26 @@
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--background);
-  /* Paint edge-to-edge; only the controls/content are inset from system areas. */
-  padding: var(--safe-top) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--dock-bottom-clearance)) calc(var(--app-gutter) + var(--safe-left));
+  /* Body owns the four safe-area insets; the shell adds only side gutters and
+     room for the fixed dock so nothing double-insets. */
+  padding: 0 var(--app-gutter) 8rem;
 }
 .app-dock-nav {
+  position: fixed;
   border: 0;
   left: 0; right: 0; bottom: 0;
   background: transparent;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  padding-bottom: var(--dock-bottom-clearance);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 .dock-link { min-width: 0; }
-.app-dock { width: 100%; max-width: 100%; min-width: 0; padding-left: var(--safe-left); padding-right: var(--safe-right); }
+.app-dock { width: 100%; max-width: 100%; min-width: 0; }
 .app-safe-screen {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  padding-top: max(1.5rem, var(--safe-top));
-  padding-right: max(var(--app-gutter), var(--safe-right));
-  padding-bottom: max(1.5rem, var(--safe-bottom));
-  padding-left: max(var(--app-gutter), var(--safe-left));
+  padding: 1.5rem var(--app-gutter);
 }
 @media (min-width: 1024px) { :root { --app-gutter: 2rem; } }
 
@@ -254,12 +257,12 @@
    Shells and fixed navigation own their insets; the document stays full-bleed. */
 :root[data-dock="side"] { --rail-width: 4.25rem; }
 :root[data-dock="side"] .app-shell {
-  padding-right: calc(var(--rail-width) + 0.25rem + var(--safe-right));
-  padding-bottom: calc(2rem + var(--safe-bottom));
+  padding-right: calc(var(--rail-width) + 0.25rem);
+  padding-bottom: 2rem;
 }
 :root[data-dock="side"] .app-dock-nav {
   left: auto; right: 0; top: 0; bottom: 0;
-  width: calc(var(--rail-width) + var(--safe-right));
+  width: var(--rail-width);
   /* No divider: the rail fades from clear into the page colour, which is also
      the colour the OS paints its strip, so rail + strip read as one surface and
      card glows spill across the boundary. */
@@ -272,7 +275,7 @@
 }
 :root[data-dock="side"] .app-dock {
   display: flex; height: 100%; flex-direction: column; justify-content: safe center; gap: 0.5rem; overflow-y: auto;
-  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) 0;
+  padding: 0;
 }
 :root[data-dock="side"] .dock-link { margin: 0 0.35rem; padding: 0.7rem 0.25rem; font-size: 10px; border-radius: 1.1rem; transition: background-color .2s; }
 :root[data-dock="side"] .dock-link.dock-active { background: color-mix(in oklab, var(--primary) 16%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary) 28%, transparent), 0 0 22px color-mix(in oklab, var(--primary) 22%, transparent); }
