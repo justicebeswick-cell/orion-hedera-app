@@ -7,7 +7,12 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://orion-hedera.app',
     cleartext: false
+  },
+  ios: {
+    contentInset: 'always',
+    scrollEnabled: true
   }
 };
 
 export default config;
+
