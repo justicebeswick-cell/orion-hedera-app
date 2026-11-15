@@ -72,13 +72,13 @@ export function Shell({ title, children, hideBranding = false }: { title: string
         <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
       </footer>
-      <nav aria-label="Main" className="app-dock-nav fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 backdrop-blur">
+      <nav aria-label="Main" className="app-dock-nav fixed inset-x-0 bottom-0 z-40">
         <div className="app-dock grid w-full max-w-full grid-cols-5">
           {dock.map((d) => (
             <Link
               key={d.to}
               to={d.to}
-              className="dock-link relative flex flex-col items-center gap-1.5 pb-[calc(1rem+var(--safe-bottom))] pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+              className="dock-link relative flex flex-col items-center gap-1.5 pb-1 pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "dock-active text-primary font-medium", "aria-current": "page" }}
               activeOptions={{ exact: true }}
             >

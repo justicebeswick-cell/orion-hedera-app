@@ -56,6 +56,8 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --app-gutter: 1.25rem;
+  --dock-bottom-clearance: max(16px, var(--safe-bottom));
+  --dock-material: color-mix(in oklab, var(--background) 60%, transparent);
   --motion-fast: 160ms;
   --motion-ease: cubic-bezier(.22, 1, .36, 1);
   --logo-halo: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 42%, transparent), transparent);
@@ -162,24 +164,30 @@
 :root[data-theme="default"] .launch-screen .orion-lettering { filter: none; }
 
 @layer base {
-  * { border-color: var(--color-border); }
+  * { box-sizing: border-box; border-color: var(--color-border); }
   html, body, #root {
     margin: 0;
     padding: 0;
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    min-height: 100vh;
     min-height: 100dvh;
     overscroll-behavior: none;
   }
-  html, body, #root { background-color: var(--background); height: 100%; overflow-x: hidden; }
+  html, body, #root { background-color: var(--launch); height: 100%; overflow-x: hidden; }
+  /* Full-bleed override: the document itself never insets or tints; the wallet
+     shell and dock own safe-area clearance so content paints under system UI. */
+  html, body, #root, .app { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; background-color: #000000 !important; overflow-x: hidden !important; }
+  html { scroll-padding-top: var(--safe-top); scroll-padding-bottom: calc(6rem + var(--dock-bottom-clearance)); }
   :root { color-scheme: dark; }
   :root[data-theme="default"] { color-scheme: light; }
   body {
+    padding: 0;
     overscroll-behavior-y: none;
     -webkit-user-select: none;
     user-select: none;
-    background-color: var(--color-background);
+    background-color: var(--launch);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-size: 14px;
@@ -215,11 +223,21 @@
   width: 100%;
   max-width: 100%;
   min-width: 0;
+  min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--background);
-  /* Use the top safe area once, rather than adding a second blank band. */
-  padding: max(0.5rem, var(--safe-top)) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--safe-bottom)) calc(var(--app-gutter) + var(--safe-left));
+  /* Paint edge-to-edge; only the controls/content are inset from system areas. */
+  padding: var(--safe-top) calc(var(--app-gutter) + var(--safe-right)) calc(8rem + var(--dock-bottom-clearance)) calc(var(--app-gutter) + var(--safe-left));
 }
+.app-dock-nav {
+  border: 0;
+  left: 0; right: 0; bottom: 0;
+  background: transparent;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding-bottom: var(--dock-bottom-clearance);
+}
+.dock-link { min-width: 0; }
 .app-dock { width: 100%; max-width: 100%; min-width: 0; padding-left: var(--safe-left); padding-right: var(--safe-right); }
 .app-safe-screen {
   width: 100%;
@@ -232,12 +250,8 @@
 }
 @media (min-width: 1024px) { :root { --app-gutter: 2rem; } }
 
-/* iPhone Duo outer display: Safari keeps page content out of the right-side
-   status/controls strip and paints it with the page background / theme-color,
-   even with viewport-fit=cover. We match that color exactly so the strip
-   blends in, and offer a vertical side rail (data-dock="side") that sits beside
-   it. If Apple later reports the strip as safe-area-inset-right, "Auto" picks
-   the rail on its own and all padding below already respects the inset. */
+/* Safe-area values come from the host browser, not assumed device dimensions.
+   Shells and fixed navigation own their insets; the document stays full-bleed. */
 :root[data-dock="side"] { --rail-width: 4.25rem; }
 :root[data-dock="side"] .app-shell {
   padding-right: calc(var(--rail-width) + 0.25rem + var(--safe-right));
@@ -250,12 +264,14 @@
      the colour the OS paints its strip, so rail + strip read as one surface and
      card glows spill across the boundary. */
   border: 0;
-  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--background) 70%, transparent) 35%, var(--background) 85%);
-  backdrop-filter: blur(14px);
+  padding-bottom: 0;
+  background: linear-gradient(to right, transparent, var(--dock-material));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   box-shadow: none;
 }
 :root[data-dock="side"] .app-dock {
-  display: flex; height: 100%; flex-direction: column; justify-content: center; gap: 0.5rem;
+  display: flex; height: 100%; flex-direction: column; justify-content: safe center; gap: 0.5rem; overflow-y: auto;
   padding: var(--safe-top) var(--safe-right) var(--safe-bottom) 0;
 }
 :root[data-dock="side"] .dock-link { margin: 0 0.35rem; padding: 0.7rem 0.25rem; font-size: 10px; border-radius: 1.1rem; transition: background-color .2s; }
@@ -390,6 +406,7 @@
 .node-logo-image { background: transparent; }
 .receipt-label { font-weight: 300; font-variation-settings: "wght" 300, "FLAR" 100; }
 .shell-content { width: 100%; max-width: 100%; min-width: 0; animation: page-enter .22s var(--motion-ease) both; }
+.shell-content > * { min-width: 0; max-width: 100%; }
 @keyframes page-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; } .launch-screen { animation: none; } }
 
