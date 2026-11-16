@@ -25,22 +25,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Show capacitor config
-        run: cat capacitor.config.ts || cat capacitor.config.json || echo "No capacitor config found"
-
       - name: Add and sync iOS
         run: |
           npx cap add ios || true
           npx cap sync ios
-          ls -la
-          ls -la ios || true
-          ls -la ios/App || true
 
       - name: Build IPA
         run: |
           cd ios/App
-          ls -la
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive archive
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive archive
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
       - name: Upload to TestFlight
