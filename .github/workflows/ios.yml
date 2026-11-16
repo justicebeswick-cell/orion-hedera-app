@@ -33,7 +33,7 @@ jobs:
       - name: Build IPA
         run: |
           cd ios/App
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ archive
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ -allowProvisioningUpdates archive
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
       - name: Upload to TestFlight
@@ -43,3 +43,4 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
