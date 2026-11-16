@@ -25,15 +25,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Add iOS platform
-        run: npx cap add ios || true
+      - name: Show capacitor config
+        run: cat capacitor.config.ts || cat capacitor.config.json || echo "No capacitor config found"
 
-      - name: Sync Capacitor
-        run: npx cap sync ios
+      - name: Add and sync iOS
+        run: |
+          npx cap add ios || true
+          npx cap sync ios
+          ls -la
+          ls -la ios || true
+          ls -la ios/App || true
 
       - name: Build IPA
         run: |
           cd ios/App
+          ls -la
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive archive
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
@@ -44,4 +50,3 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-
