@@ -31,9 +31,15 @@ jobs:
           npx cap sync ios
 
       - name: Build IPA
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
           cd ios/App
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ -allowProvisioningUpdates archive
+          mkdir -p ~/private_keys
+          echo "$APPSTORE_API_PRIVATE_KEY" > ~/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ -allowProvisioningUpdates -authenticationKeyPath ~/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8 -authenticationKeyID $APPSTORE_API_KEY_ID -authenticationKeyIssuerID $APPSTORE_ISSUER_ID archive
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
       - name: Upload to TestFlight
