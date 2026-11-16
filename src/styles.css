@@ -465,42 +465,53 @@
 :root[data-dock="side"] .welcome-wordmark { width: min(14rem, calc(100% - 3rem)); }
 
 /* ===== iPhone Duo full-bleed override (owner-supplied; wins over all rules above) ===== */
-/* Root fills the screen. No overflow clipping on html/body: on iOS that turns the
+/* Pure-black full-screen canvas. No overflow clipping on html/body: on iOS that turns the
    body into its own scroll box and can push the fixed tab bar out of view. */
-html, body, #root {
-  height: 100dvh !important;
+html, body {
   margin: 0 !important;
-  padding: 0 !important;
+  height: 100% !important;
   width: 100% !important;
   max-width: none !important;
-  background: #000 !important;
+  background: #000000 !important;
 }
-#root { overflow-x: clip; }
-/* Body has no padding, so screens own their safe-area clearance. */
-.app-shell, .app-safe-screen {
+html { padding: 0 !important; }
+/* Body owns the four safe-area insets, including the Duo's right-side controls. */
+body {
   padding-top: env(safe-area-inset-top) !important;
-  padding-left: calc(var(--app-gutter) + env(safe-area-inset-left)) !important;
-  padding-right: calc(var(--app-gutter) + env(safe-area-inset-right)) !important;
+  padding-bottom: env(safe-area-inset-bottom) !important;
+  padding-left: env(safe-area-inset-left) !important;
+  padding-right: env(safe-area-inset-right) !important;
+  min-height: 100dvh !important;
 }
-:root:not([data-dock="side"]) .app-shell {
-  padding-bottom: calc(7rem + env(safe-area-inset-bottom)) !important;
+#root, #app, .app, main { min-height: 100dvh; }
+#root { overflow-x: clip; background: #000000; }
+/* Body already carries the insets, so in-flow screens add only their own gutter. */
+.app-shell, .app-safe-screen:not(.fixed) {
+  padding-top: 0.5rem !important;
+  padding-left: var(--app-gutter) !important;
+  padding-right: var(--app-gutter) !important;
 }
+:root:not([data-dock="side"]) .app-shell { padding-bottom: 7rem !important; }
 /* Main container goes edge to edge: no max width or side margins. */
 .app-shell, .shell-content, .app-safe-screen {
   max-width: none !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
-/* Bottom tab bar fixed above the home indicator.
+/* Bottom tab bar: fixed, transparent and blurred so it blends with the app.
    Scoped to the real tab bar: a catch-all [class*="tab"]/[class*="nav"] selector would
-   also pin amounts (tabular-nums), Vault section tabs and links to the bottom. */
+   also restyle amounts (tabular-nums), Vault section tabs and links. */
 :root:not([data-dock="side"]) :is(.app-dock-nav, .bottom-nav) {
   position: fixed !important;
   top: auto !important;
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
-  background: rgba(0, 0, 0, 0.75) !important;
+  background: transparent !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+  padding-left: env(safe-area-inset-left) !important;
+  padding-right: env(safe-area-inset-right) !important;
   z-index: 10000 !important;
 }
