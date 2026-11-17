@@ -547,3 +547,27 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   /* Text and pictures use the full width and show through the clear glass rail. */
   padding-right: var(--app-gutter) !important;
 }
+
+/* Side mode: iOS Photos-style controls. The full tab bar is hidden; Home, Vault and
+   Settings sit as small glass circles in the bottom-right corner, out of the way,
+   while text and pictures use the whole screen. Bottom mode is untouched. */
+.side-orbs { display: none; }
+:root[data-dock="side"] .app-dock-nav { display: none !important; }
+:root[data-dock="side"] .app-shell { padding-right: var(--app-gutter) !important; padding-bottom: calc(2rem + env(safe-area-inset-bottom)) !important; }
+:root[data-dock="side"] .side-orbs {
+  display: flex; flex-direction: column; gap: 12px;
+  position: fixed; z-index: 10000;
+  right: calc(10px + env(safe-area-inset-right));
+  bottom: calc(14px + env(safe-area-inset-bottom));
+}
+.side-orb {
+  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 9999px;
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--foreground) 16%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 22%, transparent), 0 8px 24px -10px color-mix(in oklab, var(--background) 80%, transparent);
+  backdrop-filter: blur(22px) saturate(170%);
+  transition: transform var(--motion-fast, 160ms) var(--motion-ease, ease), background-color 160ms;
+}
+.side-orb:active { transform: scale(0.92); }
+.side-orb-active { color: var(--primary); background: color-mix(in oklab, var(--primary) 22%, transparent); }

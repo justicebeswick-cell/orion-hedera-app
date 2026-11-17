@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Wallet, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined, ImageIcon, Handshake } from "lucide-react";
+import { Wallet, Layers, Bot, ArrowDownLeft, ArrowUpRight, ArrowLeftRight, CalendarClock, History, ShieldCheck, Receipt, Globe, Coins, BookUser, CreditCard, ChartNoAxesCombined, ImageIcon, Handshake } from "lucide-react";
 import { PactPanel } from "@/components/pact-panel";
 import { usePreferences, showAuditEvent } from "@/lib/preferences";
 import { NftGallery } from "@/components/nft-gallery";
@@ -17,8 +17,13 @@ import { IncomingTokens } from "@/components/incoming-tokens";
 import { VaultDeck } from "@/components/vault-deck";
 import { RecipientField, ContactsPanel } from "@/components/contacts";
 import { Button } from "@/components/ui/button";
-import { Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
+import { ShellEmbed, Shell, Panel, Label, BindAccount, SignButton } from "@/components/aurion";
 import { HbarLogo } from "@/components/hbar";
+import { Route as StakeRoute } from "./stake";
+import { Route as StudioRoute } from "./studio.index";
+
+const StakePage = StakeRoute.options.component!;
+const StudioPage = StudioRoute.options.component!;
 import { useAccount } from "@/lib/account";
 import { getAccount, hbar, hbarUsdLive, ACCOUNT_RE, HASHSCAN } from "@/lib/hedera";
 import { fmtAmount, fmtUsd } from "@/lib/display";
@@ -61,6 +66,8 @@ function Vault() {
         { key: "receive", label: "Receive", icon: ArrowDownLeft, content: <Panel><Label>Your Hedera account</Label><div className="flex flex-col items-center py-5"><div className="rounded-lg bg-logo-surface p-4"><QRCodeSVG value={id} size={180} bgColor="transparent" /></div><p className="mt-6 font-mono text-xl tnum">{id}</p><Button variant="outline" className="mt-4" onClick={async () => { try { await navigator.clipboard.writeText(id); setCopied(true); toast.success("Account ID copied"); } catch { setCopied(false); } }}>{copied ? "Copied" : "Copy account ID"}</Button></div><p className="text-center text-xs text-muted-foreground">Hedera mainnet · HBAR and associated HTS tokens</p><NftReceive key={id} accountId={id} /></Panel> },
         { key: "swap", label: "Swap", icon: ArrowLeftRight, content: <SwapPanel id={id} onSwapped={() => acct.refetch()} /> },
         { key: "holdings", label: "Holdings", icon: Wallet, content: <Dashboard id={id} tinybar={acct.data?.tinybar ?? null} /> },
+        { key: "stake", label: "Stake", icon: Layers, content: <ShellEmbed.Provider value={true}><StakePage /></ShellEmbed.Provider> },
+        { key: "studio", label: "Studio", icon: Bot, content: <ShellEmbed.Provider value={true}><StudioPage /></ShellEmbed.Provider> },
         { key: "nfts", label: "NFTs", icon: ImageIcon, content: <><NftGallery key={id} accountId={id} /><TokenStudio key={`studio-${id}`} accountId={id} /></> },
         { key: "market", label: "Market & ETF", icon: ChartNoAxesCombined, content: <div className="divide-y divide-border"><HbarMarket /><HbarEtf /></div> },
         { key: "buy", label: "Buy", icon: CreditCard, content: <BuyHbar id={id} /> },

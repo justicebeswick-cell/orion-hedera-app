@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
@@ -39,13 +39,21 @@ const groups = [
   { name: "About", items: [{ to: "/about", label: "About" }, { to: "/company", label: "Company" }, { to: "/privacy", label: "Privacy Policy" }, { to: "/terms", label: "User Agreement" }] },
 ] as const;
 
+/** Inside a Vault section, a page's Shell renders only its content. */
+export const ShellEmbed = createContext(false);
+
 export function Shell({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
+  if (useContext(ShellEmbed)) return <>{children}</>;
+  return <ShellFrame title={title} hideBranding={hideBranding}>{children}</ShellFrame>;
+}
+
+function ShellFrame({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
     <div className="app-shell min-h-dvh w-full max-w-full bg-background">
-      <header className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+      <header className={`mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
           <div>
@@ -86,6 +94,13 @@ export function Shell({ title, children, hideBranding = false }: { title: string
             </Link>
           ))}
         </div>
+      </nav>
+      <nav aria-label="Main" className="side-orbs">
+        {dock.filter((d) => d.to !== "/stake" && d.to !== "/studio").map((d) => (
+          <Link key={d.to} to={d.to} aria-label={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+            <d.icon size={24} strokeWidth={1.7} />
+          </Link>
+        ))}
       </nav>
       {open && (
         <div className="app-safe-screen fixed inset-0 z-50 overflow-y-auto bg-background/80 p-5 backdrop-blur" onClick={() => setOpen(false)}>
