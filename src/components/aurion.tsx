@@ -7,19 +7,24 @@ import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Layers, Handshake, X, Bot, Settings } from "lucide-react";
 
-/** Custom Vault mark: an 8-spoke wheel — outer ring, inner ring, solid hub —
- *  drawn to match the lucide stroke style. */
+/** Custom Vault mark: a vault dial — six prongs, broken outer and inner arcs,
+ *  and a solid keyhole at the centre. Drawn to match the lucide stroke style. */
 function VaultGlyph({ size = 24, strokeWidth }: { size?: number; strokeWidth?: number }) {
-  // The bottom tab bar draws this at ~20px, where eight spokes need extra air.
-  const sw = strokeWidth ?? (size <= 20 ? 1.45 : 1.7);
+  // The bottom tab bar draws this at ~20px, where the arc gaps need extra air.
+  // The dial's arc gaps need more air than the neighbouring icons, so the
+  // stroke stays at or below this icon's own cap whatever the caller passes.
+  const cap = size <= 20 ? 0.85 : 0.9;
+  const sw = Math.min(strokeWidth ?? cap, cap);
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="8.8" />
-      <circle cx="12" cy="12" r="3.5" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-      <path d="M12 8.5V3.2M12 15.5v5.3M8.5 12H3.2M15.5 12h5.3" />
-      <path d="M14.47 9.53 18.22 5.78M9.53 9.53 5.78 5.78M9.53 14.47 5.78 18.22M14.47 14.47 18.22 18.22" />
+      strokeWidth={sw} strokeLinecap="butt" strokeLinejoin="miter" aria-hidden="true">
+      <path d="M12 7.6V1M15.81 9.8 21.53 6.5M15.81 14.2 21.53 17.5M12 16.4V23M8.19 14.2 2.47 17.5M8.19 9.8 2.47 6.5" />
+      <path d="M12 3.8A8.2 8.2 0 0 1 17.49 5.91M19.1 7.9A8.2 8.2 0 0 1 20.02 13.7M19.1 16.1A8.2 8.2 0 0 1 14.53 19.8M12 20.2A8.2 8.2 0 0 1 6.51 18.09M4.9 16.1A8.2 8.2 0 0 1 3.98 10.3M4.9 7.9A8.2 8.2 0 0 1 9.47 4.2" />
+      <path d="M12 7A5 5 0 0 0 8.65 8.28M16.33 9.5A5 5 0 0 0 13.55 7.24M16.33 14.5A5 5 0 0 0 16.89 10.96M12 17A5 5 0 0 0 15.35 15.72M7.67 14.5A5 5 0 0 0 10.45 16.76M7.67 9.5A5 5 0 0 0 7.11 13.04" />
+      <g fill="currentColor" stroke="none">
+        <circle cx="12" cy="10.6" r="0.95" />
+        <path d="M11.45 11.3h1.1l0.9 2.9h-2.9z" />
+      </g>
     </svg>
   );
 }
