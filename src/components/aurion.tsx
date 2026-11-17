@@ -7,16 +7,19 @@ import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
 import { Home, Layers, Handshake, X, Bot, Settings } from "lucide-react";
 
-/** Custom Vault mark: a vault door with a spoked dial, drawn to match the lucide stroke style. */
-function VaultGlyph({ size = 24, strokeWidth = 1.7 }: { size?: number; strokeWidth?: number }) {
+/** Custom Vault mark: an 8-spoke wheel — outer ring, inner ring, solid hub —
+ *  drawn to match the lucide stroke style. */
+function VaultGlyph({ size = 24, strokeWidth }: { size?: number; strokeWidth?: number }) {
+  // The bottom tab bar draws this at ~20px, where eight spokes need extra air.
+  const sw = strokeWidth ?? (size <= 20 ? 1.45 : 1.7);
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3.25" y="4.25" width="17.5" height="15.5" rx="3.25" />
-      <circle cx="12" cy="12" r="4.4" />
-      <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
-      <path d="M12 8.6v1.9M12 13.5v1.9M8.6 12h1.9M13.5 12h1.9" />
-      <path d="M5.5 19.75v1M18.5 19.75v1" />
+      strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="8.8" />
+      <circle cx="12" cy="12" r="3.5" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M12 8.5V3.2M12 15.5v5.3M8.5 12H3.2M15.5 12h5.3" />
+      <path d="M14.47 9.53 18.22 5.78M9.53 9.53 5.78 5.78M9.53 14.47 5.78 18.22M14.47 14.47 18.22 18.22" />
     </svg>
   );
 }
