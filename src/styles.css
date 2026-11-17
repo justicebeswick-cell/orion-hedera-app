@@ -515,3 +515,15 @@ body {
   padding-right: env(safe-area-inset-right) !important;
   z-index: 10000 !important;
 }
+
+/* Content uses the full screen width; the tab bar/side rail float clear on top
+   so the page shows through behind the buttons. */
+body { padding-left: 0 !important; padding-right: 0 !important; }
+.app-dock-nav, :root[data-dock="side"] .app-dock-nav {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+:root[data-dock="side"] .app-dock-nav { padding-right: env(safe-area-inset-right); width: calc(var(--rail-width) + env(safe-area-inset-right)); }
+.dock-link { text-shadow: 0 1px 3px rgb(0 0 0 / .9); }
