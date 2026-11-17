@@ -5,7 +5,21 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
-import { Home, Wallet, Layers, Handshake, X, Bot, Settings } from "lucide-react";
+import { Home, Layers, Handshake, X, Bot, Settings } from "lucide-react";
+
+/** Custom Vault mark: a vault door with a spoked dial, drawn to match the lucide stroke style. */
+function VaultGlyph({ size = 24, strokeWidth = 1.7 }: { size?: number; strokeWidth?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3.25" y="4.25" width="17.5" height="15.5" rx="3.25" />
+      <circle cx="12" cy="12" r="4.4" />
+      <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
+      <path d="M12 8.6v1.9M12 13.5v1.9M8.6 12h1.9M13.5 12h1.9" />
+      <path d="M5.5 19.75v1M18.5 19.75v1" />
+    </svg>
+  );
+}
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
   if (crisp) return <span className={`orion-logo-frame orion-home-logo relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
@@ -26,7 +40,7 @@ export function AurionLogo({ className = "", sizes = "48px", orbit = false, cris
 
 const dock = [
   { to: "/", label: "Home", icon: Home },
-  { to: "/vault", label: "Vault", icon: Wallet },
+  { to: "/vault", label: "Vault", icon: VaultGlyph },
   { to: "/stake", label: "Stake", icon: Layers },
   { to: "/studio", label: "Studio", icon: Bot },
   { to: "/settings", label: "Settings", icon: Settings },
@@ -96,7 +110,7 @@ function ShellFrame({ title, children, hideBranding = false }: { title: string; 
         </div>
       </nav>
       <nav aria-label="Main" className="side-orbs">
-        {dock.filter((d) => d.to !== "/stake" && d.to !== "/studio").map((d) => (
+        {dock.filter((d) => d.to !== "/stake").map((d) => (
           <Link key={d.to} to={d.to} aria-label={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
             <d.icon size={24} strokeWidth={1.7} />
           </Link>
