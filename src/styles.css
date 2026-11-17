@@ -532,14 +532,14 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   top: 0 !important; bottom: 0 !important; right: 0 !important; left: auto !important;
   width: max(var(--rail-width), env(safe-area-inset-right)) !important;
   padding: calc(env(safe-area-inset-top) + 4.5rem) 0 env(safe-area-inset-bottom) !important;
-  background: color-mix(in oklab, #000 38%, transparent) !important;
-  backdrop-filter: blur(28px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  background: linear-gradient(to right, color-mix(in oklab, #000 8%, transparent), color-mix(in oklab, #000 30%, transparent)) !important;
+  backdrop-filter: blur(24px) saturate(170%) !important;
   box-shadow: none !important;
   border: 0 !important;
-  border-left: 1px solid color-mix(in oklab, #fff 10%, transparent) !important;
+  border-left: 1px solid color-mix(in oklab, #fff 6%, transparent) !important;
 }
 :root[data-dock="side"] .app-shell {
-  /* Content extends under the glass rail; only the normal side gutter remains. */
-  padding-right: var(--app-gutter) !important;
+  /* The backdrop glow runs behind the glass rail, but text and buttons stop just
+     before it so nothing is hidden or blocked from tapping. */
+  padding-right: calc(max(var(--rail-width), env(safe-area-inset-right)) + var(--app-gutter)) !important;
 }
