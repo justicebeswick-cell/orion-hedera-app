@@ -557,11 +557,12 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 :root[data-dock="side"] .side-orbs {
   display: flex; flex-direction: column; gap: 12px;
   position: fixed; z-index: 10000;
-  right: calc(10px + env(safe-area-inset-right));
-  bottom: calc(14px + env(safe-area-inset-bottom));
+  /* Centre the circles inside the iOS system strip on the far right, like native controls. */
+  right: max(6px, calc((env(safe-area-inset-right) - 46px) / 2));
+  bottom: max(8px, calc(env(safe-area-inset-bottom) - 4px));
 }
 .side-orb {
-  display: grid; place-items: center; width: 52px; height: 52px; border-radius: 9999px;
+  display: grid; place-items: center; width: 46px; height: 46px; border-radius: 9999px;
   color: var(--foreground);
   background: color-mix(in oklab, var(--foreground) 12%, transparent);
   border: 1px solid color-mix(in oklab, var(--foreground) 16%, transparent);

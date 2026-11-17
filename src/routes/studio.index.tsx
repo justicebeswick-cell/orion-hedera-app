@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MessageSquarePlus, ImageIcon, MessagesSquare, Trash2, Bot, Compass, ArrowUpRight, Sparkles, ArrowUp } from "lucide-react";
-import { Shell, Label } from "@/components/aurion";
+import { Shell, ShellEmbed, Label } from "@/components/aurion";
 import { Button } from "@/components/ui/button";
 import { clearStudio, deleteThread, readThreads, readImages, type SavedImage, type Thread } from "@/lib/studio-threads";
 import { saveToPhone } from "@/components/generation-canvas";
@@ -38,12 +38,17 @@ function Studio() {
   useEffect(() => { setThreads(readThreads()); setImages(readImages()); }, []);
   const start = (prompt?: string) => nav({ to: "/studio/$threadId", params: { threadId: crypto.randomUUID() }, search: { q: prompt, agent: undefined } });
 
+  const embedded = useContext(ShellEmbed);
   return (
     <Shell title="Studio">
-      <div className="studio-heading mb-7 py-3">
-        <h1 className="text-3xl font-light">AI Studio</h1>
-      </div>
-      <div className="studio-tabs mb-6 grid grid-cols-3 gap-1 rounded-full border border-border bg-background p-1" role="tablist" aria-label="Studio views">
+      {embedded ? (
+        <div className="mb-5 flex items-center gap-2 text-sm text-muted-foreground"><Sparkles size={15} className="text-signal" /> Ask Orion, run agents or explore apps.</div>
+      ) : (
+        <div className="studio-heading mb-7 py-3">
+          <h1 className="text-3xl font-light">AI Studio</h1>
+        </div>
+      )}
+      <div className={`studio-tabs grid grid-cols-3 gap-1 rounded-full border border-border bg-background p-1 ${embedded ? "mb-5 [&_button]:h-9 [&_button]:text-xs" : "mb-6"}`} role="tablist" aria-label="Studio views">
         <Button role="tab" aria-selected={tab === "chat"} variant={tab === "chat" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("chat")}><MessagesSquare /> Chat</Button>
         <Button role="tab" aria-selected={tab === "agents"} variant={tab === "agents" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("agents")}><Bot /> Agents</Button>
         <Button role="tab" aria-selected={tab === "discover"} variant={tab === "discover" ? "default" : "ghost"} className="rounded-full" onClick={() => setTab("discover")}><Compass /> Discover</Button>
