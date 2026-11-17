@@ -525,16 +525,21 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   -webkit-backdrop-filter: none !important;
 }
 :root:not([data-dock="side"]) .app-dock { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
-/* Side mode (unfolded): the rail lives inside the right system strip as one
-   solid black column under the clock, and content stops at its edge. */
+/* Side mode: the rail floats over the content as an iOS-style glass column —
+   text and pictures run the full width behind it, and the rail blurs and
+   tints whatever passes underneath. */
 :root[data-dock="side"] .app-dock-nav {
   top: 0 !important; bottom: 0 !important; right: 0 !important; left: auto !important;
   width: max(var(--rail-width), env(safe-area-inset-right)) !important;
   padding: calc(env(safe-area-inset-top) + 4.5rem) 0 env(safe-area-inset-bottom) !important;
-  background: #000 !important;
-  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
-  box-shadow: none !important; border: 0 !important;
+  background: color-mix(in oklab, #000 38%, transparent) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-left: 1px solid color-mix(in oklab, #fff 10%, transparent) !important;
 }
 :root[data-dock="side"] .app-shell {
-  padding-right: calc(max(var(--rail-width), env(safe-area-inset-right)) + var(--app-gutter)) !important;
+  /* Content extends under the glass rail; only the normal side gutter remains. */
+  padding-right: var(--app-gutter) !important;
 }
