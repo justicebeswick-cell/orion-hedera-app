@@ -30,19 +30,28 @@ jobs:
           npx cap add ios || true
           npx cap sync ios
 
-      - name: Build IPA
+      - name: Install Certificate and Provisioning Profile
         env:
-          API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
-          API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
-          API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          CERTIFICATE: ${{ secrets.IOS_CERTIFICATE }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
         run: |
-          echo "Key ID length: ${#API_KEY_ID}"
-          echo "Issuer ID length: ${#API_ISSUER_ID}"
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+
+          echo "$CERTIFICATE" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P "$CERTIFICATE_PASSWORD" -A -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      - name: Build IPA
+        run: |
           cd ios/App
-          mkdir -p ~/private_keys
-          printf '%s\n' "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_$API_KEY_ID.p8
-          ls -la ~/private_keys/
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ -allowProvisioningUpdates -authenticationKeyPath ~/private_keys/AuthKey_$API_KEY_ID.p8 -authenticationKeyID $API_KEY_ID -authenticationKeyIssuerID $API_ISSUER_ID archive
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER="" archive
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
       - name: Upload to TestFlight
@@ -52,4 +61,3 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-
