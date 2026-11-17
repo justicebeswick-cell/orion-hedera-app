@@ -36,10 +36,13 @@ jobs:
           API_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
+          echo "Key ID length: ${#API_KEY_ID}"
+          echo "Issuer ID length: ${#API_ISSUER_ID}"
           cd ios/App
           mkdir -p ~/private_keys
-          echo "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_$API_KEY_ID.p8
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ -allowProvisioningUpdates -authenticationKeyPath ~/private_keys/AuthKey_$API_KEY_ID.p8 -authenticationKeyID "$API_KEY_ID" -authenticationKeyIssuerID "$API_ISSUER_ID" archive
+          printf '%s\n' "$API_PRIVATE_KEY" > ~/private_keys/AuthKey_$API_KEY_ID.p8
+          ls -la ~/private_keys/
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -destination generic/platform=iOS -archivePath $RUNNER_TEMP/App.xcarchive DEVELOPMENT_TEAM=78PU393GBQ -allowProvisioningUpdates -authenticationKeyPath ~/private_keys/AuthKey_$API_KEY_ID.p8 -authenticationKeyID $API_KEY_ID -authenticationKeyIssuerID $API_ISSUER_ID archive
           xcodebuild -exportArchive -archivePath $RUNNER_TEMP/App.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $RUNNER_TEMP/export
 
       - name: Upload to TestFlight
@@ -49,3 +52,4 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
