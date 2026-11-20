@@ -149,11 +149,11 @@ function Settings() {
 
 
 function SettingsItem({ icon: Icon, label, onClick }: { icon: LucideIcon; label: string; onClick: () => void }) {
-  return <Button variant="ghost" onClick={onClick} className="h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Button>;
+  return <Button variant="ghost" onClick={onClick} className="settings-row h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-normal"><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Button>;
 }
 
 function SettingsLink({ icon: Icon, label, to, section }: { icon: LucideIcon; label: string; to: "/vault" | "/about" | "/company" | "/privacy" | "/terms"; section?: string }) {
-  return <Button asChild variant="ghost" className="h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Link to={to} search={section ? { section } : {}}><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Link></Button>;
+  return <Button asChild variant="ghost" className="settings-row h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-normal"><Link to={to} search={section ? { section } : {}}><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Link></Button>;
 }
 
 function ChangeCode({ onChanged }: { onChanged: () => void }) {

@@ -13,9 +13,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Sora", ui-sans-serif, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sans);
   --font-brand: "Montserrat", "Sora", ui-sans-serif, sans-serif;
   --font-receipt: "Optima", "Optima Alt", "Cormorant Garamond", sans-serif;
   --radius-sm: calc(var(--radius) - 6px);
@@ -64,16 +64,19 @@
   --logo-ring-ink: oklch(1 0 0);
   --launch: oklch(0 0 0);
   --logo-surface: oklch(0.97 0 0);
-  --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
-  --card-radius: 1.75rem;
-  --card-border: oklch(1 0 0 / 20%);
+  --shadow-deck: inset 0 1px 0 color-mix(in oklab, var(--foreground) 5%, transparent), 0 12px 32px oklch(0 0 0 / 20%), 0 0 28px -16px color-mix(in oklab, var(--primary) 28%, transparent);
+  --card-radius: 1.5rem;
+  --card-border: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --balance-finish: linear-gradient(125deg, color-mix(in oklab, var(--primary) 24%, var(--background)), color-mix(in oklab, var(--primary) 7%, var(--background)));
+  --surface-highlight: color-mix(in oklab, var(--foreground) 4%, transparent);
+  --control-edge: color-mix(in oklab, var(--foreground) 9%, transparent);
   --action-sheen: radial-gradient(120% 90% at 6% 0%, oklch(1 0 0 / 28%) 0%, transparent 60%), radial-gradient(110% 110% at 94% 100%, oklch(0 0 0 / 20%) 0%, transparent 58%);
   --send-finish: var(--action-sheen), linear-gradient(135deg, oklch(from var(--primary) 0.59 c h), oklch(from var(--primary) 0.48 c h));
   --swap-finish: radial-gradient(120% 90% at 6% 0%, oklch(1 0 0 / 14%) 0%, transparent 60%), radial-gradient(110% 110% at 94% 100%, oklch(0 0 0 / 20%) 0%, transparent 58%), linear-gradient(135deg, oklch(from var(--primary) 0.29 calc(c * 0.56) h), oklch(from var(--primary) 0.20 calc(c * 0.4) h));
   --receive-finish: var(--action-sheen), linear-gradient(135deg, #3dcca5, #41d9a0);
   /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:
-    radial-gradient(120% 90% at 6% 0%, oklch(from var(--primary) 0.42 calc(c * 0.84) h / 55%) 0%, transparent 60%),
+    radial-gradient(120% 90% at 6% 0%, oklch(from var(--primary) 0.42 calc(c * 0.84) h / 42%) 0%, transparent 60%),
     radial-gradient(110% 110% at 94% 100%, oklch(from var(--primary) 0.28 calc(c * 0.68) h / 38%) 0%, transparent 58%),
     var(--card);
   --radius: 1.125rem;
@@ -212,6 +215,26 @@
 }
 /* Refine shared wallet typography without touching artwork or receipt lettering. */
 .app-shell :is(h1, h2, h3) { font-family: var(--font-sans); font-weight: 500; line-height: 1.25; text-wrap: balance; }
+.shell-header { min-height: 48px; }
+.shell-footer a { padding: 8px 0; }
+.home-account { border: 1px solid var(--control-edge); background: color-mix(in oklab, var(--background) 92%, var(--foreground)); border-radius: 14px; }
+.home-account a:first-child { padding-block: 4px; }
+.home-account [data-slot], .home-account button { flex-shrink: 0; }
+.home-balance { background: var(--balance-finish); border: 1px solid var(--card-border); box-shadow: var(--shadow-deck); padding: 20px 18px; }
+.home-balance-number { font-size: 28px; }
+.home-balance-number[data-density="compact"] { font-size: 23px; }
+.home-balance-number[data-density="dense"] { font-size: 19px; }
+.home-balance-number[data-density="small"] { font-size: 16px; }
+.home-actions > a { border-radius: 14px; height: 48px; font-weight: 500; box-shadow: inset 0 1px 0 var(--surface-highlight), 0 4px 12px color-mix(in oklab, var(--background) 30%, transparent); }
+.home-asset { border-radius: 12px; }
+.home-staking { border-color: var(--control-edge); }
+.home-staking > a { min-height: 48px; }
+.home-receipts > a { min-height: 76px; }
+.home-receipts > a > span:first-child { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--surface-highlight); }
+.settings-row { min-height: 60px; transition-property: background-color, color; }
+.settings-row > svg:last-child { width: 16px; opacity: .65; }
+@media (max-width: 380px) { .home-balance-number { font-size: 24px; } .home-balance { padding-inline: 14px; } }
+@media (hover: hover) { .home-asset:hover, .settings-row:hover { background: var(--surface-highlight); } }
 .app-shell :is(p, span, h1, h2, h3, button, a) { letter-spacing: 0; }
 .app-shell :is(p, li) { overflow-wrap: break-word; }
 .app-shell :is(button, a, input, textarea, [role="tab"]) { transition-duration: var(--motion-fast); transition-timing-function: var(--motion-ease); }
@@ -576,6 +599,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   border: 1px solid color-mix(in oklab, var(--foreground) 16%, transparent);
   box-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 22%, transparent), 0 8px 24px -10px color-mix(in oklab, var(--background) 80%, transparent);
   backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
   transition: transform var(--motion-fast, 160ms) var(--motion-ease, ease), background-color 160ms;
 }
 .side-orb:active { transform: scale(0.92); }

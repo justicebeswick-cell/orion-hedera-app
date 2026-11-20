@@ -77,7 +77,7 @@ function ShellFrame({ title, children, hideBranding = false }: { title: string; 
   const nav = useNavigate();
   return (
     <div className="app-shell min-h-dvh w-full max-w-full bg-background">
-      <header className={`mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
+      <header className={`shell-header mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
           <div>
@@ -99,7 +99,7 @@ function ShellFrame({ title, children, hideBranding = false }: { title: string; 
         </div>}
       </header>
       <main key={title} className="shell-content w-full min-w-0 max-w-full">{children}</main>
-      <footer className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
+      <footer className="shell-footer mt-10 flex flex-wrap justify-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
         <Link to="/company" className="hover:text-foreground">Company</Link>
         <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
@@ -121,7 +121,7 @@ function ShellFrame({ title, children, hideBranding = false }: { title: string; 
       </nav>
       <nav aria-label="Main" className="side-orbs">
         {dock.filter((d) => d.to !== "/stake").map((d) => (
-          <Link key={d.to} to={d.to} aria-label={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+          <Link key={d.to} to={d.to} aria-label={d.label} title={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
             <d.icon size={24} strokeWidth={1.7} />
           </Link>
         ))}
