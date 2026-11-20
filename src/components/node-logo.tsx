@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import dellLogo from "@/assets/company-logos/dell-crisp.svg.asset.json";
 
 /** Company that hosts each mainnet node → its website, used for the logo. */
 const DOMAINS: [RegExp, string][] = [
@@ -28,12 +29,12 @@ export function NodeLogo({ description, size = 48 }: { description?: string | un
   const domain = DOMAINS.find(([re]) => re.test(description ?? ""))?.[1];
   const name = nodeCompany(description) || "?";
   const asset = domain
-    ? (logoAssets[`../assets/company-logos/${domain}.svg.asset.json`]?.default
+    ? (domain === "dell.com" ? dellLogo : logoAssets[`../assets/company-logos/${domain}.svg.asset.json`]?.default
       ?? logoAssets[`../assets/company-logos/${domain}.png.asset.json`]?.default
       ?? legacyAssets[`../assets/nodes/${domain}.png.asset.json`]?.default)
     : undefined;
   useEffect(() => setBroken(false), [domain]);
-  const box = { width: Math.min(size * 2, 112), height: size };
+  const box = { width: domain === "dell.com" ? size : Math.min(size * 2, 112), height: size };
   if (!asset || broken)
     return (
       <span style={box} className="flex shrink-0 items-center justify-center font-display text-xl font-medium text-muted-foreground">
