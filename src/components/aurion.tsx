@@ -5,6 +5,8 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
+import { PortfolioTracker } from "@/components/portfolio-tracker";
+import { useAccount } from "@/lib/account";
 import { Home, Layers, Handshake, X, Settings, Sparkles } from "lucide-react";
 
 /** Custom Vault mark: a vault dial — six prongs, broken outer and inner arcs,
@@ -72,11 +74,13 @@ export function Shell({ title, children, hideBranding = false, className = "" }:
 }
 
 function ShellFrame({ title, children, hideBranding = false, className = "" }: { title: string; children: ReactNode; hideBranding?: boolean; className?: string }) {
+  const { id } = useAccount();
   const [open, setOpen] = useState(false);
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
     <div className={`app-shell min-h-dvh w-full max-w-full bg-background ${className}`}>
+      {id && title !== "Home" && <PortfolioTracker key={id} accountId={id} />}
       <header className={`shell-header mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />

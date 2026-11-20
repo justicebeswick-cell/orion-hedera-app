@@ -20,6 +20,7 @@ export function GeneralSettings() {
     <div className="flex min-h-16 items-center justify-between gap-5 py-3"><span className="text-sm">Hide decimals</span><Switch aria-label="Hide decimals" checked={round} onCheckedChange={(value) => { setRound(value); setRounded(value); }} /></div>
     {heading("Home Screen")}
     {toggle('“Portfolio balance” on home screen', "showWorth")}
+    {toggle("Show portfolio chart", "showChart")}
     {toggle("Show asset prices on home screen", "showPrices")}
     {toggle("Show reserve value on home screen", "showReserve")}
     {heading("Theme")}

@@ -1,5 +1,10 @@
 # Roadmap
 
+- [x] Add a saved chart visibility option with tracking independent of chart visibility.
+- [x] Lift Home balance/chart and refine activity labels with iOS-style typography.
+- [x] Test hidden-chart tracking and the Settings-to-Home flow.
+- [x] Lift unfolded balance/chart/actions/activity and reduce the unfolded balance font.
+
 - [x] Compact Home balance/chart, restore mint Receive and shared purple glass, and preserve folded/unfolded reference layouts.
 - [x] Verify Home actions and layout changes across cover and unfolded screen sizes.
 

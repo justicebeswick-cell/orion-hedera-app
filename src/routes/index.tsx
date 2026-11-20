@@ -18,6 +18,7 @@ import { useAccount } from "@/lib/account";
 import { getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
 import { fmtAmount, fmtUsd } from "@/lib/display";
 import { PortfolioPerformance } from "@/components/portfolio-performance";
+import { PortfolioTracker } from "@/components/portfolio-tracker";
 import { heldTokens, totalInHbar } from "@/lib/portfolio";
 
 /** Last balance seen on this device, shown while a fresh read is retried. */
@@ -106,11 +107,11 @@ function Home() {
 
   const total = totalInHbar(acct.data ? acct.data.tinybar / 1e8 : null, portfolio.data ?? []);
   const value = total !== null && rate.data ? total * rate.data : null;
-  const completeValue = !acct.isError && !portfolio.isError && !rate.isError && acct.data && portfolio.data && value !== null ? value : null;
   const hbarText = total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—";
 
   return (
     <Shell title="Home" className="home-reference">
+      <PortfolioTracker key={id} accountId={id} />
       {lag.data !== undefined && lag.data > 120 && (
         <p className="mb-4 rounded-md border border-destructive/40 p-3 text-xs text-destructive">
           Mirror node is {Math.round(lag.data / 60)} minutes behind. Balances may be stale.
@@ -153,8 +154,8 @@ function Home() {
           <span className="portfolio-total block break-words font-light leading-tight tnum">{security.hideBalance ? "••••••" : value !== null ? fmtUsd(value) : "—"}</span>
           <span className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><HbarLogo size={16} /><span className="tnum">{security.hideBalance ? "••••" : hbarText}</span><span>HBAR + tokens</span><Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} /></span>
         </Link>
-        <PortfolioPerformance key={id} accountId={id} value={completeValue} hidden={security.hideBalance} />
       </>}
+      {prefs.showChart && <PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} />}
       <div className="home-actions mb-6 mt-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-full"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
         <Button asChild variant="glass" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
@@ -182,7 +183,7 @@ function Home() {
       </div>
       </div>
       </div>
-      <div className="mb-3 mt-9 flex items-center justify-between">
+      <div className="home-activity-heading mb-3 mt-9 flex items-center justify-between">
         <h2 className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</h2>
         <Button variant="ghost" size="icon" aria-label="Refresh activity" disabled={txs.isFetching} onClick={() => txs.refetch()}>
           <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
@@ -191,7 +192,7 @@ function Home() {
       <div className="home-receipts panel divide-y divide-border overflow-hidden">
         {txs.isPending && <p className="px-5 py-5 text-sm text-muted-foreground">Loading receipts…</p>}
         {txs.isError && <p className="px-5 py-5 text-sm text-destructive">{(txs.error as Error).message}</p>}
-        {txs.data?.length === 0 && <p className="px-5 py-5 font-receipt receipt-label text-lg text-muted-foreground">No receipts yet.</p>}
+        {txs.data?.length === 0 && <p className="px-5 py-5 font-sans text-sm text-muted-foreground">No receipts yet.</p>}
         {txs.data?.filter((t) => showTransaction(t, id, prefs, readBlocklist(), readAudit().filter((r) => r.action === "swap fee" && r.ok).flatMap((r) => r.txId ? [r.txId] : []))).map((t) => {
           const n = netAmount(t, id);
           const received = n > 0;
@@ -202,8 +203,8 @@ function Home() {
                 {received ? <ArrowDownLeft size={20} strokeWidth={1.8} /> : <ArrowUpRight size={20} strokeWidth={1.8} />}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="font-receipt receipt-label text-lg leading-tight text-foreground">{received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}</p>
-                <p className="mt-1 break-words font-mono text-[10px] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
+                <p className="font-sans text-sm font-medium leading-tight text-foreground">{received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}</p>
+                <p className="mt-1 break-words font-sans text-[11px] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
               <span className={`shrink-0 whitespace-nowrap text-right font-sans text-sm font-medium tnum sm:text-lg ${received ? "text-success" : "text-muted-foreground"}`}>
                 {received ? "+" : ""}{hbar(n)} ℏ

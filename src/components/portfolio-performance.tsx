@@ -1,33 +1,14 @@
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { fmtUsd } from "@/lib/display";
-import { balanceChange, PORTFOLIO_RANGES, rangePoints, recordPoint, validPoints, type PortfolioPoint, type PortfolioRange } from "@/lib/portfolio-history";
+import { balanceChange, PORTFOLIO_RANGES, rangePoints, type PortfolioPoint, type PortfolioRange } from "@/lib/portfolio-history";
+import { usePortfolioHistory } from "@/lib/use-portfolio-history";
 
-export function PortfolioPerformance({ accountId, value, hidden }: { accountId: string; value: number | null; hidden: boolean }) {
-  const [points, setPoints] = useState<PortfolioPoint[]>([]);
+export function PortfolioPerformance({ accountId, hidden }: { accountId: string; hidden: boolean }) {
+  const points = usePortfolioHistory(accountId);
   const [range, setRange] = useState<PortfolioRange>("1M");
   const gradient = useId().replace(/:/g, "");
-  useEffect(() => {
-    try { setPoints(validPoints(JSON.parse(localStorage.getItem(`orion.performance.${accountId}`) ?? "[]"))); }
-    catch { setPoints([]); }
-  }, [accountId]);
-  useEffect(() => {
-    if (value === null || !Number.isFinite(value)) return;
-    setPoints((previous) => {
-      const next = recordPoint(previous, { at: Date.now(), value });
-      try { localStorage.setItem(`orion.performance.${accountId}`, JSON.stringify(next)); } catch { /* chart still works if storage is full */ }
-      return next;
-    });
-    const timer = window.setInterval(() => {
-      setPoints((previous) => {
-        const next = recordPoint(previous, { at: Date.now(), value });
-        try { localStorage.setItem(`orion.performance.${accountId}`, JSON.stringify(next)); } catch { /* storage unavailable */ }
-        return next;
-      });
-    }, 10_000);
-    return () => window.clearInterval(timer);
-  }, [accountId, value]);
   const visible = rangePoints(points, range, Date.now());
   const change = balanceChange(visible);
   return <section className="portfolio-performance" aria-label="Portfolio performance">

@@ -8,11 +8,11 @@ export const THEME_OPTIONS = [
   { id: "plum", label: "Plum" }, { id: "blue", label: "Blue" },
   { id: "custom", label: "Custom" },
 ] as const;
-export const DEFAULT_PREFERENCES = { currency: "USD", systemFormat: false, showWorth: true, showPrices: true, showReserve: false, autoTheme: false, theme: "dark", customColor: "#7a3fd6", hideSpam: false, hideFees: false, haptics: true, dock: "auto" as "auto" | "bottom" | "side" };
+export const DEFAULT_PREFERENCES = { currency: "USD", systemFormat: false, showWorth: true, showChart: true, showPrices: true, showReserve: false, autoTheme: false, theme: "dark", customColor: "#7a3fd6", hideSpam: false, hideFees: false, haptics: true, dock: "auto" as "auto" | "bottom" | "side" };
 export type Preferences = typeof DEFAULT_PREFERENCES;
 const KEY = "aurion.general";
 const EVENT = "aurion:general";
-const schema = z.object({ currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD", "JPY"]), systemFormat: z.boolean(), showWorth: z.boolean(), showPrices: z.boolean(), showReserve: z.boolean(), autoTheme: z.boolean(), theme: z.enum(THEME_OPTIONS.map((option) => option.id)), customColor: z.string().regex(/^#[0-9a-f]{6}$/i), hideSpam: z.boolean(), hideFees: z.boolean(), haptics: z.boolean(), dock: z.enum(["auto", "bottom", "side"]) });
+const schema = z.object({ currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD", "JPY"]), systemFormat: z.boolean(), showWorth: z.boolean(), showChart: z.boolean(), showPrices: z.boolean(), showReserve: z.boolean(), autoTheme: z.boolean(), theme: z.enum(THEME_OPTIONS.map((option) => option.id)), customColor: z.string().regex(/^#[0-9a-f]{6}$/i), hideSpam: z.boolean(), hideFees: z.boolean(), haptics: z.boolean(), dock: z.enum(["auto", "bottom", "side"]) });
 export function getPreferences(): Preferences {
   try { return schema.parse({ ...DEFAULT_PREFERENCES, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") }); } catch { return { ...DEFAULT_PREFERENCES }; }
 }
