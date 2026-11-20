@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Compact and lift the classic Home balance/chart with refined lettering and richer purple glass.
+- [x] Verify chart timeframes and Home actions on folded and unfolded displays.
+
 - [x] Blend the existing composition with darker glass and the older vibrant action colors.
 - [x] Refine preset/custom theme saturation and verify Home, Vault and Settings on cover/unfolded displays.
 

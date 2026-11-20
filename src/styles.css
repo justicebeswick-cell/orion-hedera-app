@@ -608,8 +608,8 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 
 /* Shared liquid-glass material: neutral highlights retain the selected theme. */
 :root {
-  --glass-edge: color-mix(in oklab, var(--foreground) 11%, transparent);
-  --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--primary) 13%, transparent), transparent 48%, color-mix(in oklab, var(--primary) 5%, transparent)), linear-gradient(165deg, color-mix(in oklab, var(--foreground) 4%, transparent), transparent 40%), color-mix(in oklab, var(--background) 88%, var(--graphite) 12%);
+  --glass-edge: color-mix(in oklab, var(--primary) 24%, color-mix(in oklab, var(--foreground) 11%, transparent));
+  --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--primary) 30%, transparent), color-mix(in oklab, var(--primary) 7%, transparent) 48%, color-mix(in oklab, var(--primary) 14%, transparent)), linear-gradient(165deg, color-mix(in oklab, var(--foreground) 4%, transparent), transparent 40%), color-mix(in oklab, var(--background) 88%, var(--graphite) 12%);
   --glass-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 10%, transparent), inset 0 -1px 0 color-mix(in oklab, var(--primary) 9%, transparent), 0 10px 28px -8px color-mix(in oklab, var(--launch) 48%, transparent);
   --chart-line: color-mix(in oklab, var(--primary) 40%, var(--foreground));
 }
@@ -867,7 +867,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 
 /* Unboxed, premium total balance that blends into the canvas */
 .home-balance { background: none !important; border: 0 !important; box-shadow: none !important; padding: 4px 2px 0 !important; border-radius: 0 !important; }
-.home-balance-number { font-size: 44px; letter-spacing: -0.03em; }
+.home-balance-number { font-size: 44px; letter-spacing: 0; }
 .home-balance-number[data-density="compact"] { font-size: 36px; }
 .home-balance-number[data-density="dense"] { font-size: 30px; }
 .home-balance-number[data-density="small"] { font-size: 24px; }
@@ -882,3 +882,27 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .home-chart .performance-change { font-size: 13px; }
 .home-chart .portfolio-plot { -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
 .home-chart .performance-range.is-selected { background: color-mix(in oklab, var(--foreground) 8%, transparent); border-color: transparent; box-shadow: none; }
+
+/* Compact classic Home: typography and chart share the uninterrupted canvas. */
+.home-classic .shell-header { padding-top: 8px; margin-bottom: 8px; min-height: 40px; }
+.home-classic .home-account { margin-bottom: 10px; }
+.home-classic .home-balance { padding: 0 2px !important; margin-bottom: 4px !important; }
+.home-classic .home-balance-number { font-family: "Roboto", "Helvetica Neue", var(--font-sans); font-size: 34px; font-weight: 300; line-height: 1.08; margin-top: 5px; font-variant-numeric: lining-nums tabular-nums; }
+.home-classic .home-balance-number[data-density="compact"] { font-size: 30px; }
+.home-classic .home-balance-number[data-density="dense"] { font-size: 26px; }
+.home-classic .home-balance-number[data-density="small"] { font-size: 22px; }
+.home-classic .home-balance > span:last-child { margin-top: 5px; font-size: 12px; }
+.home-classic .home-chart { margin: 0 0 8px; }
+.home-classic .home-chart .portfolio-plot { height: 64px !important; }
+.home-classic .performance-caption { min-height: 20px; }
+.home-classic .performance-ranges { margin-top: 0; }
+.home-classic .performance-range { height: 32px; }
+.home-classic .home-actions { margin-bottom: 0; }
+.home-classic .home-overview { gap: 12px; }
+.home-classic .home-holdings { padding-top: 0; }
+@media (min-width: 680px) {
+  .home-classic .home-balance-number { font-size: 38px; }
+  .home-classic .home-chart .portfolio-plot { height: 84px !important; }
+  .home-classic .home-overview { column-gap: 32px; }
+  .home-classic .home-holdings { padding-top: 8px; }
+}

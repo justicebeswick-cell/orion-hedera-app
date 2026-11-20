@@ -123,7 +123,7 @@ function Home() {
   const numberDensity = effChars <= 18 ? "regular" : effChars <= 22 ? "compact" : effChars <= 26 ? "dense" : "small";
 
   return (
-    <Shell title="Home">
+    <Shell title="Home" className="home-classic">
       <PortfolioTracker key={id} accountId={id} />
       {lag.data !== undefined && lag.data > 120 && (
         <p className="mb-4 rounded-md border border-destructive/40 p-3 text-xs text-destructive">
@@ -164,7 +164,7 @@ function Home() {
       {prefs.showWorth && (
         <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-3 block transition-opacity duration-300 active:opacity-80">
           <span className="block text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">Total balance</span>
-          <span data-density={numberDensity} className="home-balance-number mt-2 block truncate font-extralight leading-none tracking-tight text-foreground tnum">
+          <span data-density={numberDensity} className="home-balance-number mt-2 block truncate leading-none text-foreground tnum">
             {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.5em] font-extralight text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
           </span>
           <span className="mt-2 flex items-center gap-1.5 text-sm font-light text-muted-foreground tnum">
@@ -173,7 +173,7 @@ function Home() {
         </Link>
       )}
 
-      {prefs.showChart && <div className="home-chart mb-4"><PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} /></div>}
+      {prefs.showChart && <div className="home-chart"><PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} /></div>}
       <div className="home-actions mb-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
         <Button asChild variant="swap" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
