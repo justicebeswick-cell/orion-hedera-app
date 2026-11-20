@@ -158,7 +158,7 @@ function Home() {
       {prefs.showChart && <PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} />}
       <div className="home-actions mb-6 mt-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-full"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
-        <Button asChild variant="glass" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
+        <Button asChild variant="swap" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
         <Button asChild variant="receive" className="h-12 rounded-full"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
       </div>
