@@ -162,27 +162,18 @@ function Home() {
       <div className="home-overview">
       <div className="home-summary">
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-5 block overflow-hidden rounded-[var(--card-radius)] transition-transform duration-300 active:scale-[0.99]">
-          <span className="relative block">
-            <span className="flex items-end justify-between gap-5">
-              <span className="min-w-0 text-left">
-                <span data-density={numberDensity} className="home-balance-number block truncate font-light leading-none text-foreground tnum">
-                  {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.6em] font-extralight">{parts.frac}</span> : null}</> : "—"}
-                </span>
-                <span className="mt-1 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">US dollars</span>
-              </span>
-              <span className="min-w-0 text-right">
-                <span data-density={numberDensity} className="home-balance-number flex items-center justify-end gap-2 leading-none tnum">
-                  <HbarLogo size={16} /><span className="truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light text-transparent">{hbarText.split(".")[0]}{hbarText.includes(".") ? <span className="text-[0.6em] font-extralight">.{hbarText.split(".")[1]}</span> : null}</span>
-                </span>
-                <span className="mt-1 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">HBAR + tokens</span>
-              </span>
-            </span>
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-3 block transition-opacity duration-300 active:opacity-80">
+          <span className="block text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">Total balance</span>
+          <span data-density={numberDensity} className="home-balance-number mt-2 block truncate font-extralight leading-none tracking-tight text-foreground tnum">
+            {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.5em] font-extralight text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
+          </span>
+          <span className="mt-2 flex items-center gap-1.5 text-sm font-light text-muted-foreground tnum">
+            <HbarLogo size={13} /><span className="truncate">{hbarText.split(".")[0]}</span><span className="text-xs uppercase tracking-[0.18em]">HBAR</span>
           </span>
         </Link>
       )}
 
-      {prefs.showChart && <div className="mb-5"><PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} /></div>}
+      {prefs.showChart && <div className="home-chart mb-4"><PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} /></div>}
       <div className="home-actions mb-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
         <Button asChild variant="swap" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>

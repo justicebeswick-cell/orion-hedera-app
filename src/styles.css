@@ -864,3 +864,13 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .stake-list { border-radius: 28px; border: 1px solid var(--glass-edge); background: var(--glass-finish, var(--card)); box-shadow: var(--glass-shadow); overflow: hidden; }
 .stake-list > * + * { border-top: 1px solid var(--glass-edge); }
 .stake-list .node-logo, .stake-list img { max-height: 36px; }
+
+/* Unboxed, premium total balance that blends into the canvas */
+.home-balance { background: none !important; border: 0 !important; box-shadow: none !important; padding: 4px 2px 0 !important; border-radius: 0 !important; }
+.home-balance-number { font-size: 44px; letter-spacing: -0.03em; }
+.home-balance-number[data-density="compact"] { font-size: 36px; }
+.home-balance-number[data-density="dense"] { font-size: 30px; }
+.home-balance-number[data-density="small"] { font-size: 24px; }
+@media (max-width: 380px) { .home-balance-number { font-size: 38px; } }
+.home-chart .portfolio-plot { height: 110px !important; }
+@media (min-width: 680px) { .home-chart .portfolio-plot { height: 140px !important; } }
