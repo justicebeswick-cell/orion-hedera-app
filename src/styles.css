@@ -654,7 +654,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   --home-staking: color-mix(in oklab, var(--primary) 26%, var(--graphite));
   --home-send: linear-gradient(135deg, color-mix(in oklab, var(--primary) 65%, var(--foreground)), var(--primary));
 }
-.home-reference { position: relative; background: var(--home-canvas); background-size: 100% 100dvh; background-repeat: no-repeat; --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
+.home-reference { position: relative; --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
 .home-reference .shell-content { animation: none; }
 .home-reference > header { height: 72px; padding-top: 22px; margin-bottom: 32px; align-items: center; }
 .home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
@@ -738,7 +738,10 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 :root[data-theme="default"] { --card-finish: var(--glass-finish); --card-foreground: var(--foreground); }
 :root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, .bg-popover) { --foreground: oklch(0.18 0 0); --muted-foreground: oklch(0.43 0 0); }
 :root:is([data-theme="amethyst"], [data-theme="lavender"], [data-theme="plum"], [data-theme="blue"], [data-theme="custom"]) { --card-finish: var(--glass-finish); }
-.app-shell { background: var(--home-canvas); background-attachment: fixed; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
+.app-shell { position: relative; isolation: isolate; background: none; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
+/* One viewport-sized paint layer avoids iOS fixed-background clipping and
+   keeps the header, long pages, and safe areas on the same continuous canvas. */
+.app-shell::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--home-canvas); background-repeat: no-repeat; }
 .app-shell :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface) { backdrop-filter: blur(20px) saturate(115%); }
 .side-orb { background: var(--glass-finish); box-shadow: var(--glass-shadow); border-color: var(--glass-edge); }
 .home-reference .shell-content { min-height: 0; }
