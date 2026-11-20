@@ -53,10 +53,10 @@ function Settings() {
   useEffect(() => { setMeta(readKeystoreMeta()); setBio(bioEnrolled()); setL(getLimits()); setLock(lockOnClose()); }, []);
 
   return (
-    <Shell title="Settings">
+    <Shell title="Settings" className="settings-screen">
       {category && <Button variant="ghost" className="mb-4 -ml-3" onClick={() => setCategory(null)}><ArrowLeft size={18} />Settings</Button>}
       <h1 className="mb-7 text-3xl font-semibold">{category ?? "Settings"}</h1>
-      {!category && <div className="divide-y divide-border">
+      {!category && <div className="settings-list divide-y divide-border">
         <div className="pb-3">
           <SettingsItem icon={SlidersHorizontal} label="General" onClick={() => setCategory("General")} />
           <SettingsItem icon={Wallet} label="Accounts" onClick={() => setCategory("Accounts")} />
@@ -149,11 +149,11 @@ function Settings() {
 
 
 function SettingsItem({ icon: Icon, label, onClick }: { icon: LucideIcon; label: string; onClick: () => void }) {
-  return <Button variant="ghost" onClick={onClick} className="h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Button>;
+  return <Button variant="ghost" onClick={onClick} className="settings-row h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Button>;
 }
 
 function SettingsLink({ icon: Icon, label, to, section }: { icon: LucideIcon; label: string; to: "/vault" | "/about" | "/company" | "/privacy" | "/terms"; section?: string }) {
-  return <Button asChild variant="ghost" className="h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Link to={to} search={section ? { section } : {}}><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Link></Button>;
+  return <Button asChild variant="ghost" className="settings-row h-16 w-full justify-start gap-5 rounded-none px-1 text-base font-medium"><Link to={to} search={section ? { section } : {}}><Icon size={23} strokeWidth={1.7} /><span className="flex-1 text-left">{label}</span><ChevronRight size={20} className="text-muted-foreground" /></Link></Button>;
 }
 
 function ChangeCode({ onChanged }: { onChanged: () => void }) {

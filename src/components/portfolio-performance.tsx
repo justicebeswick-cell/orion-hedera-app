@@ -35,7 +35,7 @@ export function PortfolioPerformance({ accountId, value, hidden }: { accountId: 
       <span className="text-muted-foreground">Portfolio performance</span>
       {!hidden && change !== null && <span className={`tnum ${change >= 0 ? "text-success" : "text-destructive"}`}>{change >= 0 ? "+" : ""}{change.toFixed(2)}%</span>}
     </div>
-    <div className="portfolio-plot" role="img" aria-label={hidden ? "Portfolio balance hidden" : `Portfolio value, ${range} timeframe, ${visible.length} observations`}>
+    <div className={`portfolio-plot ${hidden || visible.length < 2 ? "portfolio-plot-empty" : ""}`} role="img" aria-label={hidden ? "Portfolio balance hidden" : `Portfolio value, ${range} timeframe, ${visible.length} observations`}>
       {!hidden && visible.length > 1 ? <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={visible} margin={{ top: 12, right: 6, bottom: 0, left: 6 }}>
           <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--chart-line)" stopOpacity={0.5} /><stop offset="100%" stopColor="var(--chart-line)" stopOpacity={0} /></linearGradient></defs>

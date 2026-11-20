@@ -168,8 +168,8 @@ function Home() {
       </>}
       <div className="home-actions mb-6 mt-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-full"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
-        <Button asChild variant="glass" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
-        <Button asChild variant="glass" className="h-12 rounded-full"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
+        <Button asChild variant="swap" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
+        <Button asChild variant="receive" className="h-12 rounded-full"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
       </div>
       <div className="home-holdings">
@@ -193,13 +193,13 @@ function Home() {
       </div>
       </div>
       </div>
-      <div className="mb-3 mt-9 flex items-center justify-between">
+      <div className="activity-heading mb-3 mt-9 flex items-center justify-between">
         <h2 className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</h2>
         <Button variant="ghost" size="icon" aria-label="Refresh activity" disabled={txs.isFetching} onClick={() => txs.refetch()}>
           <RefreshCw size={16} className={txs.isFetching ? "animate-spin" : ""} />
         </Button>
       </div>
-      <div className="panel divide-y divide-border overflow-hidden">
+      <div className="activity-receipts panel divide-y divide-border overflow-hidden">
         {txs.isPending && <p className="px-5 py-5 text-sm text-muted-foreground">Loading receipts…</p>}
         {txs.isError && <p className="px-5 py-5 text-sm text-destructive">{(txs.error as Error).message}</p>}
         {txs.data?.length === 0 && <p className="px-5 py-5 font-receipt receipt-label text-lg text-muted-foreground">No receipts yet.</p>}
