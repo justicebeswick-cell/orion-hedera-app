@@ -944,7 +944,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 
 /* Side mode refinements: orbs centred exactly under the iOS clock/battery column, actions 3 across, matte-glass account pill. */
 :root[data-dock="side"] .side-orbs {
-  right: calc(env(safe-area-inset-right, 0px) / 2 - 23px) !important;
+  right: 8px !important;
   top: calc(env(safe-area-inset-top) + 170px) !important;
   align-items: center;
 }
