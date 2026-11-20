@@ -132,7 +132,7 @@
 :root[data-theme="moonlight"] { --background: oklch(0.13 0.012 298); --primary: oklch(0.65 0.19 290); --card: oklch(0.19 0.018 298); --graphite: oklch(0.23 0.014 298); }
 :root[data-theme="royal"] { --background: oklch(0.1 0.02 298); --primary: oklch(0.55 0.265 292); --card: oklch(0.18 0.04 298); --graphite: oklch(0.23 0.025 298); }
 :root[data-theme="amethyst"] { --primary: oklch(0.6 0.245 310); }
-:root[data-theme="lavender"] { --primary: oklch(0.66 0.19 295); }
+:root[data-theme="lavender"] { --background: oklch(0.12 0.02 295); --primary: oklch(0.65 0.17 295); --graphite: oklch(0.25 0.02 295); --muted-foreground: oklch(0.74 0.03 295); }
 :root[data-theme="plum"] { --primary: oklch(0.59 0.23 330); }
 :root[data-theme="blue"] {
   --primary: oklch(0.59 0.225 264);
@@ -149,7 +149,7 @@
 .theme-swatch-moonlight { background: oklch(0.3 0.02 298); color: oklch(0.98 0 0); }
 .theme-swatch-royal { background: oklch(0.35 0.18 298); color: oklch(0.98 0 0); }
 .theme-swatch-amethyst { background: oklch(0.6 0.245 310); color: oklch(0.98 0 0); }
-.theme-swatch-lavender { background: oklch(0.66 0.19 295); color: oklch(0.98 0 0); }
+.theme-swatch-lavender { background: linear-gradient(145deg, oklch(0.38 0.11 295), oklch(0.15 0.03 295)); color: oklch(0.92 0.03 295); }
 .theme-swatch-plum { background: oklch(0.59 0.23 330); color: oklch(0.98 0 0); }
 .theme-swatch-blue { background: oklch(0.59 0.225 264); color: oklch(0.98 0 0); }
 .theme-swatch-custom { background: oklch(from var(--custom-color, #7a3fd6) clamp(0.52, l, 0.7) min(c, 0.25) h); color: oklch(0.98 0 0); }
@@ -609,13 +609,14 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 /* Shared liquid-glass material: neutral highlights retain the selected theme. */
 :root {
   --glass-edge: color-mix(in oklab, var(--primary) 24%, color-mix(in oklab, var(--foreground) 11%, transparent));
-  --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--primary) 30%, transparent), color-mix(in oklab, var(--primary) 7%, transparent) 48%, color-mix(in oklab, var(--primary) 14%, transparent)), linear-gradient(165deg, color-mix(in oklab, var(--foreground) 4%, transparent), transparent 40%), color-mix(in oklab, var(--background) 88%, var(--graphite) 12%);
+  --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--primary) 6%, transparent) 48%, color-mix(in oklab, var(--primary) 12%, transparent)), linear-gradient(165deg, color-mix(in oklab, var(--foreground) 5%, transparent), transparent 40%), color-mix(in oklab, var(--background) 48%, transparent);
+  --glass-filter: blur(16px) saturate(130%);
   --glass-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 10%, transparent), inset 0 -1px 0 color-mix(in oklab, var(--primary) 9%, transparent), 0 10px 28px -8px color-mix(in oklab, var(--launch) 48%, transparent);
   --chart-line: color-mix(in oklab, var(--primary) 40%, var(--foreground));
 }
 .glass-control, .home-account, .performance-tooltip {
   background: var(--glass-finish); border: 1px solid var(--glass-edge);
-  box-shadow: var(--glass-shadow); backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-filter);
 }
 .home-account { border-radius: 999px; }
 .home-overview { display: grid; gap: 24px; }
@@ -743,14 +744,17 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   --chart-line: var(--primary);
 }
 :root[data-theme="default"] :is(.portfolio-total, .home-account, .holdings-tabs a, .home-staking-link, .dock-active, .side-orb, .performance-range.is-selected) { color: var(--foreground); }
-:root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, .bg-popover) { --foreground: oklch(0.18 0 0); --muted-foreground: oklch(0.43 0 0); }
+:root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, [class~="bg-card/95"], .bg-popover) { --foreground: oklch(0.18 0 0); --card-foreground: var(--foreground); --popover-foreground: var(--foreground); --graphite: oklch(0.94 0 0); --muted-foreground: oklch(0.43 0 0); --border: oklch(0 0 0 / 12%); --input: oklch(0 0 0 / 18%); }
+:root[data-theme="default"] { --card: oklch(0.97 0.01 295); --popover: var(--card); --home-selected: color-mix(in oklab, var(--primary) 12%, transparent); }
+:root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, .bg-popover) .orion-lettering { filter: invert(1); }
+:root[data-theme="lavender"] { --home-canvas: linear-gradient(135deg, oklch(0.3 0.085 295), var(--background) 42%, var(--background) 72%, oklch(0.23 0.06 295)); --chart-line: oklch(0.77 0.1 295); --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--foreground) 8%, transparent), transparent 50%, color-mix(in oklab, var(--primary) 18%, transparent)), color-mix(in oklab, var(--graphite) 48%, transparent); }
 :root:is([data-theme="amethyst"], [data-theme="lavender"], [data-theme="plum"], [data-theme="blue"], [data-theme="custom"]) { --card-finish: var(--glass-finish); }
 .app-shell { position: relative; isolation: isolate; background: none; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
 /* One viewport-sized paint layer avoids iOS fixed-background clipping and
    keeps the header, long pages, and safe areas on the same continuous canvas. */
 .app-shell::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--home-canvas); background-repeat: no-repeat; }
-.app-shell :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface) { backdrop-filter: blur(20px) saturate(115%); }
-.side-orb { background: var(--glass-finish); box-shadow: var(--glass-shadow); border-color: var(--glass-edge); }
+.app-shell :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface) { backdrop-filter: var(--glass-filter); }
+.side-orb { background: var(--glass-finish); box-shadow: var(--glass-shadow); border-color: var(--glass-edge); backdrop-filter: var(--glass-filter); }
 .home-reference .shell-content { min-height: 0; }
 .home-reference .home-balance { background: none; border: 0; box-shadow: none; padding: 0; border-radius: 0; }
 .home-reference .home-balance-label { margin-bottom: 10px; }

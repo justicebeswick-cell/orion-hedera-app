@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Refine translucent purple matte glass and offer Dark, Light, reference Lavender and custom colorways.
+- [x] Verify saved theme choices and glass across phone and unfolded layouts.
+
 - [x] Compact and lift the classic Home balance/chart with refined lettering and richer purple glass.
 - [x] Verify chart timeframes and Home actions on folded and unfolded displays.
 

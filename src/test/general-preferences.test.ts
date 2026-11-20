@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { DEFAULT_PREFERENCES, getPreferences, savePreferences, resolvedTheme, showAuditEvent } from "@/lib/preferences";
+import { DEFAULT_PREFERENCES, THEME_OPTIONS, getPreferences, savePreferences, resolvedTheme, showAuditEvent } from "@/lib/preferences";
 import { saveSecurityPreferences, getSecurityPreferences } from "@/lib/security-preferences";
 import { showTransaction } from "@/lib/event-display";
 import { fmtAmount, fmtUsd } from "@/lib/display";
@@ -9,6 +9,8 @@ import { saveContact, readContacts } from "@/lib/contacts";
 
 afterEach(() => { localStorage.clear(); setCurrencyRates({ USD: 1 }); vi.unstubAllGlobals(); });
 it("keeps black Dark mode and home worth and prices by default", () => { expect(getPreferences().theme).toBe("dark"); expect(getPreferences().showWorth).toBe(true); expect(getPreferences().showPrices).toBe(true); });
+it("offers exactly dark, light, lavender and custom colorways", () => { expect(THEME_OPTIONS.map((theme) => theme.id)).toEqual(["dark", "default", "lavender", "custom"]); });
+it("retains the selected lavender colorway after reload", () => { savePreferences({ theme: "lavender" }); expect(getPreferences().theme).toBe("lavender"); expect(resolvedTheme(getPreferences(), true)).toBe("lavender"); });
 it("stores independently configurable Home visibility", () => { savePreferences({ showWorth: false, showPrices: false, showReserve: true }); expect(getPreferences()).toMatchObject({ showWorth: false, showPrices: false, showReserve: true }); });
 it("saves chart visibility without hiding the portfolio balance", () => { expect(getPreferences().showChart).toBe(true); savePreferences({ showChart: false }); expect(getPreferences()).toMatchObject({ showChart: false, showWorth: true }); savePreferences({ showChart: true }); expect(getPreferences().showChart).toBe(true); });
 it("honors selected themes and system light/dark only when automatic is on", () => { expect(resolvedTheme({ ...DEFAULT_PREFERENCES, theme: "royal" }, true)).toBe("royal"); expect(resolvedTheme({ ...DEFAULT_PREFERENCES, autoTheme: true }, true)).toBe("default"); expect(resolvedTheme({ ...DEFAULT_PREFERENCES, autoTheme: true }, false)).toBe("dark"); });
