@@ -122,11 +122,16 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
         </div>
       </nav>
       <nav aria-label="Main" className="side-orbs">
-        {dock.filter((d) => d.to !== "/stake").map((d) => (
+        {dock.filter((d) => d.to !== "/stake" && d.to !== "/settings").map((d) => (
           <Link key={d.to} to={d.to} aria-label={d.label} title={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
             <d.icon size={24} strokeWidth={1.7} />
           </Link>
         ))}
+      </nav>
+      <nav aria-label="Settings" className="side-orb-solo">
+        <Link to="/settings" aria-label="Settings" title="Settings" className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+          <Settings size={24} strokeWidth={1.7} />
+        </Link>
       </nav>
       {open && (
         <div className="app-safe-screen fixed inset-0 z-50 overflow-y-auto bg-background/80 p-5 backdrop-blur" onClick={() => setOpen(false)}>
