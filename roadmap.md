@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Compact Home balance/chart, restore mint Receive and shared purple glass, and preserve folded/unfolded reference layouts.
+- [x] Verify Home actions and layout changes across cover and unfolded screen sizes.
+
 - [x] Match IMG_0109-3 Home layout and apply its glass finish and consistent dock throughout.
 - [x] Preserve theme selection and verify chart, navigation and phone layouts.
 

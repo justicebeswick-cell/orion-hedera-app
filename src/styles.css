@@ -608,8 +608,8 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 /* Shared liquid-glass material: neutral highlights retain the selected theme. */
 :root {
   --glass-edge: color-mix(in oklab, var(--foreground) 16%, transparent);
-  --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--foreground) 11%, transparent), color-mix(in oklab, var(--foreground) 4%, transparent)), color-mix(in oklab, var(--background) 70%, transparent);
-  --glass-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 6%, transparent), 0 12px 32px color-mix(in oklab, var(--launch) 16%, transparent);
+  --glass-finish: linear-gradient(135deg, color-mix(in oklab, var(--primary) 26%, transparent), transparent 58%, color-mix(in oklab, var(--primary) 12%, transparent)), linear-gradient(145deg, color-mix(in oklab, var(--foreground) 11%, transparent), color-mix(in oklab, var(--foreground) 4%, transparent)), color-mix(in oklab, var(--background) 66%, transparent);
+  --glass-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 14%, transparent), inset 0 -1px 0 color-mix(in oklab, var(--primary) 15%, transparent), 0 12px 32px color-mix(in oklab, var(--launch) 16%, transparent), 0 0 24px -12px color-mix(in oklab, var(--primary) 38%, transparent);
   --chart-line: color-mix(in oklab, var(--primary) 40%, var(--foreground));
 }
 .glass-control, .home-account, .performance-tooltip {
@@ -633,7 +633,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .side-orb { background: var(--glass-finish); border-color: var(--glass-edge); box-shadow: var(--glass-shadow); }
 .side-orb-active { color: var(--foreground); background: var(--glass-finish); border-color: color-mix(in oklab, var(--primary) 60%, var(--glass-edge)); }
 .app-shell :is(.panel, .card-surface, .deck-surface) { backdrop-filter: blur(20px); }
-@media (min-width: 760px) {
+@media (min-width: 680px) {
   .home-overview { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; align-items: start; }
   .home-holdings { padding: 24px 28px; border-left: 1px solid var(--glass-edge); }
   .portfolio-total { font-size: 64px; }
@@ -699,7 +699,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .dock-active { color: var(--foreground); background: var(--home-selected); }
 .dock-active::before { display: none; }
 .dock-active svg { filter: none; }
-@media (min-width: 760px) {
+@media (min-width: 680px) {
   .home-reference { --app-gutter: 4.6%; }
   .home-reference .home-overview { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; }
   .home-reference .portfolio-total { font-size: 76px; }
@@ -708,7 +708,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   .home-reference .home-actions { margin-top: 24px; }
   .home-reference .home-overview + div { margin-top: 100px; }
 }
-@media (max-width: 759px) {
+@media (max-width: 679px) {
   .home-reference > header { margin-bottom: 22px; }
   .home-reference .home-account { top: 33px; max-width: 58%; padding: 6px 10px; gap: 3px; }
   .home-reference .home-account-status { display: none; }
@@ -761,34 +761,34 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .dock-active { font-weight: 400; }
 .home-reference .home-reward > span.flex-1 > span { display: none; }
 .home-reference .home-reward { padding-top: 14px; }
-@media (min-width: 760px) {
+@media (min-width: 680px) {
   .home-reference > header { margin-bottom: 28px; height: 86px; }
   .home-reference .home-account { top: 28px; }
   .home-reference .home-overview { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; }
-  .home-reference .portfolio-total { font-size: 76px; }
+  .home-reference .portfolio-total { font-size: 64px; }
   .home-reference .home-holdings { min-height: 518px; padding: 18px 32px 24px; }
-  .home-reference .portfolio-performance { margin-top: 45px; }
-  .home-reference .portfolio-plot { height: 205px; width: calc(100% + 140px); margin-left: -56px; }
+  .home-reference .portfolio-performance { margin-top: 28px; }
+  .home-reference .portfolio-plot { height: 180px; width: calc(100% + 140px); margin-left: -56px; }
   .home-reference .home-actions { margin-top: 20px; }
   .home-reference .home-actions a { height: 58px; }
 }
-@media (max-width: 759px) {
+@media (max-width: 679px) {
   .home-reference > header { height: 64px; padding-top: 10px; margin-bottom: 20px; }
   .home-reference > header .orion-lettering { width: 70px; }
   .home-reference > header .orion-logo-frame { width: 30px; height: 30px; }
   .home-reference .home-account { top: 24px; padding: 6px 8px; max-width: 60%; }
   .home-reference .home-account .account-tool { width: 22px; height: 28px; }
-  .home-reference .portfolio-total { font-size: 48px; }
-  .home-reference .portfolio-performance { margin-top: 15px; }
-  .home-reference .portfolio-plot { height: 130px; }
+  .home-reference .portfolio-total { font-size: 38px; }
+  .home-reference .portfolio-performance { margin-top: 10px; }
+  .home-reference .portfolio-plot { height: 100px; }
   .home-reference .home-balance > span:last-child { gap: 6px; font-size: 12px; }
   .home-reference .home-updated { font-size: 10px; }
   .home-reference .home-actions { margin-top: 12px; }
   .home-reference .home-actions a { height: 48px; font-size: 14px; padding: 0 10px; }
   .home-reference .home-overview { gap: 18px; }
   .home-reference .home-holdings { min-height: 300px; padding: 16px 20px; }
-  .home-reference .home-asset { padding: 18px 0; }
-  .home-reference .home-staking { padding-top: 28px; }
+  .home-reference .home-asset { padding: 14px 0; }
+  .home-reference .home-staking { padding-top: 18px; }
   .home-reference .home-staking-link { min-height: 54px; padding: 14px; border-radius: 22px; }
 }
 @media (max-width: 359px) {
@@ -796,11 +796,24 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   .home-reference > header .orion-lettering { width: 54px; }
   .home-reference > header > div { gap: 6px; }
   .home-reference .home-account .account-tool { width: 20px; }
-  .home-reference .portfolio-total { font-size: 42px; }
+  .home-reference .portfolio-total { font-size: 34px; }
 }
-@media (max-width: 759px) and (max-height: 650px) {
+@media (max-width: 679px) and (max-height: 650px) {
   .home-reference > header { margin-bottom: 12px; }
-  .home-reference .portfolio-plot { height: 84px; }
-  .home-reference .portfolio-total { font-size: 42px; }
+  .home-reference .portfolio-plot { height: 68px; }
+  .home-reference .portfolio-total { font-size: 34px; }
   .home-reference .home-overview { gap: 12px; }
+}
+/* Compact unfolded displays retain the reference's left/right composition. */
+@media (min-width: 680px) and (max-width: 900px) {
+  .home-reference { --app-gutter: 3%; }
+  .home-reference .home-overview { gap: 24px; }
+  .home-reference .portfolio-total { font-size: 52px; }
+  .home-reference .portfolio-plot { height: 160px; width: calc(100% + 64px); margin-left: -24px; }
+  .home-reference .home-holdings { min-height: 420px; padding: 16px 20px 20px; }
+  .home-reference .home-actions { gap: 8px; }
+  .home-reference .home-actions a { height: 48px; padding-inline: 8px; font-size: 13px; gap: 6px; }
+  .home-reference .holdings-tabs a { min-width: 58px; padding-inline: 8px; }
+  .home-reference .home-asset { gap: 10px; }
+  .home-reference .home-asset > span:last-of-type > span:first-child { font-size: 13px; }
 }
