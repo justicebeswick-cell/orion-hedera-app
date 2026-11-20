@@ -30,19 +30,21 @@ function VaultGlyph({ size = 24, strokeWidth }: { size?: number; strokeWidth?: n
 }
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
-  if (crisp) return <span className={`orion-logo-frame orion-home-logo relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
+  if (crisp || orbit) return <span className={`orion-logo-frame ${orbit ? "" : "orion-home-logo"} relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
     <svg viewBox="0 0 1024 1024" className="relative h-full w-full" aria-hidden="true">
       <image href="/orion-refined/launch-sphere-v39.png" width="1024" height="1024" />
-      <g className="orion-home-rings" fill="none" strokeWidth="16">
-        <circle cx="512" cy="512" r="381" />
-        <circle cx="512" cy="512" r="320" />
+      <g className={orbit ? "launch-orbit" : undefined}>
+        <g className="orion-home-rings" fill="none" strokeWidth="16">
+          <circle cx="512" cy="512" r="381" />
+          <circle cx="512" cy="512" r="320" />
+        </g>
+        <circle className="orion-home-node" cx="512" cy="131" r="29" />
       </g>
-      <circle className="orion-home-node" cx="512" cy="131" r="29" />
     </svg>
   </span>;
   return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <img src={orbit ? "/orion-refined/launch-sphere-v39.png" : "/orion-refined/sphere-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`h-full w-full object-contain ${orbit ? "" : "orion-static-sphere"}`} />
-    <img src={orbit ? "/orion-refined/launch-rings-v39.png" : "/orion-refined/rings-v38.png"} sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className={`absolute inset-0 h-full w-full object-contain ${orbit ? "launch-orbit" : "orion-orbit-rings"}`} />
+    <img src="/orion-refined/sphere-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="h-full w-full object-contain orion-static-sphere" />
+    <img src="/orion-refined/rings-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="absolute inset-0 h-full w-full object-contain orion-orbit-rings" />
   </span>;
 }
 
