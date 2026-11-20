@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Coins, Network, Copy, Pencil, ImageIcon, RefreshCw } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowLeftRight, ChevronDown, ChevronRight, Copy, Pencil, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -121,7 +121,7 @@ function Home() {
   const hbarText = total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—";
 
   return (
-    <Shell title="Home">
+    <Shell title="Home" className="home-reference">
       {lag.data !== undefined && lag.data > 120 && (
         <p className="mb-4 rounded-md border border-destructive/40 p-3 text-xs text-destructive">
           Mirror node is {Math.round(lag.data / 60)} minutes behind. Balances may be stale.
@@ -129,10 +129,10 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      <div className="home-account mb-7 flex items-center gap-1.5 px-4 py-2.5">
+      <div className="home-account flex items-center gap-1.5 px-4 py-2.5">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
-          <span className="block break-words text-base font-semibold leading-tight">{walletName || id}</span>
-          <span className="mt-0.5 block text-[11px] text-muted-foreground">{walletName ? (watchOnly ? `${id} · Cold storage` : id) : watchOnly ? "Cold storage · watch-only" : "My Hedera wallet"}</span>
+          <span className="block break-words text-sm font-normal leading-tight">{walletName || id}</span>
+          <span className="home-account-status text-xs text-muted-foreground">{walletName ? (watchOnly ? `${id} · Cold storage` : id) : watchOnly ? "Watch-only" : "My wallet"}</span>
         </Link>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Name wallet" onClick={() => { setNameDraft(walletName); setEditingName(true); }}><Pencil size={13} /></Button>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Copy account ID" onClick={async () => { try { await navigator.clipboard.writeText(id); toast.success("Account ID copied"); } catch { toast.error("Copy failed"); } }}><Copy size={13} /></Button>
@@ -160,22 +160,22 @@ function Home() {
       <div className="home-summary">
       {prefs.showWorth && <>
         <Link to="/vault" search={{ section: "holdings" }} className="home-balance block py-4" aria-label="View portfolio holdings">
-          <span className="mb-3 block text-xs text-muted-foreground">Total balance</span>
+          <span className="home-balance-label mb-3 block text-xs text-muted-foreground">Total balance</span>
           <span className="portfolio-total block break-words font-light leading-tight tnum">{security.hideBalance ? "••••••" : value !== null ? fmtUsd(value) : "—"}</span>
-          <span className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><HbarLogo size={16} /><span className="tnum">{security.hideBalance ? "••••" : hbarText}</span><span>HBAR + tokens</span></span>
+          <span className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><HbarLogo size={16} /><span className="tnum">{security.hideBalance ? "••••" : hbarText}</span><span>HBAR + tokens</span><Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} /></span>
         </Link>
         <PortfolioPerformance key={id} accountId={id} value={completeValue} hidden={security.hideBalance} />
       </>}
       <div className="home-actions mb-6 mt-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-full"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
-        <Button asChild variant="swap" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
-        <Button asChild variant="receive" className="h-12 rounded-full"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
+        <Button asChild variant="glass" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
+        <Button asChild variant="glass" className="h-12 rounded-full"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
       </div>
       <div className="home-holdings">
-      <div className="mb-2 flex items-center justify-between">
-        <div className="holdings-tabs flex gap-1"><Button asChild variant="glass" size="sm" className="rounded-full"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens{tokenCount.data ? <span className="tnum text-muted-foreground">{tokenCount.data}</span> : null}</Link></Button>
-        <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}><ImageIcon size={16} />NFTs</Link></Button></div>
+      <div className="home-holdings-header mb-2 flex items-center justify-between">
+        <div className="holdings-tabs flex gap-1"><Button asChild variant="glass" size="sm" className="rounded-full"><Link to="/vault" search={{ section: "holdings" }}>Tokens{tokenCount.data ? <span className="tnum text-muted-foreground">{tokenCount.data}</span> : null}</Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}>NFTs</Link></Button></div>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
       </div>
       {acct.isError && <p className="py-4 text-xs text-destructive">{(acct.error as Error).message}</p>}
@@ -187,11 +187,10 @@ function Home() {
       </Link>
       <HomeAssets accountId={id} />
       {prefs.showReserve && <div className="flex justify-between border-b border-border py-4 text-sm"><span className="text-muted-foreground">Required HBAR reserve</span><span className="text-xs text-muted-foreground">Not applicable on Hedera</span></div>}
-      <div className="mt-4 border-t border-border">
-        <Link to="/stake" className="flex items-center gap-3 py-3 text-sm"><Network size={16} className="text-primary" /><span className="flex-1">{acct.data?.stakedNode != null ? `Staked to node ${acct.data.stakedNode}` : "Choose a staking node"}</span><ChevronRight size={15} className="text-muted-foreground" /></Link>
+      <div className="home-staking mt-4">
+        <Link to="/stake" className="home-staking-link flex items-center gap-3 py-3 text-sm"><span className="home-staking-dot" /><span className="flex-1">{acct.data?.stakedNode != null ? `Staked to node ${acct.data.stakedNode}` : "Choose a staking node"}</span><ChevronRight size={15} className="text-muted-foreground" /></Link>
         <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
       </div>
-      <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
       </div>
       </div>
       <div className="mb-3 mt-9 flex items-center justify-between">
@@ -237,9 +236,9 @@ function Updated({ at, fetching }: { at: number; fetching: boolean }) {
   if (!at) return null;
   const s = Math.max(0, Math.round((Date.now() - at) / 1000));
   return (
-    <p className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground tnum">
+    <span className="home-updated flex items-center gap-1.5 text-[11px] text-muted-foreground tnum">
       <span className={`h-1.5 w-1.5 rounded-full bg-success ${fetching ? "animate-ping" : ""}`} />
       {s < 5 ? "Updated just now" : `Updated ${s}s ago`}
-    </p>
+    </span>
   );
 }

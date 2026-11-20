@@ -619,3 +619,83 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   :root[data-dock="side"] .home-actions { margin-right: 48px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   :root[data-dock="side"] .home-actions a:last-child { grid-column: 1 / -1; }
 }
+
+/* Reference Home: unframed balance and chart alongside a single glass asset panel. */
+:root {
+  --home-canvas: linear-gradient(135deg, color-mix(in oklab, var(--primary) 25%, var(--background)), var(--background) 38%, var(--background) 75%, color-mix(in oklab, var(--primary) 18%, var(--background)));
+  --home-panel: linear-gradient(145deg, color-mix(in oklab, var(--foreground) 11%, transparent), color-mix(in oklab, var(--primary) 10%, transparent)), color-mix(in oklab, var(--background) 84%, transparent);
+  --home-selected: color-mix(in oklab, var(--foreground) 17%, transparent);
+  --home-staking: color-mix(in oklab, var(--primary) 26%, var(--graphite));
+  --home-send: linear-gradient(135deg, color-mix(in oklab, var(--primary) 65%, var(--foreground)), var(--primary));
+}
+.home-reference { position: relative; background: var(--home-canvas); background-size: 100% 100dvh; background-repeat: no-repeat; --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
+.home-reference .shell-content { animation: none; }
+.home-reference > header { height: 72px; padding-top: 22px; margin-bottom: 32px; align-items: center; }
+.home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
+.home-reference > header .orion-home-logo::before { display: none; }
+.home-reference > header .orion-lettering { width: 88px; }
+.home-reference > header p { display: none; }
+.home-reference .home-account { position: absolute; top: 30px; right: var(--app-gutter); width: auto; max-width: 55%; min-height: 44px; padding: 8px 16px; gap: 8px; }
+.home-reference .home-account > a { display: flex; align-items: center; gap: 12px; }
+.home-reference .home-account-status { margin: 0; padding-left: 12px; border-left: 1px solid var(--glass-edge); white-space: nowrap; }
+.home-reference .home-account > button, .home-reference .home-account > a:last-child { width: 22px; height: 22px; }
+.home-reference .home-overview { gap: 28px; }
+.home-reference .home-balance { padding-top: 0; }
+.home-reference .home-balance-label { text-transform: uppercase; font-size: 11px; }
+.home-reference .portfolio-total { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", sans-serif; font-size: 48px; font-weight: 200; line-height: 1.12; }
+.home-reference .home-balance > span:last-child { flex-wrap: wrap; font-size: 14px; }
+.home-reference .home-updated { font-size: 11px; }
+.home-reference .portfolio-performance { margin-top: 20px; }
+.home-reference .performance-caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.home-reference .portfolio-plot { height: 230px; }
+.home-reference .performance-ranges { max-width: 360px; margin: 0 auto; }
+.home-reference .performance-range { border: 0; background: transparent; box-shadow: none; height: 36px; font-weight: 400; }
+.home-reference .performance-range.is-selected { color: var(--foreground); }
+.home-reference .performance-note { text-align: center; opacity: .65; font-size: 9px; margin-top: 4px; }
+.home-reference .home-actions { grid-template-columns: 1.25fr 1fr 1fr; gap: 10px; margin: 20px 0 0; }
+.home-reference .home-actions a { height: 54px; font-size: 15px; font-weight: 400; }
+.home-reference .home-actions a:first-child { background: var(--home-send); }
+.home-reference .home-holdings { display: flex; flex-direction: column; min-height: 430px; padding: 22px 26px; border: 1px solid var(--glass-edge); border-radius: 36px; background: var(--home-panel); box-shadow: var(--glass-shadow); backdrop-filter: blur(24px); }
+.home-reference .home-holdings-header { border-bottom: 1px solid var(--glass-edge); padding-bottom: 14px; }
+.home-reference .holdings-tabs { gap: 3px; }
+.home-reference .holdings-tabs a { min-width: 74px; font-size: 14px; font-weight: 400; }
+.home-reference .holdings-tabs a:first-child { background: var(--home-selected); box-shadow: inset 0 1px 0 var(--glass-edge); }
+.home-reference .home-holdings-header > a { padding: 0; font-size: 12px; color: var(--chart-line); }
+.home-reference .home-asset { border-bottom: 1px solid var(--glass-edge); padding: 22px 0; }
+.home-reference .home-asset > span:first-child { color: var(--foreground); }
+.home-reference .home-asset > svg:last-child { display: none; }
+.home-reference .home-asset a, .home-reference .home-asset .text-primary { color: var(--chart-line); }
+.home-reference .home-staking { margin-top: auto; padding-top: 32px; }
+.home-reference .home-staking-link { padding: 18px 20px; border-radius: 24px; border: 1px solid color-mix(in oklab, var(--chart-line) 40%, transparent); background: var(--home-staking); font-size: 14px; }
+.home-staking-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--chart-line); box-shadow: 0 0 8px var(--chart-line); }
+:root:not([data-dock="side"]) .home-reference .app-dock-nav { left: 50% !important; right: auto !important; bottom: calc(18px + var(--safe-bottom)) !important; width: min(470px, calc(100% - 24px)) !important; transform: translateX(-50%); padding: 6px !important; border-radius: 999px; border: 1px solid var(--glass-edge); background: var(--home-panel) !important; backdrop-filter: blur(24px) !important; box-shadow: var(--glass-shadow); }
+.home-reference .dock-link { padding: 9px 4px; gap: 5px; border-radius: 999px; font-size: 11px; }
+.home-reference .dock-active { color: var(--foreground); background: var(--home-selected); }
+.home-reference .dock-active::before { display: none; }
+.home-reference .dock-active svg { filter: none; }
+@media (min-width: 760px) {
+  .home-reference { --app-gutter: 4.6%; }
+  .home-reference .home-overview { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; }
+  .home-reference .portfolio-total { font-size: 76px; }
+  .home-reference .portfolio-plot { height: 250px; width: calc(100% + var(--app-gutter) + 48px); margin-left: calc(-1 * var(--app-gutter)); }
+  .home-reference .home-holdings { min-height: 480px; position: relative; z-index: 1; }
+  .home-reference .home-actions { margin-top: 24px; }
+  .home-reference .home-overview + div { margin-top: 100px; }
+}
+@media (max-width: 759px) {
+  .home-reference > header { margin-bottom: 22px; }
+  .home-reference .home-account { top: 33px; max-width: 58%; padding: 6px 10px; gap: 3px; }
+  .home-reference .home-account-status { display: none; }
+  .home-reference .home-account > a span { font-size: 12px; }
+  .home-reference .home-holdings { min-height: 320px; padding: 20px; border-radius: 28px; }
+  .home-reference .home-actions { margin-bottom: 10px; }
+  :root[data-dock="side"] .home-reference .home-actions { margin-right: 0; grid-template-columns: 1.25fr 1fr 1fr; }
+  :root[data-dock="side"] .home-reference .home-actions a:last-child { grid-column: auto; }
+  :root[data-dock="side"] .home-reference .performance-ranges { margin-right: auto; }
+}
+@media (max-width: 359px) {
+  .home-reference .portfolio-total { font-size: 40px; }
+  .home-reference .home-actions a { font-size: 13px; gap: 5px; padding: 0 8px; }
+  .home-reference .home-holdings { padding: 16px; }
+  .home-reference .holdings-tabs a { min-width: 60px; padding: 0 8px; }
+}
