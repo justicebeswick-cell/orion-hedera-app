@@ -9,6 +9,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        glass: "glass-control text-foreground hover:brightness-110",
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         card: "border border-[var(--card-border)] [background:var(--card-finish)] text-card-foreground hover:brightness-125",
         send: "border border-[var(--card-border)] [background:var(--send-finish)] text-card-foreground hover:brightness-110",

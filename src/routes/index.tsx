@@ -16,7 +16,8 @@ import { HelloGreeting } from "@/components/hello-greeting";
 import { OrionName } from "@/components/orion-name";
 import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
-import { fmtAmount, fmtUsd, fmtUsdParts } from "@/lib/display";
+import { fmtAmount, fmtUsd } from "@/lib/display";
+import { PortfolioPerformance } from "@/components/portfolio-performance";
 import { heldTokens, totalInHbar } from "@/lib/portfolio";
 
 /** Last balance seen on this device, shown while a fresh read is retried. */
@@ -115,10 +116,9 @@ function Home() {
   };
 
   const total = totalInHbar(acct.data ? acct.data.tinybar / 1e8 : null, portfolio.data ?? []);
-  const parts = total !== null && rate.data ? fmtUsdParts(total * rate.data) : null;
+  const value = total !== null && rate.data ? total * rate.data : null;
+  const completeValue = !acct.isError && !portfolio.isError && !rate.isError && acct.data && portfolio.data && value !== null ? value : null;
   const hbarText = total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—";
-  const effChars = (parts ? parts.main.length : 1) + (parts ? parts.frac.length * 0.6 : 0) + hbarText.length;
-  const numSize = effChars <= 18 ? "text-[clamp(1.1rem,5.2vw,1.85rem)]" : effChars <= 22 ? "text-[clamp(1rem,4.6vw,1.6rem)]" : effChars <= 26 ? "text-[clamp(0.9rem,4vw,1.35rem)]" : "text-[clamp(0.8rem,3.4vw,1.15rem)]";
 
   return (
     <Shell title="Home">
@@ -129,7 +129,7 @@ function Home() {
       )}
       {lag.isError && <p className="mb-4 text-xs text-destructive">Hedera unreachable.</p>}
 
-      <div className="home-account mb-2 flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2">
+      <div className="home-account mb-7 flex items-center gap-1.5 px-4 py-2.5">
         <Link to="/wallet" className="min-w-0 flex-1" aria-label="Switch account">
           <span className="block break-words text-base font-semibold leading-tight">{walletName || id}</span>
           <span className="mt-0.5 block text-[11px] text-muted-foreground">{walletName ? (watchOnly ? `${id} · Cold storage` : id) : watchOnly ? "Cold storage · watch-only" : "My Hedera wallet"}</span>
@@ -156,36 +156,25 @@ function Home() {
           </form>
         </DialogContent>
       </Dialog>
-      {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-5 block overflow-hidden rounded-[var(--card-radius)] border border-primary/15 px-5 pb-3 pt-2 transition-transform duration-300 active:scale-[0.99]" style={{ background: "radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 72%)" }}>
-          <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
-          <span aria-hidden className="pointer-events-none absolute -top-16 left-1/2 h-32 w-48 -translate-x-1/2 rounded-full bg-primary/30 blur-3xl transition-opacity duration-500 group-hover:opacity-80" />
-          <span className="relative block">
-            <span className="flex items-end justify-between gap-5">
-              <span className="min-w-0 text-left">
-                <span className={`block truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light leading-none tracking-tight text-transparent tnum ${numSize}`}>
-                  {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.6em] font-extralight">{parts.frac}</span> : null}</> : "—"}
-                </span>
-                <span className="mt-1 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">US dollars</span>
-              </span>
-              <span className="min-w-0 text-right">
-                <span className={`flex items-center justify-end gap-2 leading-none tnum ${numSize}`}>
-                  <HbarLogo size={16} /><span className="truncate bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text font-light text-transparent">{hbarText.split(".")[0]}{hbarText.includes(".") ? <span className="text-[0.6em] font-extralight">.{hbarText.split(".")[1]}</span> : null}</span>
-                </span>
-                <span className="mt-1 block text-[10px] uppercase tracking-[0.28em] text-muted-foreground">HBAR + tokens</span>
-              </span>
-            </span>
-          </span>
+      <div className="home-overview">
+      <div className="home-summary">
+      {prefs.showWorth && <>
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance block py-4" aria-label="View portfolio holdings">
+          <span className="mb-3 block text-xs text-muted-foreground">Total balance</span>
+          <span className="portfolio-total block break-words font-light leading-tight tnum">{security.hideBalance ? "••••••" : value !== null ? fmtUsd(value) : "—"}</span>
+          <span className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"><HbarLogo size={16} /><span className="tnum">{security.hideBalance ? "••••" : hbarText}</span><span>HBAR + tokens</span></span>
         </Link>
-      )}
-
-      <div className="mb-6 grid grid-cols-3 gap-2">
-        <Button asChild variant="send" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
-        <Button asChild variant="swap" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
-        <Button asChild variant="receive" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
+        <PortfolioPerformance key={id} accountId={id} value={completeValue} hidden={security.hideBalance} />
+      </>}
+      <div className="home-actions mb-6 mt-6 grid grid-cols-3 gap-2">
+        <Button asChild variant="send" className="h-12 rounded-full"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
+        <Button asChild variant="swap" className="h-12 rounded-full"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>
+        <Button asChild variant="receive" className="h-12 rounded-full"><Link to="/vault" search={{ section: "receive" }}><ArrowDownLeft />Receive</Link></Button>
       </div>
+      </div>
+      <div className="home-holdings">
       <div className="mb-2 flex items-center justify-between">
-        <div className="flex gap-1"><Button asChild variant="secondary" size="sm" className="rounded-lg"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens{tokenCount.data ? <span className="tnum text-muted-foreground">{tokenCount.data}</span> : null}</Link></Button>
+        <div className="holdings-tabs flex gap-1"><Button asChild variant="glass" size="sm" className="rounded-full"><Link to="/vault" search={{ section: "holdings" }}><Coins size={16} />Tokens{tokenCount.data ? <span className="tnum text-muted-foreground">{tokenCount.data}</span> : null}</Link></Button>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "nfts" }}><ImageIcon size={16} />NFTs</Link></Button></div>
         <Button asChild variant="ghost" size="sm"><Link to="/vault" search={{ section: "buy" }}>Buy HBAR<ChevronRight size={14} /></Link></Button>
       </div>
@@ -203,6 +192,8 @@ function Home() {
         <ClaimRewards key={id} compact accountId={id} pendingReward={acct.isError ? undefined : acct.data?.pendingReward} />
       </div>
       <Updated at={acct.dataUpdatedAt} fetching={acct.isFetching} />
+      </div>
+      </div>
       <div className="mb-3 mt-9 flex items-center justify-between">
         <h2 className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Recent activity</h2>
         <Button variant="ghost" size="icon" aria-label="Refresh activity" disabled={txs.isFetching} onClick={() => txs.refetch()}>

@@ -13,9 +13,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Sora", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sans);
   --font-brand: "Montserrat", "Sora", ui-sans-serif, sans-serif;
   --font-receipt: "Optima", "Optima Alt", "Cormorant Garamond", sans-serif;
   --radius-sm: calc(var(--radius) - 6px);
@@ -65,6 +65,10 @@
   --launch: oklch(0 0 0);
   --logo-surface: oklch(0.97 0 0);
   --shadow-deck: 0 16px 44px oklch(0 0 0 / 24%);
+  --glass-finish: linear-gradient(145deg, color-mix(in oklab, var(--foreground) 9%, transparent), color-mix(in oklab, var(--foreground) 3%, transparent)), color-mix(in oklab, var(--background) 75%, transparent);
+  --glass-edge: color-mix(in oklab, var(--foreground) 15%, transparent);
+  --glass-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 12%, transparent), 0 12px 36px color-mix(in oklab, var(--background) 35%, transparent);
+  --chart-line: color-mix(in oklab, var(--primary) 45%, var(--foreground));
   --card-radius: 1.75rem;
   --card-border: oklch(1 0 0 / 20%);
   --action-sheen: radial-gradient(120% 90% at 6% 0%, oklch(1 0 0 / 28%) 0%, transparent 60%), radial-gradient(110% 110% at 94% 100%, oklch(0 0 0 / 20%) 0%, transparent 58%);
@@ -73,8 +77,8 @@
   --receive-finish: var(--action-sheen), linear-gradient(135deg, #3dcca5, #41d9a0);
   /* Hashgraph colorway: magenta glow top-left, deep indigo bottom-right */
   --card-finish:
-    radial-gradient(120% 90% at 6% 0%, oklch(from var(--primary) 0.42 calc(c * 0.84) h / 55%) 0%, transparent 60%),
-    radial-gradient(110% 110% at 94% 100%, oklch(from var(--primary) 0.28 calc(c * 0.68) h / 38%) 0%, transparent 58%),
+    linear-gradient(145deg, color-mix(in oklab, var(--foreground) 6%, transparent), transparent 65%),
+    radial-gradient(110% 110% at 94% 100%, oklch(from var(--primary) 0.28 calc(c * 0.68) h / 22%) 0%, transparent 58%),
     var(--card);
   --radius: 1.125rem;
   --background: oklch(0 0 0);               /* pure black backdrop */
@@ -580,3 +584,38 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 }
 .side-orb:active { transform: scale(0.92); }
 .side-orb-active { color: var(--primary); background: color-mix(in oklab, var(--primary) 22%, transparent); }
+
+/* Shared liquid-glass material: neutral highlights retain the selected theme. */
+.glass-control, .home-account, .performance-tooltip {
+  background: var(--glass-finish); border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-shadow); backdrop-filter: blur(20px) saturate(140%);
+}
+.home-account { border-radius: 999px; }
+.home-overview { display: grid; gap: 24px; }
+.home-summary, .home-holdings { min-width: 0; }
+.home-holdings { padding-top: 8px; }
+.portfolio-total { font-size: 48px; overflow-wrap: anywhere; }
+.portfolio-performance { margin-top: 20px; }
+.portfolio-plot { width: 100%; height: 178px; min-width: 0; }
+.performance-ranges { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; margin-top: 8px; }
+.performance-range { border-radius: 999px; padding: 0; color: var(--muted-foreground); height: 36px; }
+.performance-range.is-selected { background: var(--glass-finish); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--foreground); }
+.performance-tooltip { padding: 10px 14px; border-radius: 8px; }
+.performance-baseline { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--glass-edge), transparent); }
+.home-actions a { box-shadow: var(--glass-shadow); }
+.holdings-tabs { padding: 3px; border-radius: 999px; background: color-mix(in oklab, var(--foreground) 4%, transparent); }
+.side-orb { background: var(--glass-finish); border-color: var(--glass-edge); box-shadow: var(--glass-shadow); }
+.side-orb-active { color: var(--foreground); background: var(--glass-finish); border-color: color-mix(in oklab, var(--primary) 60%, var(--glass-edge)); }
+.app-shell :is(.panel, .card-surface, .deck-surface) { backdrop-filter: blur(20px); }
+@media (min-width: 760px) {
+  .home-overview { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  .home-holdings { padding: 24px 28px; border-left: 1px solid var(--glass-edge); }
+  .portfolio-total { font-size: 64px; }
+  .portfolio-plot { height: 230px; }
+}
+@media (max-width: 359px) { .portfolio-total { font-size: 38px; } .home-actions a { gap: 5px; padding: 0 8px; } }
+@media (max-width: 480px) {
+  :root[data-dock="side"] .performance-ranges { margin-right: 48px; gap: 0; }
+  :root[data-dock="side"] .home-actions { margin-right: 48px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :root[data-dock="side"] .home-actions a:last-child { grid-column: 1 / -1; }
+}
