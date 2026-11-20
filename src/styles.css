@@ -874,3 +874,11 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 @media (max-width: 380px) { .home-balance-number { font-size: 38px; } }
 .home-chart .portfolio-plot { height: 110px !important; }
 @media (min-width: 680px) { .home-chart .portfolio-plot { height: 140px !important; } }
+
+/* Chart sits high, blends into canvas, shows timeframe change */
+.home-balance { margin-bottom: 2px !important; }
+.home-chart .portfolio-performance, .home-reference .home-chart .portfolio-performance { margin-top: 0 !important; background: none; border: 0; box-shadow: none; }
+.home-chart .performance-caption { position: static !important; width: auto !important; height: auto !important; overflow: visible !important; clip-path: none !important; padding: 0 2px; font-weight: 500; }
+.home-chart .performance-change { font-size: 13px; }
+.home-chart .portfolio-plot { -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
+.home-chart .performance-range.is-selected { background: color-mix(in oklab, var(--foreground) 8%, transparent); border-color: transparent; box-shadow: none; }

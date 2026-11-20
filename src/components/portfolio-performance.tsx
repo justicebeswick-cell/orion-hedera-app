@@ -12,14 +12,14 @@ export function PortfolioPerformance({ accountId, hidden }: { accountId: string;
   const visible = rangePoints(points, range, Date.now());
   const change = balanceChange(visible);
   return <section className="portfolio-performance" aria-label="Portfolio performance">
-    <div className="performance-caption flex min-h-6 items-center justify-between gap-2 text-xs">
-      <span className="text-muted-foreground">Portfolio performance</span>
-      {!hidden && change !== null && <span className={`tnum ${change >= 0 ? "text-success" : "text-destructive"}`}>{change >= 0 ? "+" : ""}{change.toFixed(2)}%</span>}
+    <div className="performance-caption flex min-h-6 items-center justify-start gap-2 text-xs">
+      {!hidden && <span className={`performance-change tnum ${change === null ? "text-muted-foreground" : change >= 0 ? "text-success" : "text-destructive"}`}>{change === null ? "0.00" : `${change >= 0 ? "+" : ""}${change.toFixed(2)}`}%</span>}
+      <span className="text-muted-foreground">{range === "All" ? "All time" : `Past ${range}`}</span>
     </div>
     <div className="portfolio-plot" role="img" aria-label={hidden ? "Portfolio balance hidden" : `Portfolio value, ${range} timeframe, ${visible.length} observations`}>
       {!hidden && visible.length > 1 ? <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={visible} margin={{ top: 12, right: 6, bottom: 0, left: 6 }}>
-          <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--chart-line)" stopOpacity={0.5} /><stop offset="100%" stopColor="var(--chart-line)" stopOpacity={0} /></linearGradient></defs>
+          <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--chart-line)" stopOpacity={0.28} /><stop offset="100%" stopColor="var(--chart-line)" stopOpacity={0} /></linearGradient></defs>
           <XAxis hide dataKey="at" type="number" domain={["dataMin", "dataMax"]} />
           <YAxis hide domain={[(minimum: number) => Math.max(0, minimum - Math.max(1, minimum * 0.015)), (maximum: number) => maximum + Math.max(1, maximum * 0.015)]} />
           <Tooltip content={({ active, payload }) => {
