@@ -87,8 +87,7 @@ function Home() {
     import("@/lib/signer").then((m) => setWatchOnly(m.signMode(id).kind === "none"));
   }, [id]);
 
-  if (!ready) return <Shell title="Home">
-      <PortfolioTracker key={id} accountId={id} /><div /></Shell>;
+  if (!ready) return <Shell title="Home"><div /></Shell>;
   if (!id)
     return (
       <Shell title="Home" hideBranding>
@@ -125,6 +124,7 @@ function Home() {
 
   return (
     <Shell title="Home">
+      <PortfolioTracker key={id} accountId={id} />
       {lag.data !== undefined && lag.data > 120 && (
         <p className="mb-4 rounded-md border border-destructive/40 p-3 text-xs text-destructive">
           Mirror node is {Math.round(lag.data / 60)} minutes behind. Balances may be stale.
