@@ -9,16 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        glass: "glass-control text-foreground hover:brightness-110",
-        default: "bubble-action bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        card: "bubble-action border border-[var(--card-border)] [background:var(--card-finish)] text-card-foreground hover:brightness-125",
-        send: "bubble-action border border-[var(--card-border)] [background:var(--send-finish)] text-card-foreground hover:brightness-110",
-        swap: "bubble-action border border-[var(--card-border)] [background:var(--swap-finish)] text-card-foreground hover:brightness-110",
-        receive: "bubble-action border border-[var(--card-border)] [background:var(--receive-finish)] text-card-foreground hover:brightness-110",
+        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        card: "border border-[var(--card-border)] [background:var(--card-finish)] text-card-foreground hover:brightness-125",
+        send: "border border-[var(--card-border)] [background:var(--send-finish)] text-card-foreground hover:brightness-110",
+        swap: "border border-[var(--card-border)] [background:var(--swap-finish)] text-card-foreground hover:brightness-110",
+        receive: "border border-[var(--card-border)] [background:var(--receive-finish)] text-card-foreground hover:brightness-110",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "glass-control border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary: "glass-control bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },

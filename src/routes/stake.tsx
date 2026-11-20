@@ -68,17 +68,17 @@ function Stake() {
 
   return (
     <Shell title="Stake">
-      <Panel className="staking-current">
+      <Panel>
         <Label>Staking to</Label>
         {info.isError ? (
           <p className="text-sm text-destructive">{(info.error as Error).message}</p>
         ) : info.data?.stakedNodeId != null ? (
-          <div className="staking-identity">
-            <NodeLogo description={current?.description} size={76} />
-            <p className="staking-company">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
-            <div className="staking-meta tnum">
-              <span>Node {info.data.stakedNodeId}</span>{current && <span>~{apr(current)} yearly</span>}
-            </div>
+          <div className="flex flex-col items-center gap-2 text-center">
+            <NodeLogo description={current?.description} size={64} />
+            <p className="text-2xl font-semibold break-words">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
+            <p className="text-xs text-muted-foreground tnum">
+              Node {info.data.stakedNodeId}{current && ` · ~${apr(current)} yearly`}
+            </p>
           </div>
         ) : info.data?.stakedAccountId ? (
           <p className="text-lg">Account {info.data.stakedAccountId}</p>
@@ -87,14 +87,14 @@ function Stake() {
         )}
         {info.data?.declineReward && <p className="mt-2 text-xs text-destructive">Rewards are declined on this account.</p>}
 
-        <div className="staking-rewards grid grid-cols-2 border-t">
+        <div className="mt-5 grid grid-cols-2 gap-4 border-t pt-4">
           <div>
             <p className="text-xs text-muted-foreground">Pending reward</p>
-            <p className="staking-amount flex items-center gap-1.5 text-flare tnum">{info.data ? hbar(info.data.pendingReward) : "—"} <HbarLogo size={16} /></p>
+            <p className="flex items-center gap-1.5 text-lg font-semibold text-flare tnum">{info.data ? hbar(info.data.pendingReward) : "—"} <HbarLogo size={16} /></p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Paid (last 25)</p>
-            <p className="staking-amount flex items-center gap-1.5 tnum">{hbar(paid)} <HbarLogo size={16} /></p>
+            <p className="flex items-center gap-1.5 text-lg font-semibold tnum">{hbar(paid)} <HbarLogo size={16} /></p>
           </div>
         </div>
         {info.data?.stakePeriodStart && (

@@ -66,18 +66,18 @@ const groups = [
 /** Inside a Vault section, a page's Shell renders only its content. */
 export const ShellEmbed = createContext(false);
 
-export function Shell({ title, children, hideBranding = false, className = "" }: { title: string; children: ReactNode; hideBranding?: boolean; className?: string }) {
+export function Shell({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
   if (useContext(ShellEmbed)) return <>{children}</>;
-  return <ShellFrame title={title} hideBranding={hideBranding} className={className}>{children}</ShellFrame>;
+  return <ShellFrame title={title} hideBranding={hideBranding}>{children}</ShellFrame>;
 }
 
-function ShellFrame({ title, children, hideBranding = false, className = "" }: { title: string; children: ReactNode; hideBranding?: boolean; className?: string }) {
+function ShellFrame({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
-    <div className={`app-shell min-h-dvh w-full max-w-full bg-background ${className}`}>
-      <header className={`shell-header mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
+    <div className="app-shell min-h-dvh w-full max-w-full bg-background">
+      <header className={`mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
           <div>
@@ -121,7 +121,7 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
       </nav>
       <nav aria-label="Main" className="side-orbs">
         {dock.filter((d) => d.to !== "/stake").map((d) => (
-          <Link key={d.to} to={d.to} aria-label={d.label} title={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+          <Link key={d.to} to={d.to} aria-label={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
             <d.icon size={24} strokeWidth={1.7} />
           </Link>
         ))}
