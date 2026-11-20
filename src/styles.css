@@ -939,7 +939,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 /* Lavender: wallet identifier uses the same lavender glass as every other bubble. */
 :root[data-theme="lavender"] .home-account {
   background: var(--glass-finish); border-color: var(--glass-edge); box-shadow: var(--glass-shadow);
-  backdrop-filter: var(--glass-filter); -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
 }
 
 /* Side mode refinements: orbs centred exactly under the iOS clock/battery column, actions 3 across, matte-glass account pill. */
@@ -958,5 +958,5 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 :root[data-dock="side"] .home-reference .home-account { right: calc(var(--app-gutter) + 4px); }
 .home-account, .home-reference .home-account {
   background: var(--glass-finish) !important; border: 1px solid var(--glass-edge) !important; box-shadow: var(--glass-shadow) !important;
-  backdrop-filter: var(--glass-filter); -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
 }
