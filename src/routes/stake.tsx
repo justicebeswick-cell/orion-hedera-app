@@ -68,17 +68,18 @@ function Stake() {
 
   return (
     <Shell title="Stake">
-      <Panel>
-        <Label>Staking to</Label>
+      <section className="stake-hero">
+        <p className="stake-eyebrow">Staking to</p>
         {info.isError ? (
           <p className="text-sm text-destructive">{(info.error as Error).message}</p>
         ) : info.data?.stakedNodeId != null ? (
-          <div className="flex flex-col items-center gap-2 text-center">
-            <NodeLogo description={current?.description} size={64} />
-            <p className="text-2xl font-semibold break-words">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
-            <p className="text-xs text-muted-foreground tnum">
-              Node {info.data.stakedNodeId}{current && ` · ~${apr(current)} yearly`}
-            </p>
+          <div className="flex items-center gap-4">
+            <span className="stake-logo"><NodeLogo description={current?.description} size={44} /></span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xl font-medium tracking-tight">{nodeName(current) || `Node ${info.data.stakedNodeId}`}</p>
+              <p className="text-xs text-muted-foreground tnum">Node {info.data.stakedNodeId}</p>
+            </div>
+            {current && <span className="stake-apr tnum">~{apr(current)}</span>}
           </div>
         ) : info.data?.stakedAccountId ? (
           <p className="text-lg">Account {info.data.stakedAccountId}</p>
@@ -87,30 +88,28 @@ function Stake() {
         )}
         {info.data?.declineReward && <p className="mt-2 text-xs text-destructive">Rewards are declined on this account.</p>}
 
-        <div className="mt-5 grid grid-cols-2 gap-4 border-t pt-4">
+        <div className="stake-stats">
           <div>
-            <p className="text-xs text-muted-foreground">Pending reward</p>
-            <p className="flex items-center gap-1.5 text-lg font-semibold text-flare tnum">{info.data ? hbar(info.data.pendingReward) : "—"} <HbarLogo size={16} /></p>
+            <p>Pending reward</p>
+            <strong className="text-flare tnum">{info.data ? hbar(info.data.pendingReward) : "—"} <HbarLogo size={13} /></strong>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Paid (last 25)</p>
-            <p className="flex items-center gap-1.5 text-lg font-semibold tnum">{hbar(paid)} <HbarLogo size={16} /></p>
+            <p>Paid (last 25)</p>
+            <strong className="tnum">{hbar(paid)} <HbarLogo size={13} /></strong>
           </div>
         </div>
-        {info.data?.stakePeriodStart && (
-          <p className="mt-3 text-xs text-muted-foreground tnum">Staking since {fmtTs(info.data.stakePeriodStart)}</p>
-        )}
-        <p className="mt-3 text-xs text-muted-foreground">
-          Your HBAR stays in your account. Rewards are paid on your next transaction after each 24-hour period.
+        <p className="stake-note tnum">
+          {info.data?.stakePeriodStart && <>Since {fmtTs(info.data.stakePeriodStart).replace(" 00:00:00 UTC", "")} · </>}
+          Your HBAR never leaves your account. Rewards arrive with your next transaction each day.
         </p>
-      </Panel>
+      </section>
 
       {pick ? (
         <Redelegate accountId={id} node={pick} hasKey={hasKey} wallet={wallet} onClose={() => setPick(null)} />
       ) : (
         <>
-          <Label><span className="mt-8 block">Redelegate to a node</span></Label>
-          <div className="panel divide-y">
+          <p className="stake-eyebrow mt-8 mb-3 px-1">Redelegate</p>
+          <div className="stake-list">
             {nodes.isLoading && <p className="p-4 text-sm text-muted-foreground">Reading nodes…</p>}
             {nodes.isError && <p className="p-4 text-sm text-destructive">Hedera unreachable</p>}
             {nodes.data?.map((n) => {

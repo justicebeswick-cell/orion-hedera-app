@@ -83,7 +83,7 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
       {id && title !== "Home" && <PortfolioTracker key={id} accountId={id} />}
       <header className={`shell-header mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
-          <AurionLogo className="h-12 w-12" crisp />
+          <AurionLogo className="shell-logo h-9 w-9" crisp />
           <div>
           <Button variant="ghost"
             onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}
@@ -94,11 +94,9 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
             onClick={() => setOpen(true)}
             aria-label="Orion — open menu"
           >
-            <OrionName className={["Home", "Vault", "Stake", "Studio", "Settings"].includes(title) ? "w-16" : "w-28"} />
+            <OrionName className="shell-wordmark w-[88px]" />
           </Button>
-          <p className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            A Hashgraph Wallet
-          </p>
+          <p className="sr-only">A Hashgraph Wallet</p>
           </div>
         </div>}
       </header>

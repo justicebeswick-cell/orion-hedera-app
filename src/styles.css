@@ -831,3 +831,36 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   .home-reference .home-asset { gap: 10px; }
   .home-reference .home-asset > span:last-of-type > span:first-child { font-size: 13px; }
 }
+
+/* Uniform Orion header on every page */
+.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
+.shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 88px; }
+.shell-header .orion-home-logo::before { display: none; }
+@media (max-width: 679px) {
+  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 30px; height: 30px; }
+  .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 70px; }
+  /* Lift Home content */
+  .home-reference > header { height: 48px; padding-top: 6px; margin-bottom: 0; }
+  .home-reference .home-account { top: 14px; }
+  .home-reference .portfolio-performance { margin-top: 2px; }
+  .home-reference .home-actions { margin-top: 6px; }
+}
+@media (min-width: 680px) {
+  .home-reference > header { height: 56px; padding-top: 10px; margin-bottom: 0; }
+  .home-reference .home-account { top: 18px; }
+  .home-reference .portfolio-performance { margin-top: 6px; }
+}
+
+/* Refined staking */
+.stake-hero { padding: 20px 22px; border-radius: 28px; border: 1px solid var(--glass-edge); background: var(--glass-finish, var(--card)); box-shadow: var(--glass-shadow); backdrop-filter: blur(24px); }
+.stake-eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 14px; }
+.stake-logo { display: grid; place-items: center; flex-shrink: 0; }
+.stake-apr { padding: 6px 12px; border-radius: 999px; font-size: 12px; color: var(--primary); background: color-mix(in oklab, var(--primary) 14%, transparent); }
+.stake-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.stake-stats > div { padding: 12px 14px; border-radius: 18px; background: color-mix(in oklab, var(--foreground) 4%, transparent); border: 1px solid var(--glass-edge); }
+.stake-stats p { font-size: 11px; color: var(--muted-foreground); }
+.stake-stats strong { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 17px; font-weight: 500; }
+.stake-note { margin-top: 14px; font-size: 11px; line-height: 1.5; color: var(--muted-foreground); }
+.stake-list { border-radius: 28px; border: 1px solid var(--glass-edge); background: var(--glass-finish, var(--card)); box-shadow: var(--glass-shadow); overflow: hidden; }
+.stake-list > * + * { border-top: 1px solid var(--glass-edge); }
+.stake-list .node-logo, .stake-list img { max-height: 36px; }
