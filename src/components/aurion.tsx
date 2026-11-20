@@ -5,7 +5,7 @@ import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
 import { OrionName } from "@/components/orion-name";
-import { Home, Layers, Handshake, X, Bot, Settings } from "lucide-react";
+import { Home, Layers, Handshake, X, Settings, Sparkles } from "lucide-react";
 
 /** Custom Vault mark: a vault dial — six prongs, broken outer and inner arcs,
  *  and a solid keyhole at the centre. Drawn to match the lucide stroke style. */
@@ -52,7 +52,7 @@ const dock = [
   { to: "/", label: "Home", icon: Home },
   { to: "/vault", label: "Vault", icon: VaultGlyph },
   { to: "/stake", label: "Stake", icon: Layers },
-  { to: "/studio", label: "Studio", icon: Bot },
+  { to: "/studio", label: "Studio", icon: Sparkles },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -66,17 +66,17 @@ const groups = [
 /** Inside a Vault section, a page's Shell renders only its content. */
 export const ShellEmbed = createContext(false);
 
-export function Shell({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
+export function Shell({ title, children, hideBranding = false, className = "" }: { title: string; children: ReactNode; hideBranding?: boolean; className?: string }) {
   if (useContext(ShellEmbed)) return <>{children}</>;
-  return <ShellFrame title={title} hideBranding={hideBranding}>{children}</ShellFrame>;
+  return <ShellFrame title={title} hideBranding={hideBranding} className={className}>{children}</ShellFrame>;
 }
 
-function ShellFrame({ title, children, hideBranding = false }: { title: string; children: ReactNode; hideBranding?: boolean }) {
+function ShellFrame({ title, children, hideBranding = false, className = "" }: { title: string; children: ReactNode; hideBranding?: boolean; className?: string }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
-    <div className="app-shell min-h-dvh w-full max-w-full bg-background">
+    <div className={`app-shell min-h-dvh w-full max-w-full bg-background ${className}`}>
       <header className={`shell-header mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="h-12 w-12" crisp />
