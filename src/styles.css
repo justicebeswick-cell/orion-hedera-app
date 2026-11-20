@@ -929,3 +929,15 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   .home-classic .home-overview { column-gap: 32px; }
   .home-classic .home-holdings { padding-top: 8px; }
 }
+
+/* Side mode: controls sit at the top of the iOS status strip, just under the clock and signal, evenly spaced. */
+:root[data-dock="side"] .side-orbs {
+  gap: 14px; bottom: auto;
+  top: calc(env(safe-area-inset-top) + 150px);
+}
+:root[data-dock="side"] .app-shell { padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important; }
+/* Lavender: wallet identifier uses the same lavender glass as every other bubble. */
+:root[data-theme="lavender"] .home-account {
+  background: var(--glass-finish); border-color: var(--glass-edge); box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-filter); -webkit-backdrop-filter: var(--glass-filter);
+}
