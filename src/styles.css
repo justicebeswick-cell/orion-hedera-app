@@ -736,7 +736,13 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   --home-panel: var(--glass-finish);
   --home-staking: linear-gradient(135deg, color-mix(in oklab, var(--primary) 18%, var(--background)), color-mix(in oklab, var(--primary) 6%, var(--background)));
 }
-:root[data-theme="default"] { --card-finish: var(--glass-finish); --card-foreground: var(--foreground); }
+:root[data-theme="default"] {
+  --card-finish: var(--glass-finish);
+  --card-foreground: var(--foreground);
+  --glass-shadow: inset 0 1px 0 color-mix(in oklab, var(--background) 80%, transparent), 0 8px 24px -12px color-mix(in oklab, var(--launch) 22%, transparent);
+  --chart-line: var(--primary);
+}
+:root[data-theme="default"] :is(.portfolio-total, .home-account, .holdings-tabs a, .home-staking-link, .dock-active, .side-orb, .performance-range.is-selected) { color: var(--foreground); }
 :root[data-theme="default"] :is(.panel, .card-surface, .hero-card, .stat-tile, .deck-surface, .bg-card, .bg-popover) { --foreground: oklch(0.18 0 0); --muted-foreground: oklch(0.43 0 0); }
 :root:is([data-theme="amethyst"], [data-theme="lavender"], [data-theme="plum"], [data-theme="blue"], [data-theme="custom"]) { --card-finish: var(--glass-finish); }
 .app-shell { position: relative; isolation: isolate; background: none; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }

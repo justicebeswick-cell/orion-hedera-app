@@ -1,7 +1,7 @@
 # Roadmap
 
-- [ ] Blend the existing composition with darker glass and the older vibrant action colors.
-- [ ] Refine preset/custom theme saturation and verify Home, Vault and Settings on cover/unfolded displays.
+- [x] Blend the existing composition with darker glass and the older vibrant action colors.
+- [x] Refine preset/custom theme saturation and verify Home, Vault and Settings on cover/unfolded displays.
 
 - [x] Add a saved chart visibility option with tracking independent of chart visibility.
 - [x] Lift Home balance/chart and refine activity labels with iOS-style typography.
