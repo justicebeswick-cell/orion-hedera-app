@@ -910,7 +910,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .home-classic .shell-header { padding-top: 8px; margin-bottom: 8px; min-height: 40px; }
 .home-classic .home-account { margin-bottom: 10px; }
 .home-classic .home-balance { padding: 0 2px !important; margin-bottom: 4px !important; }
-.home-classic .home-balance-number { font-family: "Roboto", "Helvetica Neue", var(--font-sans); font-size: 34px; font-weight: 300; line-height: 1.08; margin-top: 5px; font-variant-numeric: lining-nums tabular-nums; }
+.home-classic .home-balance-number { font-family: var(--font-sans); font-size: 34px; font-weight: 300; line-height: 1.15; margin-top: 5px; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; }
 .home-classic .home-balance-number[data-density="compact"] { font-size: 30px; }
 .home-classic .home-balance-number[data-density="dense"] { font-size: 26px; }
 .home-classic .home-balance-number[data-density="small"] { font-size: 22px; }
@@ -919,7 +919,14 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .home-classic .home-chart .portfolio-plot { height: 64px !important; }
 .home-classic .performance-caption { min-height: 20px; }
 .home-classic .performance-ranges { margin-top: 0; }
-.home-classic .performance-range { height: 32px; }
+.home-classic .performance-range { height: 32px; font-family: var(--font-sans); font-size: 11px; font-weight: 500; }
+.home-classic .home-balance-label { letter-spacing: 0; font-weight: 500; }
+.home-classic .home-balance > span:last-child { font-family: var(--font-sans); font-weight: 400; }
+.home-classic .performance-caption { font-family: var(--font-sans); font-size: 11px; font-weight: 400; }
+.home-classic .performance-change { font-size: 12px; font-weight: 500; }
+.home-classic .performance-tooltip { font-family: var(--font-sans); }
+.home-classic .home-receipt-title { font-weight: 500; letter-spacing: 0; line-height: 1.4; }
+.home-classic .home-receipt-amount { font-family: var(--font-sans); font-size: 14px; font-weight: 500; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; }
 .home-classic .home-actions { margin-bottom: 0; }
 .home-classic .home-overview { gap: 12px; }
 .home-classic .home-holdings { padding-top: 0; }

@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Refine Home balance/chart and activity numbers and labels with coordinated iOS-style typography; verify cover and unfolded layouts.
+
 - [x] Refine translucent purple matte glass and offer Dark, Light, reference Lavender and custom colorways.
 - [x] Give Lavender bubbles an elegant lavender hue, keep its wallet identifier clear, and restore Dark's greyish-black identifier.
 - [x] Verify saved theme choices and glass across phone and unfolded layouts.

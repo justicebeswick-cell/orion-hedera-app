@@ -163,7 +163,7 @@ function Home() {
       <div className="home-summary">
       {prefs.showWorth && (
         <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-3 block transition-opacity duration-300 active:opacity-80">
-          <span className="block text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">Total balance</span>
+          <span className="home-balance-label block text-[11px] font-medium uppercase text-muted-foreground">Total balance</span>
           <span data-density={numberDensity} className="home-balance-number mt-2 block truncate leading-none text-foreground tnum">
             {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.5em] font-extralight text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
           </span>
@@ -211,7 +211,7 @@ function Home() {
       <div className="home-receipts panel divide-y divide-border overflow-hidden">
         {txs.isPending && <p className="px-5 py-5 text-sm text-muted-foreground">Loading receipts…</p>}
         {txs.isError && <p className="px-5 py-5 text-sm text-destructive">{(txs.error as Error).message}</p>}
-        {txs.data?.length === 0 && <p className="px-5 py-5 font-receipt receipt-label text-lg text-muted-foreground">No receipts yet.</p>}
+        {txs.data?.length === 0 && <p className="px-5 py-5 font-sans text-sm text-muted-foreground">No receipts yet.</p>}
         {txs.data?.filter((t) => showTransaction(t, id, prefs, readBlocklist(), readAudit().filter((r) => r.action === "swap fee" && r.ok).flatMap((r) => r.txId ? [r.txId] : []))).map((t) => {
           const n = netAmount(t, id);
           const received = n > 0;
@@ -222,10 +222,10 @@ function Home() {
                 {received ? <ArrowDownLeft size={20} strokeWidth={1.8} /> : <ArrowUpRight size={20} strokeWidth={1.8} />}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="font-receipt receipt-label text-lg leading-tight text-foreground">{received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}</p>
-                <p className="mt-1 break-words font-mono text-[10px] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
+                <p className="home-receipt-title font-sans text-sm font-medium leading-tight text-foreground">{received ? "Received" : n < 0 ? "Sent" : txLabel(t.name)}</p>
+                <p className="mt-1 break-words font-sans text-[11px] text-muted-foreground tnum">{fmtTs(t.consensus_timestamp)}</p>
               </div>
-              <span className={`shrink-0 whitespace-nowrap text-right font-sans text-sm font-medium tnum sm:text-lg ${received ? "text-success" : "text-muted-foreground"}`}>
+              <span className={`home-receipt-amount shrink-0 whitespace-nowrap text-right font-sans text-sm font-medium tnum ${received ? "text-success" : "text-muted-foreground"}`}>
                 {received ? "+" : ""}{hbar(n)} ℏ
               </span>
             </a>
