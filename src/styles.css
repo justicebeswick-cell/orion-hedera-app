@@ -909,7 +909,8 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 /* Compact classic Home: typography and chart share the uninterrupted canvas. */
 .home-classic .shell-header { padding-top: 8px; margin-bottom: 8px; min-height: 40px; }
 .home-classic .home-account { margin-bottom: 10px; }
-.home-classic .home-balance { padding: 0 2px !important; margin-bottom: 4px !important; }
+.home-classic .home-balance { padding: 0 2px !important; margin-bottom: 4px !important; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.home-balance-side { display: flex; flex-shrink: 0; flex-direction: column; align-items: flex-end; padding-bottom: 4px; text-align: right; }
 .home-classic .home-balance-number { font-family: var(--font-sans); font-size: 34px; font-weight: 300; line-height: 1.15; margin-top: 5px; letter-spacing: 0; font-variant-numeric: lining-nums tabular-nums; }
 .home-classic .home-balance-number[data-density="compact"] { font-size: 30px; }
 .home-classic .home-balance-number[data-density="dense"] { font-size: 26px; }

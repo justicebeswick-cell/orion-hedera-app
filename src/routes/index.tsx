@@ -20,6 +20,8 @@ import { useAccount } from "@/lib/account";
 import { MIRROR, getAccount, getLag, getTransactions, netAmount, txLabel, fmtTs, HASHSCAN, hbar, hbarUsdLive } from "@/lib/hedera";
 import { fmtAmount, fmtUsd, fmtUsdParts } from "@/lib/display";
 import { heldTokens, totalInHbar } from "@/lib/portfolio";
+import { balanceChange, rangePoints, type PortfolioRange } from "@/lib/portfolio-history";
+import { usePortfolioHistory } from "@/lib/use-portfolio-history";
 
 /** Last balance seen on this device, shown while a fresh read is retried. */
 function cachedAcct(id: string | null) {
@@ -76,6 +78,8 @@ function Home() {
       return ((j.tokens ?? []) as { balance: number }[]).filter((t) => t.balance > 0).length;
     },
   });
+  const [range, setRange] = useState<PortfolioRange>("1M");
+  const historyPoints = usePortfolioHistory(id ?? "");
   const [watchOnly, setWatchOnly] = useState(false);
   const [walletName, setWalletName] = useState("");
   const [nameDraft, setNameDraft] = useState("");
@@ -121,6 +125,7 @@ function Home() {
   const hbarText = total !== null ? fmtAmount(total, { maximumFractionDigits: 2 }) : "—";
   const effChars = (parts ? parts.main.length : 1) + (parts ? parts.frac.length * 0.6 : 0) + hbarText.length;
   const numberDensity = effChars <= 18 ? "regular" : effChars <= 22 ? "compact" : effChars <= 26 ? "dense" : "small";
+  const change = balanceChange(rangePoints(historyPoints, range, Date.now()));
 
   return (
     <Shell title="Home" className="home-classic">
@@ -162,18 +167,26 @@ function Home() {
       <div className="home-overview">
       <div className="home-summary">
       {prefs.showWorth && (
-        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-3 block transition-opacity duration-300 active:opacity-80">
-          <span className="home-balance-label block text-[11px] font-medium uppercase text-muted-foreground">Total balance</span>
-          <span data-density={numberDensity} className="home-balance-number mt-2 block truncate leading-none text-foreground tnum">
-            {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.5em] font-extralight text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
+        <Link to="/vault" search={{ section: "holdings" }} className="home-balance group relative mb-1 block transition-opacity duration-300 active:opacity-80">
+          <span className="home-balance-main min-w-0">
+            <span className="home-balance-label block text-[11px] font-medium uppercase text-muted-foreground">Total balance</span>
+            <span data-density={numberDensity} className="home-balance-number mt-2 block truncate leading-none text-foreground tnum">
+              {parts ? <>{parts.main}{parts.frac ? <span className="text-[0.5em] font-extralight text-muted-foreground">{parts.frac}</span> : null}</> : "—"}
+            </span>
           </span>
-          <span className="mt-2 flex items-center gap-1.5 text-sm font-light text-muted-foreground tnum">
-            <HbarLogo size={13} /><span className="truncate">{hbarText.split(".")[0]}</span><span className="text-xs uppercase tracking-[0.18em]">HBAR</span>
+          <span className="home-balance-side">
+            <span className="flex items-center justify-end gap-1.5 text-sm font-light text-muted-foreground tnum">
+              <HbarLogo size={13} /><span className="truncate">{hbarText.split(".")[0]}</span><span className="text-xs uppercase tracking-[0.18em]">HBAR</span>
+            </span>
+            <span className="mt-1.5 flex items-center justify-end gap-1.5 text-xs tnum">
+              {!security.hideBalance && <span className={change === null ? "text-muted-foreground" : change >= 0 ? "text-success" : "text-destructive"}>{change === null ? "0.00" : `${change >= 0 ? "+" : ""}${change.toFixed(2)}`}%</span>}
+              <span className="text-muted-foreground">{range === "All" ? "All time" : `Past ${range}`}</span>
+            </span>
           </span>
         </Link>
       )}
 
-      {prefs.showChart && <div className="home-chart"><PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} /></div>}
+      {prefs.showChart && <div className="home-chart"><PortfolioPerformance key={id} accountId={id} hidden={security.hideBalance} range={range} onRangeChange={setRange} hideCaption={prefs.showWorth} /></div>}
       <div className="home-actions mb-6 grid grid-cols-3 gap-2">
         <Button asChild variant="send" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "send" }}><ArrowUpRight />Send</Link></Button>
         <Button asChild variant="swap" className="h-12 rounded-lg"><Link to="/vault" search={{ section: "swap" }}><ArrowLeftRight />Swap</Link></Button>

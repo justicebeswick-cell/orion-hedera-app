@@ -1,21 +1,20 @@
-import { useId, useState } from "react";
+import { useId } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { fmtUsd } from "@/lib/display";
 import { balanceChange, PORTFOLIO_RANGES, rangePoints, type PortfolioPoint, type PortfolioRange } from "@/lib/portfolio-history";
 import { usePortfolioHistory } from "@/lib/use-portfolio-history";
 
-export function PortfolioPerformance({ accountId, hidden }: { accountId: string; hidden: boolean }) {
+export function PortfolioPerformance({ accountId, hidden, range, onRangeChange, hideCaption }: { accountId: string; hidden: boolean; range: PortfolioRange; onRangeChange: (range: PortfolioRange) => void; hideCaption?: boolean }) {
   const points = usePortfolioHistory(accountId);
-  const [range, setRange] = useState<PortfolioRange>("1M");
   const gradient = useId().replace(/:/g, "");
   const visible = rangePoints(points, range, Date.now());
   const change = balanceChange(visible);
   return <section className="portfolio-performance" aria-label="Portfolio performance">
-    <div className="performance-caption flex min-h-6 items-center justify-start gap-2 text-xs">
+    {!hideCaption && <div className="performance-caption flex min-h-6 items-center justify-start gap-2 text-xs">
       {!hidden && <span className={`performance-change tnum ${change === null ? "text-muted-foreground" : change >= 0 ? "text-success" : "text-destructive"}`}>{change === null ? "0.00" : `${change >= 0 ? "+" : ""}${change.toFixed(2)}`}%</span>}
       <span className="text-muted-foreground">{range === "All" ? "All time" : `Past ${range}`}</span>
-    </div>
+    </div>}
     <div className="portfolio-plot" role="img" aria-label={hidden ? "Portfolio balance hidden" : `Portfolio value, ${range} timeframe, ${visible.length} observations`}>
       {!hidden && visible.length > 1 ? <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={visible} margin={{ top: 12, right: 6, bottom: 0, left: 6 }}>
@@ -33,7 +32,7 @@ export function PortfolioPerformance({ accountId, hidden }: { accountId: string;
         <div className="performance-empty">{hidden ? "Balance hidden" : "Awaiting performance history"}</div>
       </>}
     </div>
-    <div className="performance-ranges" role="group" aria-label="Portfolio timeframe">{PORTFOLIO_RANGES.map((r) => <Button key={r} size="sm" variant="ghost" aria-pressed={range === r} onClick={() => setRange(r)} className={range === r ? "performance-range is-selected" : "performance-range"}>{r}</Button>)}</div>
+    <div className="performance-ranges" role="group" aria-label="Portfolio timeframe">{PORTFOLIO_RANGES.map((r) => <Button key={r} size="sm" variant="ghost" aria-pressed={range === r} onClick={() => onRangeChange(r)} className={range === r ? "performance-range is-selected" : "performance-range"}>{r}</Button>)}</div>
     {!hidden && <p className="performance-note text-[10px] text-muted-foreground">Since tracking on this device · Includes deposits and withdrawals</p>}
   </section>;
 }
