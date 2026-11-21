@@ -113,7 +113,7 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
           >
             <OrionName className="shell-wordmark w-[88px]" />
           </Button>
-          <p className="sr-only">A Hashgraph Wallet</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-light tracking-[0.08em] text-muted-foreground"><HederaMark size={10} /> Powered by Hedera</p>
           </div>
         </div>}
       </header>

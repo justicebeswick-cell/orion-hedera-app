@@ -41,7 +41,6 @@ export function LaunchScreen() {
         </div>
         <div className="launch-wordmark">
           <div className="launch-name"><OrionName className="mx-auto w-32" /></div>
-          <p className="mt-3 text-xs text-muted-foreground">A Hashgraph Wallet</p>
           <div className="launch-rule" />
           <p className="launch-tag flex items-center justify-center gap-2 text-muted-foreground">
             <HederaMark size={13} /> Powered by Hedera
