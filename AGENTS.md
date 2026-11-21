@@ -46,3 +46,4 @@
 - Pact uses one browser-safe PactPanel in Vault and the preserved /pact page, keeping payment checks and signing identical across entry points.
 - General and security display preferences are schema-validated and device-local; the root applies themes, currency conversion and inactivity locks, leaving signing checks unchanged. Custom colors are validated hex values applied only to a root CSS token; preset and custom palettes derive shared card/action colors while preserving brand artwork and readable text.
 - The tab bar uses root data-dock and device-local preferences; Auto detects narrow-screen right-only insets. Theme-color requests matching browser chrome, but system-area transparency remains host-controlled, never guaranteed by CSS.
+- Dock previews use shared motion layout IDs; hover never navigates.

@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Match header logo glow and position across wallet pages.
+- [x] Add smooth dock hover/touch feedback and lower unfolded Home actions slightly; verify navigation and both layouts.
+
 - [x] Refine Home balance/chart and activity numbers and labels with coordinated iOS-style typography; verify cover and unfolded layouts.
 
 - [x] Refine translucent purple matte glass and offer Dark, Light, reference Lavender and custom colorways.

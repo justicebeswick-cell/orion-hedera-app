@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type PointerEvent } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
@@ -76,12 +76,29 @@ export function Shell({ title, children, hideBranding = false, className = "" }:
 function ShellFrame({ title, children, hideBranding = false, className = "" }: { title: string; children: ReactNode; hideBranding?: boolean; className?: string }) {
   const { id } = useAccount();
   const [open, setOpen] = useState(false);
+  const [dockPreview, setDockPreview] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
+  const previewDock = (event: PointerEvent<HTMLElement>) => {
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest<HTMLAnchorElement>("a[data-dock-preview]");
+    setDockPreview(target && event.currentTarget.contains(target) ? target.dataset["dockPreview"] ?? null : null);
+  };
+  const dockFeedback = {
+    onPointerMove: previewDock,
+    onPointerDown: previewDock,
+    onPointerLeave: () => setDockPreview(null),
+    onPointerUp: () => setDockPreview(null),
+    onPointerCancel: () => setDockPreview(null),
+  };
+  const glide = (key: string, group: string) => dockPreview === key ? <motion.span
+    className="dock-glide" layoutId={`dock-glide-${group}`} aria-hidden="true"
+    transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 430, damping: 34 }}
+  /> : null;
   const timer = useRef<number>(undefined);
   const nav = useNavigate();
   return (
     <div className={`app-shell min-h-dvh w-full max-w-full bg-background ${className}`}>
       {id && title !== "Home" && <PortfolioTracker key={id} accountId={id} />}
-      <header className={`shell-header mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 ${title === "Home" ? "pt-5" : ""}`}>
+      <header className="shell-header grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="shell-logo h-9 w-9" crisp />
           <div>
@@ -106,30 +123,37 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
         <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
         <Link to="/terms" className="hover:text-foreground">User Agreement</Link>
       </footer>
-      <nav aria-label="Main" className="app-dock-nav fixed inset-x-0 bottom-0 z-40">
+      <nav aria-label="Main" className="app-dock-nav fixed inset-x-0 bottom-0 z-40" {...dockFeedback}>
         <div className="app-dock grid w-full max-w-full grid-cols-5">
           {dock.map((d) => (
             <Link
               key={d.to}
               to={d.to}
+              data-dock-preview={`bottom-${d.to}`}
+              data-preview={dockPreview === `bottom-${d.to}` ? "true" : undefined}
+              onFocus={() => setDockPreview(`bottom-${d.to}`)}
+              onBlur={() => setDockPreview(null)}
               className="dock-link relative flex flex-col items-center gap-1.5 pb-1 pt-4 text-center text-[11px] text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "dock-active text-primary font-medium", "aria-current": "page" }}
               activeOptions={{ exact: true }}
             >
-              <d.icon size={20} strokeWidth={1.6} />{d.label}
+              {glide(`bottom-${d.to}`, "bottom")}
+              <d.icon size={20} strokeWidth={1.6} /><span className="dock-label">{d.label}</span>
             </Link>
           ))}
         </div>
       </nav>
-      <nav aria-label="Main" className="side-orbs">
+      <nav aria-label="Main" className="side-orbs" {...dockFeedback}>
         {dock.filter((d) => d.to !== "/stake" && d.to !== "/settings").map((d) => (
-          <Link key={d.to} to={d.to} aria-label={d.label} title={d.label} className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+          <Link key={d.to} to={d.to} aria-label={d.label} title={d.label} className="side-orb" data-dock-preview={`side-${d.to}`} data-preview={dockPreview === `side-${d.to}` ? "true" : undefined} onFocus={() => setDockPreview(`side-${d.to}`)} onBlur={() => setDockPreview(null)} activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+            {glide(`side-${d.to}`, "side")}
             <d.icon size={24} strokeWidth={1.7} />
           </Link>
         ))}
       </nav>
-      <nav aria-label="Settings" className="side-orb-solo">
-        <Link to="/settings" aria-label="Settings" title="Settings" className="side-orb" activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+      <nav aria-label="Settings" className="side-orb-solo" {...dockFeedback}>
+        <Link to="/settings" aria-label="Settings" title="Settings" className="side-orb" data-dock-preview="solo-settings" data-preview={dockPreview === "solo-settings" ? "true" : undefined} onFocus={() => setDockPreview("solo-settings")} onBlur={() => setDockPreview(null)} activeProps={{ className: "side-orb-active", "aria-current": "page" }} activeOptions={{ exact: true }}>
+          {glide("solo-settings", "solo")}
           <Settings size={24} strokeWidth={1.7} />
         </Link>
       </nav>
