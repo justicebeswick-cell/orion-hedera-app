@@ -156,6 +156,9 @@
 :root[data-theme="default"] .orion-lettering { filter: invert(1) drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
 :root[data-theme="default"] { --logo-ring-ink: oklch(0 0 0); }
 .orion-home-logo::before { content: ""; position: absolute; inset: -45%; background: var(--logo-halo); pointer-events: none; }
+/* Launch-screen purple glow behind every Orion logo across the app. */
+.orion-logo-frame { filter: drop-shadow(0 0 10px color-mix(in oklab, var(--primary) 55%, transparent)) drop-shadow(0 0 26px color-mix(in oklab, var(--primary) 32%, transparent)); }
+.launch-screen .orion-logo-frame { filter: none; }
 .orion-home-rings { stroke: var(--logo-ring-ink); }
 .orion-home-node { fill: var(--logo-ring-ink); }
 :root[data-theme="default"] .orion-orbit-rings { filter: invert(1); }
