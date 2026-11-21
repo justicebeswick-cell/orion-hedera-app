@@ -640,6 +640,8 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   .home-holdings { padding: 24px 28px; border-left: 1px solid var(--glass-edge); }
   .portfolio-total { font-size: 64px; }
   .portfolio-plot { height: 230px; }
+  .home-actions { margin-top: 48px; }
+  .home-actions a { border-radius: 999px; }
 }
 @media (max-width: 359px) { .portfolio-total { font-size: 38px; } .home-actions a { gap: 5px; padding: 0 8px; } }
 @media (max-width: 480px) {
