@@ -37,13 +37,13 @@ import { REFRESH_MS } from "@/lib/refresh";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Orion — A future proof HBAR wallet on Hedera" },
+      { title: "Oreon — A future proof HBAR wallet on Hedera" },
       {
         name: "description",
         content:
           "A future proof HBAR wallet native to the Hedera network where you can safely store, stake, swap and agree on secure transactions. Keys stay on your device; every move needs your approval.",
       },
-      { property: "og:title", content: "Orion — A future proof HBAR wallet on Hedera" },
+      { property: "og:title", content: "Oreon — A future proof HBAR wallet on Hedera" },
       {
         property: "og:description",
         content:

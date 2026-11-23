@@ -5,23 +5,23 @@ import { themeIconPaths } from "@/lib/themed-icon";
 
 it("uses permanent refined artwork URLs for Chrome shortcut installation", () => {
   expect(themeIconPaths("blue", [0, 93, 209])).toEqual({
-    manifest: "/orion-refined/manifest-v42.webmanifest",
-    apple: "/theme-icons/v42/default-180.png",
-    favicon: "/theme-icons/v42/default-64.png",
+    manifest: "/oreon/v43/manifest.webmanifest",
+    apple: "/oreon/v43/icon-180.png",
+    favicon: "/oreon/v43/icon-64.png",
   });
 });
 
 it("keeps the approved black and white icon across every preset", () => {
   for (const theme of ["dark", "moonlight", "royal", "amethyst", "lavender", "plum", "blue"]) {
-    expect(themeIconPaths(theme, [255, 0, 0]).manifest).toBe("/orion-refined/manifest-v42.webmanifest");
+    expect(themeIconPaths(theme, [255, 0, 0]).manifest).toBe("/oreon/v43/manifest.webmanifest");
   }
 });
 
 it("uses the same black sphere and white rings in light and dark themes", () => {
   expect(themeIconPaths("default", [137, 68, 230])).toEqual({
-    manifest: "/orion-refined/manifest-v42.webmanifest",
-    apple: "/theme-icons/v42/default-180.png",
-    favicon: "/theme-icons/v42/default-64.png",
+    manifest: "/oreon/v43/manifest.webmanifest",
+    apple: "/oreon/v43/icon-180.png",
+    favicon: "/oreon/v43/icon-64.png",
   });
   expect(themeIconPaths("dark", [122, 31, 218])).toEqual(themeIconPaths("default", [137, 68, 230]));
 });
@@ -32,19 +32,17 @@ it("keeps custom app accents from changing the approved icon", () => {
 
 it("serves the smaller logo mark from files the browser can fetch", () => {
   const manifest = JSON.parse(
-    readFileSync(resolve("public/orion-refined/manifest-v42.webmanifest"), "utf8"),
+    readFileSync(resolve("public/oreon/v43/manifest.webmanifest"), "utf8"),
   ) as { icons: { src: string }[] };
   expect(manifest.icons.map((i) => i.src)).toEqual([
-    "/theme-icons/v42/splash-1024.png",
-    "/theme-icons/v42/splash-192.png",
-    "/theme-icons/v42/splash-512.png",
-    "/theme-icons/v42/default-192-maskable.png",
-    "/theme-icons/v42/default-512-maskable.png",
+    "/oreon/v43/icon-192.png",
+    "/oreon/v43/icon-512.png",
+    "/oreon/v43/icon-1024.png",
   ]);
   for (const icon of manifest.icons) {
     expect(existsSync(resolve("public", icon.src.replace(/^\//, ""))), icon.src).toBe(true);
   }
-  for (const file of ["default-64.png", "default-180.png"]) {
-    expect(existsSync(resolve("public/theme-icons/v42", file)), file).toBe(true);
+  for (const file of ["icon-64.png", "icon-180.png"]) {
+    expect(existsSync(resolve("public/oreon/v43", file)), file).toBe(true);
   }
 });

@@ -1,4 +1,4 @@
-// Permanent icon colors generated from Orion’s existing app artwork.
+// Permanent icon colors generated from Oreon’s existing app artwork.
 export const THEME_ICON_PALETTE: { name: string; rgb: [number, number, number] }[] = [
   {
     "name": "default",

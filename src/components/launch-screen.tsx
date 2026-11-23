@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
 import { AurionLogo } from "@/components/aurion";
 import { OrionName } from "@/components/orion-name";
-import lettering from "@/assets/orion-lettering-complete.png";
+import oreonLogo from "@/assets/oreon-logo.png.asset.json";
 import { prepareLaunchAssets, runLaunchTimeline } from "@/lib/launch";
 
 export function LaunchScreen() {
@@ -25,7 +25,7 @@ export function LaunchScreen() {
     const syncVisibility = () => setPaused(document.visibilityState === "hidden");
     syncVisibility();
     document.addEventListener("visibilitychange", syncVisibility);
-    prepareLaunchAssets(["/orion-refined/launch-sphere-v39.png", lettering], controller.signal).then(() => {
+    prepareLaunchAssets([oreonLogo.url], controller.signal).then(() => {
       if (controller.signal.aborted) return;
       setReady(true);
       stopTimeline = runLaunchTimeline(() => setLeaving(true), () => setVisible(false), window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -34,9 +34,9 @@ export function LaunchScreen() {
   }, [generation]);
   if (!visible) return null;
   return (
-    <div className={`launch-screen ${ready ? "launch-ready" : ""} ${paused ? "launch-paused" : ""} ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening Orion">
+    <div className={`launch-screen ${ready ? "launch-ready" : ""} ${paused ? "launch-paused" : ""} ${leaving ? "launch-leaving" : ""}`} role="status" aria-label="Opening Oreon">
       <div key={generation} className="launch-brand">
-        <div className="launch-logo relative" role="img" aria-label="Orion logo">
+        <div className="launch-logo relative" role="img" aria-label="Oreon logo">
           <AurionLogo className="h-full w-full" sizes="148px" orbit />
         </div>
         <div className="launch-wordmark">

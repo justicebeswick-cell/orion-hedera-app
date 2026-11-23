@@ -1,0 +1,31 @@
+{
+  "id": "/?app=aurion",
+  "name": "Oreon",
+  "short_name": "Oreon",
+  "description": "Powered by Hedera. Store, send, swap and stake on mainnet.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/oreon/v43/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/oreon/v43/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/oreon/v43/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "scope": "/"
+}

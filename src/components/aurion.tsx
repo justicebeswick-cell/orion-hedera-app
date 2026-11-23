@@ -1,3 +1,4 @@
+import oreonLogo from "@/assets/oreon-logo.png.asset.json";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type PointerEvent } from "react";
@@ -32,21 +33,8 @@ function VaultGlyph({ size = 24, strokeWidth }: { size?: number; strokeWidth?: n
 }
 
 export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
-  if (crisp || orbit) return <span className={`orion-logo-frame ${orbit ? "" : "orion-home-logo"} relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <svg viewBox="0 0 1024 1024" className="relative h-full w-full" aria-hidden="true">
-      <image href="/orion-refined/launch-sphere-v39.png" width="1024" height="1024" />
-      <g className={orbit ? "launch-orbit" : undefined}>
-        <g className="orion-home-rings" fill="none" strokeWidth="16">
-          <circle cx="512" cy="512" r="381" />
-          <circle cx="512" cy="512" r="320" />
-        </g>
-        <circle className="orion-home-node" cx="512" cy="131" r="29" />
-      </g>
-    </svg>
-  </span>;
-  return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <img src="/orion-refined/sphere-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="h-full w-full object-contain orion-static-sphere" />
-    <img src="/orion-refined/rings-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="absolute inset-0 h-full w-full object-contain orion-orbit-rings" />
+  return <span className={`orion-logo-frame ${crisp && !orbit ? "orion-home-logo" : ""} relative inline-flex shrink-0 ${className}`} role="img" aria-label="Oreon logo">
+    <img src={oreonLogo.url} sizes={sizes} alt="" aria-hidden="true" width={635} height={635} className="relative h-full w-full object-contain" />
   </span>;
 }
 
@@ -109,7 +97,7 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
             onContextMenu={(e) => e.preventDefault()}
             className="h-auto select-none p-0 font-brand text-lg font-medium tracking-normal text-foreground hover:bg-transparent"
             onClick={() => setOpen(true)}
-            aria-label="Orion — open menu"
+            aria-label="Oreon — open menu"
           >
             <OrionName className="shell-wordmark w-[88px]" />
           </Button>

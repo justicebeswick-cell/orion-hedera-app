@@ -155,7 +155,7 @@
 .theme-swatch-plum { background: oklch(0.59 0.23 330); color: oklch(0.98 0 0); }
 .theme-swatch-blue { background: oklch(0.59 0.225 264); color: oklch(0.98 0 0); }
 .theme-swatch-custom { background: oklch(from var(--custom-color, #7a3fd6) clamp(0.52, l, 0.7) min(c, 0.25) h); color: oklch(0.98 0 0); }
-:root[data-theme="default"] .orion-lettering { filter: invert(1) drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
+:root[data-theme="default"] .orion-lettering { filter: drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
 :root[data-theme="default"] { --logo-ring-ink: oklch(0 0 0); }
 .orion-home-logo::before { content: ""; position: absolute; inset: -100%; background: var(--logo-halo); pointer-events: none; }
 /* Launch-screen purple glow behind every Orion logo across the app. */

@@ -1,4 +1,4 @@
-// Browser-only. Orion acting as a WalletConnect v2 wallet for Hedera mainnet dApps.
+// Browser-only. Oreon acting as a WalletConnect v2 wallet for Hedera mainnet dApps.
 import type { Wallet as HederaWeb3Wallet } from "@hashgraph/hedera-wallet-connect";
 import { WC_PROJECT_ID } from "./walletconnect";
 import { readKeystoreMeta, unlockKeystore } from "./keystore";
@@ -25,7 +25,7 @@ function refreshSessions() {
 function describe(body: any, method: string): string[] {
   if (!body) return [method.replace("hedera_", "")];
   if (typeof body === "string") return ["Sign a message:", body.length > 200 ? body.slice(0, 200) + "…" : body];
-  if (body instanceof Uint8Array) return ["Sign transaction bytes (not submitted by Orion)"];
+  if (body instanceof Uint8Array) return ["Sign transaction bytes (not submitted by Oreon)"];
   const name = body.constructor?.name?.replace("Transaction", "") ?? "Transaction";
   const out = [`Action: ${name}`];
   try {
@@ -46,7 +46,7 @@ export async function startWallet() {
   init ??= (async () => {
     const wc = await import("@hashgraph/hedera-wallet-connect");
     const w = await wc.Wallet.create(WC_PROJECT_ID, {
-      name: "Orion", description: "A Hashgraph Wallet", url: window.location.origin, icons: [`${window.location.origin}/icon-192-v26.png`],
+      name: "Oreon", description: "A Hashgraph Wallet", url: window.location.origin, icons: [`${window.location.origin}/oreon/v43/icon-192.png`],
     }, [wc.HederaChainId.Mainnet]);
     w.on("session_proposal", (p: any) => {
       const m = p.params.proposer.metadata;

@@ -20,7 +20,7 @@ export function PactPanel() {
   const [f, setF] = useState({ counterparty: "", scope: "", amount: "", deliverable: "", revisions: "" });
   const [hash, setHash] = useState("");
   const md = [
-    "# Orion Pact v1",
+    "# Oreon Pact v1",
     `Payer: ${id ?? ""}`,
     `Paid to: ${f.counterparty.trim()}`,
     `Price: ${f.amount.trim()} HBAR`,

@@ -22,8 +22,8 @@
 - WalletConnect signing uses @hiero-ledger/sdk classes (the version hedera-wallet-connect depends on); local-key signing uses @hashgraph/sdk. Mixing them fails type checks.
 - AI activity answers: server route /api/ask fetches mirror-node data itself (never trusts client-supplied history) and streams via the Responses API.
 - Biometric unlock seals only a verified code after saving the key, binds the local WebAuthn PRF seal to that encrypted wallet revision, and validates legacy seals before migration; this prevents stale or another wallet's code reaching signers without weakening device-local custody.
-- App branding uses one shared AurionLogo: Home renders vector rings over the lossless sphere for sharp small-size edges; LaunchScreen retains separate lossless layers for orbit animation. Installed icons and favicon derive from the same source with versioned permanent PNG/manifest URLs, never blob or data URLs, so browser installation can fetch them independently. Phones copy icons at install time.
-- Initial loads/BFCache restores use LaunchScreen above docks; decode artwork before a visible-time orbit with vector rings, avoiding partial logos and navigation replays.
+- App branding uses one shared AurionLogo with the approved CDN artwork; launch decodes the same artwork before its entrance animation. Installed icons and favicon use permanent versioned PNG/manifest files derived from that source so browsers and native builds can fetch them independently.
+- Initial loads/BFCache restores use LaunchScreen above docks; decode artwork before a visible-time entrance animation, avoiding partial logos and navigation replays.
 - Manifest any-purpose icons use transparent launch artwork and maskable icons retain the installed tile; Android generates its own unavoidable pre-page splash, so it cannot be replaced by React.
 - Vault uses an Embla deck with all sections mounted and inactive sections inert, preserving form state while making swipe navigation accessible.
 - Staking company images use the shared NodeLogo with first-party council artwork and verified brand assets stored as project CDN pointers; preserve SVG detail and native aspect ratios, with legacy assets/initials as fallback, avoiding third-party image requests in the wallet. Chain node records can carry older brand names, so node-logo.tsx maps them to the company's current name and artwork; keep that mapping the single source for displayed node names.
@@ -41,9 +41,11 @@
 - Optional tap haptics use one root click listener and a browser-safe helper; this covers shared and legacy controls without double vibrations or blocking unsupported browsers.
 - NFTs use paginated mainnet mirror ownership reads and inert HTTPS/IPFS image metadata; transfers recheck ownership and recipient eligibility, sign one serial through the existing signer, and require a SUCCESS receipt before reporting success.
 - NFT receiving uses a shared numbered-account readiness check and explicit collection association in Receive and NFTs; use the existing signer with a SUCCESS receipt, never silently change on-chain receiving settings.
-- Brand-name displays use shared OrionName artwork with an instance-unique SVG mask across the header, welcome, launch, unlock and public shell; one renderer keeps the lettering consistent without cross-instance mask collisions.
+- Brand-name displays use shared outlined OrionName lettering across header, welcome, launch, unlock and public shell so every display stays consistent and sharp.
 - The welcome page uses Shell's optional hideBranding flag and shared logo/wordmark in its main content; other pages retain header branding and the app menu remains accessible.
 - Pact uses one browser-safe PactPanel in Vault and the preserved /pact page, keeping payment checks and signing identical across entry points.
 - General and security display preferences are schema-validated and device-local; the root applies themes, currency conversion and inactivity locks, leaving signing checks unchanged. Custom colors are validated hex values applied only to a root CSS token; preset and custom palettes derive shared card/action colors while preserving brand artwork and readable text.
 - The tab bar uses root data-dock and device-local preferences; Auto detects narrow-screen right-only insets. Theme-color requests matching browser chrome, but system-area transparency remains host-controlled, never guaranteed by CSS.
 - Dock previews use shared motion layout IDs; hover never navigates.
+
+- Branding changes preserve domain, bundle IDs, local storage keys and keystore authenticated context to retain installed identity and existing wallet access.
