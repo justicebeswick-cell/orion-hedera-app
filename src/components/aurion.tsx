@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type PointerEvent } from "react";
+import { createContext, useId, useContext, useEffect, useRef, useState, type ReactNode, type PointerEvent } from "react";
 import { ACCOUNT_RE } from "@/lib/hedera";
 import { HederaMark } from "@/components/hbar";
 import { Button } from "@/components/ui/button";
@@ -31,22 +31,27 @@ function VaultGlyph({ size = 24, strokeWidth }: { size?: number; strokeWidth?: n
   );
 }
 
-export function AurionLogo({ className = "", sizes = "48px", orbit = false, crisp = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
-  if (crisp || orbit) return <span className={`orion-logo-frame ${orbit ? "" : "orion-home-logo"} relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
+export function AurionLogo({ className = "", orbit = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
+  const id = useId().replace(/:/g, "");
+  return <span className={`orion-logo-frame ${orbit ? "" : "orion-home-logo"} relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
     <svg viewBox="0 0 1024 1024" className="relative h-full w-full" aria-hidden="true">
-      <image href="/orion-refined/launch-sphere-v39.png" width="1024" height="1024" />
+      <defs>
+        <radialGradient id={`${id}s`} cx="0.5" cy="0.55" r="0.5"><stop offset="0" stopColor="#141417" /><stop offset="0.8" stopColor="#08080a" /><stop offset="1" stopColor="#020203" /></radialGradient>
+        <radialGradient id={`${id}h`} cx="0.3" cy="0.24" r="0.24"><stop offset="0" stopColor="#ffffff" stopOpacity="0.5" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
+        <linearGradient id={`${id}r`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#c9c8d2" /></linearGradient>
+        <radialGradient id={`${id}n`}><stop offset="0" stopColor="#ffffff" stopOpacity="0.55" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
+      </defs>
+      <circle cx="512" cy="512" r="313" fill="#141417" fillOpacity="0.9" />
+      <circle cx="512" cy="512" r="256" fill={`url(#${id}s)`} />
+      <circle cx="512" cy="512" r="256" fill={`url(#${id}h)`} />
+      <circle cx="512" cy="512" r="256" fill="none" stroke="#45454d" strokeWidth="3" />
+      <circle cx="512" cy="512" r="313" fill="none" stroke={`url(#${id}r)`} strokeWidth="7" />
       <g className={orbit ? "launch-orbit" : undefined}>
-        <g className="orion-home-rings" fill="none" strokeWidth="16">
-          <circle cx="512" cy="512" r="381" />
-          <circle cx="512" cy="512" r="320" />
-        </g>
-        <circle className="orion-home-node" cx="512" cy="131" r="29" />
+        <circle cx="512" cy="512" r="374" fill="none" stroke={`url(#${id}r)`} strokeWidth="8" />
+        <circle cx="512" cy="138" r="60" fill={`url(#${id}n)`} />
+        <circle cx="512" cy="138" r="21" fill="#ffffff" />
       </g>
     </svg>
-  </span>;
-  return <span className={`orion-logo-frame relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <img src="/orion-refined/sphere-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="h-full w-full object-contain orion-static-sphere" />
-    <img src="/orion-refined/rings-v38.png" sizes={sizes} alt="" aria-hidden="true" width={1024} height={1024} className="absolute inset-0 h-full w-full object-contain orion-orbit-rings" />
   </span>;
 }
 
