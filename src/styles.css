@@ -994,3 +994,9 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 @media (prefers-reduced-motion: reduce) {
   .dock-link > svg, .side-orb > svg { transition: none; transform: none !important; }
 }
+
+/* Side mode: Home, Vault and Studio stack in the bottom-right corner directly above Settings, clear of page content. */
+:root[data-dock="side"] .side-orbs {
+  top: auto !important;
+  bottom: calc(18px + 46px + 14px + env(safe-area-inset-bottom)) !important;
+}
