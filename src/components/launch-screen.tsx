@@ -25,7 +25,7 @@ export function LaunchScreen() {
     const syncVisibility = () => setPaused(document.visibilityState === "hidden");
     syncVisibility();
     document.addEventListener("visibilitychange", syncVisibility);
-    prepareLaunchAssets(["/orion-refined/launch-sphere-v39.png", lettering], controller.signal).then(() => {
+    prepareLaunchAssets([lettering], controller.signal).then(() => {
       if (controller.signal.aborted) return;
       setReady(true);
       stopTimeline = runLaunchTimeline(() => setLeaving(true), () => setVisible(false), window.matchMedia("(prefers-reduced-motion: reduce)").matches);
