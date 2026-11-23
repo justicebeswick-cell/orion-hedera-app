@@ -40,11 +40,13 @@ export function AurionLogo({ className = "", orbit = false }: { className?: stri
         <radialGradient id={`${id}h`} cx="0.3" cy="0.24" r="0.24"><stop offset="0" stopColor="#ffffff" stopOpacity="0.5" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
         <linearGradient id={`${id}r`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#c9c8d2" /></linearGradient>
         <radialGradient id={`${id}n`}><stop offset="0" stopColor="#cfc2ff" stopOpacity="0.9" /><stop offset="0.45" stopColor="#a78bff" stopOpacity="0.45" /><stop offset="1" stopColor="#a78bff" stopOpacity="0" /></radialGradient>
+        <radialGradient id={`${id}e`} cx="0.5" cy="0.5" r="0.5"><stop offset="0.66" stopColor="#7b5af0" stopOpacity="0" /><stop offset="0.72" stopColor="#7b5af0" stopOpacity="0.6" /><stop offset="0.8" stopColor="#7b5af0" stopOpacity="0.22" /><stop offset="1" stopColor="#7b5af0" stopOpacity="0" /></radialGradient>
       </defs>
+      <circle cx="512" cy="512" r="360" fill={`url(#${id}e)`} />
       <circle cx="512" cy="512" r="313" fill="#141417" fillOpacity="0.9" />
       <circle cx="512" cy="512" r="256" fill={`url(#${id}s)`} />
       <circle cx="512" cy="512" r="256" fill={`url(#${id}h)`} />
-      <circle cx="512" cy="512" r="256" fill="none" stroke="#45454d" strokeWidth={orbit ? 3 : 1} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
+      <circle cx="512" cy="512" r="256" fill="none" stroke="#7b5af0" strokeOpacity="0.85" strokeWidth={orbit ? 5 : 1.6} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
       <circle cx="512" cy="512" r="313" fill="none" stroke={orbit ? `url(#${id}r)` : "#f4f3f8"} strokeWidth={orbit ? 7 : 1.1} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
       <g className={orbit ? "launch-orbit" : undefined}>
         <circle cx="512" cy="512" r="374" fill="none" stroke={orbit ? `url(#${id}r)` : "#ffffff"} strokeWidth={orbit ? 8 : 1.25} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
