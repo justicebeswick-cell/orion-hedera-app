@@ -34,7 +34,7 @@ function VaultGlyph({ size = 24, strokeWidth }: { size?: number; strokeWidth?: n
 export function AurionLogo({ className = "", orbit = false }: { className?: string; sizes?: string; orbit?: boolean; crisp?: boolean }) {
   const id = useId().replace(/:/g, "");
   return <span className={`orion-logo-frame ${orbit ? "" : "orion-home-logo"} relative inline-flex shrink-0 ${className}`} role="img" aria-label="Orion logo">
-    <svg viewBox="0 0 1024 1024" className="relative h-full w-full" aria-hidden="true">
+    <svg viewBox="0 0 1024 1024" className="relative h-full w-full" aria-hidden="true" shapeRendering="geometricPrecision">
       <defs>
         <radialGradient id={`${id}s`} cx="0.5" cy="0.55" r="0.5"><stop offset="0" stopColor="#141417" /><stop offset="0.8" stopColor="#08080a" /><stop offset="1" stopColor="#020203" /></radialGradient>
         <radialGradient id={`${id}h`} cx="0.3" cy="0.24" r="0.24"><stop offset="0" stopColor="#ffffff" stopOpacity="0.5" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
@@ -44,12 +44,12 @@ export function AurionLogo({ className = "", orbit = false }: { className?: stri
       <circle cx="512" cy="512" r="313" fill="#141417" fillOpacity="0.9" />
       <circle cx="512" cy="512" r="256" fill={`url(#${id}s)`} />
       <circle cx="512" cy="512" r="256" fill={`url(#${id}h)`} />
-      <circle cx="512" cy="512" r="256" fill="none" stroke="#45454d" strokeWidth="3" />
-      <circle cx="512" cy="512" r="313" fill="none" stroke={`url(#${id}r)`} strokeWidth="7" />
+      <circle cx="512" cy="512" r="256" fill="none" stroke="#45454d" strokeWidth={orbit ? 3 : 1} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
+      <circle cx="512" cy="512" r="313" fill="none" stroke={orbit ? `url(#${id}r)` : "#f4f3f8"} strokeWidth={orbit ? 7 : 1.1} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
       <g className={orbit ? "launch-orbit" : undefined}>
-        <circle cx="512" cy="512" r="374" fill="none" stroke={`url(#${id}r)`} strokeWidth="8" />
-        <circle cx="776" cy="248" r="110" fill={`url(#${id}n)`} />
-        <circle cx="776" cy="248" r="30" fill="#ffffff" />
+        <circle cx="512" cy="512" r="374" fill="none" stroke={orbit ? `url(#${id}r)` : "#ffffff"} strokeWidth={orbit ? 8 : 1.25} vectorEffect={orbit ? undefined : "non-scaling-stroke"} />
+        <circle cx="512" cy="138" r="110" fill={`url(#${id}n)`} />
+        <circle cx="512" cy="138" r="30" fill="#ffffff" />
       </g>
     </svg>
   </span>;
