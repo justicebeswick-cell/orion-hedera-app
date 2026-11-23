@@ -61,7 +61,7 @@
   --motion-fast: 160ms;
   --motion-ease: cubic-bezier(.22, 1, .36, 1);
   --brand-halo-color: oklch(0.4 0.18 305 / 38%);
-  --logo-halo: radial-gradient(closest-side, var(--brand-halo-color), transparent 70%);
+  --logo-halo: radial-gradient(closest-side, oklch(0.42 0.19 305 / 34%), oklch(0.42 0.19 305 / 16%) 42%, transparent 78%);
   --dock-glide-finish: linear-gradient(135deg, color-mix(in oklab, var(--foreground) 18%, transparent), color-mix(in oklab, var(--primary) 16%, transparent));
   --logo-ring-ink: oklch(1 0 0);
   --launch: oklch(0 0 0);
@@ -157,7 +157,7 @@
 .theme-swatch-custom { background: oklch(from var(--custom-color, #7a3fd6) clamp(0.52, l, 0.7) min(c, 0.25) h); color: oklch(0.98 0 0); }
 :root[data-theme="default"] .orion-lettering { filter: invert(1) drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
 :root[data-theme="default"] { --logo-ring-ink: oklch(0 0 0); }
-.orion-home-logo::before { content: ""; position: absolute; inset: -100%; background: var(--logo-halo); pointer-events: none; }
+.orion-home-logo::before { content: ""; position: absolute; inset: -110%; background: var(--logo-halo); pointer-events: none; }
 /* Launch-screen purple glow behind every Orion logo across the app. */
 .orion-logo-frame { filter: none; }
 .launch-screen .orion-logo-frame { filter: none; }
@@ -221,7 +221,7 @@
 }
 /* Refine shared wallet typography without touching artwork or receipt lettering. */
 .app-shell :is(h1, h2, h3) { font-family: var(--font-sans); font-weight: 500; line-height: 1.25; text-wrap: balance; }
-.shell-header { min-height: 40px; height: 44px; padding-top: 8px; margin-bottom: 8px; }
+.shell-header { min-height: 40px; padding-top: 8px; margin-bottom: 8px; }
 .shell-footer a { padding: 8px 0; }
 .home-account { border: 1px solid var(--control-edge); background: color-mix(in oklab, var(--background) 92%, var(--foreground)); border-radius: 14px; }
 .home-account a:first-child { padding-block: 4px; }
@@ -862,11 +862,11 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 }
 
 /* Uniform Orion header on every page */
-.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 44px; height: 44px; }
+.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 50px; height: 50px; }
 .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 104px; }
 .shell-header .orion-home-logo::before { display: block; }
 @media (max-width: 679px) {
-  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
+  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 40px; height: 40px; }
   .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 84px; }
   /* Lift Home content */
   .home-reference > header { height: 48px; padding-top: 6px; margin-bottom: 0; }

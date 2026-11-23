@@ -106,7 +106,7 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
       <header className="shell-header grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         {!hideBranding && <div className="flex min-w-0 items-center gap-3">
           <AurionLogo className="shell-logo h-9 w-9" crisp />
-          <div>
+          <div className="leading-none">
           <Button variant="ghost"
             onPointerDown={() => (timer.current = window.setTimeout(() => setOpen(true), 450))}
             onPointerUp={() => clearTimeout(timer.current)}
@@ -118,7 +118,7 @@ function ShellFrame({ title, children, hideBranding = false, className = "" }: {
           >
             <OrionName className="shell-wordmark w-[88px]" />
           </Button>
-          <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-light tracking-[0.08em] text-muted-foreground"><HederaMark size={10} /> Powered by Hedera</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-light leading-[1.2] tracking-[0.08em] text-muted-foreground pointer-events-none"><HederaMark size={10} /> Powered by Hedera</p>
           </div>
         </div>}
       </header>
