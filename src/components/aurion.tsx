@@ -1,4 +1,4 @@
-import oreonLogo from "@/assets/oreon-logo.png.asset.json";
+import oreonLogo from "@/assets/oreon-logo-transparent.png.asset.json";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type PointerEvent } from "react";

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { HederaMark } from "@/components/hbar";
 import { AurionLogo } from "@/components/aurion";
 import { OrionName } from "@/components/orion-name";
-import oreonLogo from "@/assets/oreon-logo.png.asset.json";
+import oreonLogo from "@/assets/oreon-logo-transparent.png.asset.json";
 import { prepareLaunchAssets, runLaunchTimeline } from "@/lib/launch";
 
 export function LaunchScreen() {
