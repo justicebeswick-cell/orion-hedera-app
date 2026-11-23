@@ -39,7 +39,7 @@ export function AurionLogo({ className = "", orbit = false }: { className?: stri
         <radialGradient id={`${id}s`} cx="0.5" cy="0.55" r="0.5"><stop offset="0" stopColor="#141417" /><stop offset="0.8" stopColor="#08080a" /><stop offset="1" stopColor="#020203" /></radialGradient>
         <radialGradient id={`${id}h`} cx="0.3" cy="0.24" r="0.24"><stop offset="0" stopColor="#ffffff" stopOpacity="0.5" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
         <linearGradient id={`${id}r`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffffff" /><stop offset="1" stopColor="#c9c8d2" /></linearGradient>
-        <radialGradient id={`${id}n`}><stop offset="0" stopColor="#ffffff" stopOpacity="0.55" /><stop offset="1" stopColor="#ffffff" stopOpacity="0" /></radialGradient>
+        <radialGradient id={`${id}n`}><stop offset="0" stopColor="#cfc2ff" stopOpacity="0.9" /><stop offset="0.45" stopColor="#a78bff" stopOpacity="0.45" /><stop offset="1" stopColor="#a78bff" stopOpacity="0" /></radialGradient>
       </defs>
       <circle cx="512" cy="512" r="313" fill="#141417" fillOpacity="0.9" />
       <circle cx="512" cy="512" r="256" fill={`url(#${id}s)`} />
@@ -48,8 +48,8 @@ export function AurionLogo({ className = "", orbit = false }: { className?: stri
       <circle cx="512" cy="512" r="313" fill="none" stroke={`url(#${id}r)`} strokeWidth="7" />
       <g className={orbit ? "launch-orbit" : undefined}>
         <circle cx="512" cy="512" r="374" fill="none" stroke={`url(#${id}r)`} strokeWidth="8" />
-        <circle cx="512" cy="138" r="60" fill={`url(#${id}n)`} />
-        <circle cx="512" cy="138" r="21" fill="#ffffff" />
+        <circle cx="776" cy="248" r="110" fill={`url(#${id}n)`} />
+        <circle cx="776" cy="248" r="30" fill="#ffffff" />
       </g>
     </svg>
   </span>;
