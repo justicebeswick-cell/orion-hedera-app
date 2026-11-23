@@ -862,12 +862,12 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 }
 
 /* Uniform Orion header on every page */
-.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
-.shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 88px; }
+.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 44px; height: 44px; }
+.shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 104px; }
 .shell-header .orion-home-logo::before { display: block; }
 @media (max-width: 679px) {
-  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 30px; height: 30px; }
-  .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 70px; }
+  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
+  .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 84px; }
   /* Lift Home content */
   .home-reference > header { height: 48px; padding-top: 6px; margin-bottom: 0; }
   .home-reference .home-account { top: 14px; }
