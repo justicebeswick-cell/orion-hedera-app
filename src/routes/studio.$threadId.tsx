@@ -24,9 +24,9 @@ export const Route = createFileRoute("/studio/$threadId")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined, agent: typeof s["agent"] === "string" ? (s["agent"] as string) : undefined }),
   head: () => ({
     meta: [
-      { title: "Studio chat — Oreon" },
-      { name: "description", content: "Chat with Oreon's AI about your Hedera wallet." },
-      { property: "og:title", content: "Oreon Studio chat" },
+      { title: "Studio chat — Orion" },
+      { name: "description", content: "Chat with Orion's AI about your Hedera wallet." },
+      { property: "og:title", content: "Orion Studio chat" },
       { property: "og:description", content: "Ask, draft, write and create." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -193,7 +193,7 @@ function ChatWindow({ threadId, initial, agent, agentOk }: { threadId: string; i
         }}>
         <AttachmentChips />
         {reference && <div className="flex items-center gap-2 px-3 pt-2"><img src={reference.url} alt="Image reference" className="size-8 rounded object-cover" /><span className="flex-1 text-xs">Image attached</span><Button variant="ghost" size="icon" aria-label="Remove image reference" onClick={() => setReference(null)}><X /></Button></div>}
-        <PromptInputTextarea ref={textarea} autoFocus placeholder={composeMode === "image" ? "Describe the picture you want…" : "Ask Oreon anything…"} />
+        <PromptInputTextarea ref={textarea} autoFocus placeholder={composeMode === "image" ? "Describe the picture you want…" : "Ask Orion anything…"} />
         <PromptInputFooter className="justify-between">
           <div className="flex items-center gap-1"><AttachButton /><Button type="button" size="sm" variant={composeMode === "image" ? "default" : "ghost"} aria-pressed={composeMode === "image"} onClick={() => { setComposeMode((mode) => mode === "image" ? "chat" : "image"); textarea.current?.focus(); }}><ImageIcon />Create image</Button></div>
           <PromptInputSubmit status={imageBusy ? "streaming" : status} onStop={() => { if (imageBusy) imageAbort.current?.abort(); else stop(); }} />

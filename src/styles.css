@@ -62,9 +62,6 @@
   --motion-ease: cubic-bezier(.22, 1, .36, 1);
   --brand-halo-color: oklch(0.4 0.18 305 / 38%);
   --logo-halo: radial-gradient(closest-side, var(--brand-halo-color), transparent 70%);
-  --header-logo-size: 56px;
-  --header-logo-halo: radial-gradient(ellipse at center, color-mix(in oklab, var(--brand-halo-color) 70%, transparent), transparent 72%);
-  --header-logo-shadow: oklch(0.7 0.08 280 / 16%);
   --dock-glide-finish: linear-gradient(135deg, color-mix(in oklab, var(--foreground) 18%, transparent), color-mix(in oklab, var(--primary) 16%, transparent));
   --logo-ring-ink: oklch(1 0 0);
   --launch: oklch(0 0 0);
@@ -158,11 +155,9 @@
 .theme-swatch-plum { background: oklch(0.59 0.23 330); color: oklch(0.98 0 0); }
 .theme-swatch-blue { background: oklch(0.59 0.225 264); color: oklch(0.98 0 0); }
 .theme-swatch-custom { background: oklch(from var(--custom-color, #7a3fd6) clamp(0.52, l, 0.7) min(c, 0.25) h); color: oklch(0.98 0 0); }
-:root[data-theme="default"] .orion-lettering { filter: drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
+:root[data-theme="default"] .orion-lettering { filter: invert(1) drop-shadow(0.25px 0 0 var(--foreground)) drop-shadow(-0.25px 0 0 var(--foreground)); }
 :root[data-theme="default"] { --logo-ring-ink: oklch(0 0 0); }
 .orion-home-logo::before { content: ""; position: absolute; inset: -100%; background: var(--logo-halo); pointer-events: none; }
-.shell-header .orion-home-logo::before { inset: -45%; background: var(--header-logo-halo); }
-.shell-header .orion-logo-frame > img { filter: drop-shadow(0 0 5px var(--header-logo-shadow)); }
 /* Launch-screen purple glow behind every Orion logo across the app. */
 .orion-logo-frame { filter: none; }
 .launch-screen .orion-logo-frame { filter: none; }
@@ -671,7 +666,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .home-reference { position: relative; --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", Arial, sans-serif; }
 .home-reference .shell-content { animation: none; }
 .home-reference > header { height: 72px; padding-top: 22px; margin-bottom: 32px; align-items: center; }
-.home-reference > header .orion-logo-frame { width: var(--header-logo-size); height: var(--header-logo-size); }
+.home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
 .home-reference > header .orion-home-logo::before { display: block; }
 .home-reference > header .orion-lettering { width: 88px; }
 .home-reference > header p { display: none; }
@@ -820,7 +815,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 @media (max-width: 679px) {
   .home-reference > header { height: 56px; padding-top: 10px; margin-bottom: 10px; }
   .home-reference > header .orion-lettering { width: 70px; }
-  .home-reference > header .orion-logo-frame { width: var(--header-logo-size); height: var(--header-logo-size); }
+  .home-reference > header .orion-logo-frame { width: 30px; height: 30px; }
   .home-reference .home-account { top: 24px; padding: 6px 8px; max-width: 60%; }
   .home-reference .home-account .account-tool { width: 22px; height: 28px; }
   .home-reference .portfolio-total { font-size: 38px; }
@@ -868,12 +863,11 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 }
 
 /* Uniform Orion header on every page */
-.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: var(--header-logo-size); height: var(--header-logo-size); }
+.shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 36px; height: 36px; }
 .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 88px; }
 .shell-header .orion-home-logo::before { display: block; }
 @media (max-width: 679px) {
-  :root { --header-logo-size: 48px; }
-  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: var(--header-logo-size); height: var(--header-logo-size); }
+  .shell-header .shell-logo, .home-reference > header .orion-logo-frame { width: 30px; height: 30px; }
   .shell-header .orion-lettering, .home-reference > header .orion-lettering { width: 70px; }
   /* Lift Home content */
   .home-reference > header { height: 48px; padding-top: 6px; margin-bottom: 0; }

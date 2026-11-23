@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/wallet")({
   head: () => ({
     meta: [
-      { title: "Wallet — Oreon" },
+      { title: "Wallet — Orion" },
       { name: "description", content: "Create a new Hedera mainnet wallet on this device or connect an existing one." },
-      { property: "og:title", content: "Wallet — Oreon" },
-      { property: "og:description", content: "Your key is made on your device. Oreon never sees it." },
+      { property: "og:title", content: "Wallet — Orion" },
+      { property: "og:description", content: "Your key is made on your device. Orion never sees it." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -60,7 +60,7 @@ function Wallet() {
       </div>
       <p className="mb-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
         {mode === "watch"
-          ? "Connect a Ledger, Tangem or other cold wallet by its 0.0 account ID or 0x address. No keys or phrases are needed. Oreon tracks balances, tokens and staking rewards, and prepares unsigned payments for your device to sign."
+          ? "Connect a Ledger, Tangem or other cold wallet by its 0.0 account ID or 0x address. No keys or phrases are needed. Orion tracks balances, tokens and staking rewards, and prepares unsigned payments for your device to sign."
           : "Face ID / fingerprint signing works once the wallet's key is saved on this device."}
       </p>
       {mode === "create" && <Create onPending={setPending} />}
@@ -127,7 +127,7 @@ function Create({ onPending }: { onPending: (k: StoredKey) => void }) {
           </li>
         ))}
       </ol>
-      <p className="mt-3 text-xs text-destructive">Write it down. Oreon cannot restore it. Anyone with it can move your HBAR.</p>
+      <p className="mt-3 text-xs text-destructive">Write it down. Orion cannot restore it. Anyone with it can move your HBAR.</p>
       {!wrote && <BackupCheck words={words} onPass={() => setWrote(true)} />}
       {wrote && <p className="mt-4 text-sm text-success">Backup checked.</p>}
       {wrote && (
@@ -199,7 +199,7 @@ function AwaitFunding({ k, onFound }: { k: StoredKey; onFound: (id: string) => v
       <p className="mt-4 break-all font-mono text-sm">{k.evm}</p>
       <button className="btn-ghost mt-2 w-full py-2 text-xs" onClick={() => navigator.clipboard.writeText(k.evm)}>Copy address</button>
       <p className="mt-4 text-xs text-muted-foreground">
-        In another Oreon wallet, open Send and paste this address or scan this QR code. Send HBAR on Hedera mainnet to open this account. Other wallets and exchanges must support Hedera 0x addresses; many exchanges only accept 0.0 account IDs. The account ID appears here automatically after funding.
+        In another Orion wallet, open Send and paste this address or scan this QR code. Send HBAR on Hedera mainnet to open this account. Other wallets and exchanges must support Hedera 0x addresses; many exchanges only accept 0.0 account IDs. The account ID appears here automatically after funding.
       </p>
       <p className="mt-3 text-sm text-signal">{err || "Watching mainnet…"}</p>
     </Panel>

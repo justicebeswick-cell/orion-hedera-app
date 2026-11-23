@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.orionhedera.orion',
-  appName: 'Oreon',
+  appName: 'Orïon',
   webDir: 'dist',
   server: {
     url: 'https://orion-hedera.app',

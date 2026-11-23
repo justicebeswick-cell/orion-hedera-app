@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// Public, read-only: serves NFT pictures and metadata uploaded from Oreon.
+// Public, read-only: serves NFT pictures and metadata uploaded from Orion.
 export const Route = createFileRoute("/api/public/nft/$file")({
   server: {
     handlers: {

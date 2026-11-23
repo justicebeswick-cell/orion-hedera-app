@@ -42,7 +42,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
         {[0, 1, 2, 3].map((i) => <div key={i} className="my-6 flex items-center gap-4"><span className="h-12 w-12 rounded-lg bg-primary/40" /><span className="h-4 w-28 rounded bg-muted" /><span className="ml-auto h-4 w-20 rounded bg-muted" /></div>)}
       </div>
     </div>
-    <div className="unlock-glass" role="dialog" aria-modal="true" aria-label="Unlock Oreon">
+    <div className="unlock-glass" role="dialog" aria-modal="true" aria-label="Unlock Orion">
       <motion.div initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto flex min-h-full w-full max-w-xs flex-col items-center justify-center">
         <div className="flex items-center gap-2"><AurionLogo className="h-12 w-12" crisp /><h1><OrionName className="w-44" /></h1></div>
         <p className="mt-1 text-xs text-muted-foreground">A Hashgraph Wallet</p>

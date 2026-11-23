@@ -1,7 +1,7 @@
 # Roadmap
 
-- [x] Rename visible app branding to Oreon without changing existing wallet storage or domain.
-- [x] Use the newest uploaded IMG_0152.png for the shared logo and web/iOS/Android app icons; verify.
+- [x] Restore the original Orion name, logo, lettering and app icons without changing wallet features or storage.
+- [x] Verify restored Orion branding across Home, other pages and loading screen.
 
 - [x] Match header logo glow and position across wallet pages.
 - [x] Add smooth dock hover/touch feedback and lower unfolded Home actions slightly; verify navigation and both layouts.
