@@ -635,7 +635,7 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
 .performance-range.is-selected { background: var(--glass-finish); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow); color: var(--foreground); }
 .performance-tooltip { padding: 10px 14px; border-radius: 8px; }
 .performance-baseline { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--glass-edge), transparent); }
-.home-actions a { box-shadow: var(--glass-shadow); }
+.home-actions a { box-shadow: var(--glass-shadow); border-radius: 999px; }
 .holdings-tabs { padding: 3px; border-radius: 999px; background: color-mix(in oklab, var(--foreground) 4%, transparent); }
 .side-orb { background: var(--glass-finish); border-color: var(--glass-edge); box-shadow: var(--glass-shadow); }
 .side-orb-active { color: var(--foreground); background: var(--glass-finish); border-color: color-mix(in oklab, var(--primary) 60%, var(--glass-edge)); }
@@ -646,7 +646,6 @@ body { padding-left: 0 !important; padding-right: 0 !important; }
   .portfolio-total { font-size: 64px; }
   .portfolio-plot { height: 230px; }
   .home-actions { margin-top: 48px; }
-  .home-actions a { border-radius: 999px; }
 }
 @media (max-width: 359px) { .portfolio-total { font-size: 38px; } .home-actions a { gap: 5px; padding: 0 8px; } }
 @media (max-width: 480px) {
