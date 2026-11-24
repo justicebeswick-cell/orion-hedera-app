@@ -26,6 +26,7 @@ import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-imag
 import { Route as ApiHbarEtfRouteImport } from './routes/api/hbar-etf'
 import { Route as ApiHbarRatesRouteImport } from './routes/api/hbar-rates'
 import { Route as ApiMoonpaySignRouteImport } from './routes/api/moonpay-sign'
+import { Route as ApiPortfolioHistoryRouteImport } from './routes/api/portfolio-history'
 import { Route as ApiStudioRouteImport } from './routes/api/studio'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
@@ -116,6 +117,11 @@ const ApiMoonpaySignRoute = ApiMoonpaySignRouteImport.update({
   path: '/api/moonpay-sign',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPortfolioHistoryRoute = ApiPortfolioHistoryRouteImport.update({
+  id: '/api/portfolio-history',
+  path: '/api/portfolio-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStudioRoute = ApiStudioRouteImport.update({
   id: '/api/studio',
   path: '/api/studio',
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/api/hbar-etf': typeof ApiHbarEtfRoute
   '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/moonpay-sign': typeof ApiMoonpaySignRoute
+  '/api/portfolio-history': typeof ApiPortfolioHistoryRoute
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/': typeof StudioIndexRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/api/hbar-etf': typeof ApiHbarEtfRoute
   '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/moonpay-sign': typeof ApiMoonpaySignRoute
+  '/api/portfolio-history': typeof ApiPortfolioHistoryRoute
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio': typeof StudioIndexRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/api/hbar-etf': typeof ApiHbarEtfRoute
   '/api/hbar-rates': typeof ApiHbarRatesRoute
   '/api/moonpay-sign': typeof ApiMoonpaySignRoute
+  '/api/portfolio-history': typeof ApiPortfolioHistoryRoute
   '/api/studio': typeof ApiStudioRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/': typeof StudioIndexRoute
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/api/hbar-etf'
     | '/api/hbar-rates'
     | '/api/moonpay-sign'
+    | '/api/portfolio-history'
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio/'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/api/hbar-etf'
     | '/api/hbar-rates'
     | '/api/moonpay-sign'
+    | '/api/portfolio-history'
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/api/hbar-etf'
     | '/api/hbar-rates'
     | '/api/moonpay-sign'
+    | '/api/portfolio-history'
     | '/api/studio'
     | '/studio/$threadId'
     | '/studio/'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   ApiHbarEtfRoute: typeof ApiHbarEtfRoute
   ApiHbarRatesRoute: typeof ApiHbarRatesRoute
   ApiMoonpaySignRoute: typeof ApiMoonpaySignRoute
+  ApiPortfolioHistoryRoute: typeof ApiPortfolioHistoryRoute
   ApiStudioRoute: typeof ApiStudioRoute
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioIndexRoute: typeof StudioIndexRoute
@@ -424,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMoonpaySignRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/portfolio-history': {
+      id: '/api/portfolio-history'
+      path: '/api/portfolio-history'
+      fullPath: '/api/portfolio-history'
+      preLoaderRoute: typeof ApiPortfolioHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/studio': {
       id: '/api/studio'
       path: '/api/studio'
@@ -473,6 +493,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHbarEtfRoute: ApiHbarEtfRoute,
   ApiHbarRatesRoute: ApiHbarRatesRoute,
   ApiMoonpaySignRoute: ApiMoonpaySignRoute,
+  ApiPortfolioHistoryRoute: ApiPortfolioHistoryRoute,
   ApiStudioRoute: ApiStudioRoute,
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioIndexRoute: StudioIndexRoute,
