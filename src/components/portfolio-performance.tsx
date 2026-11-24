@@ -3,10 +3,21 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 import { Button } from "@/components/ui/button";
 import { fmtUsd } from "@/lib/display";
 import { balanceChange, PORTFOLIO_RANGES, rangePoints, type PortfolioPoint, type PortfolioRange } from "@/lib/portfolio-history";
-import { usePortfolioHistory } from "@/lib/use-portfolio-history";
+import { usePortfolioHistoryDetails } from "@/lib/use-portfolio-history";
+
+const MONTH_MS = 30 * 86_400_000;
+function formatPointTime(at: number): string {
+  const olderThanMonth = Date.now() - at > MONTH_MS;
+  return new Date(at).toLocaleString(
+    undefined,
+    olderThanMonth
+      ? { month: "short", day: "numeric", year: "numeric" }
+      : { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" },
+  );
+}
 
 export function PortfolioPerformance({ accountId, hidden, range, onRangeChange, hideCaption }: { accountId: string; hidden: boolean; range: PortfolioRange; onRangeChange: (range: PortfolioRange) => void; hideCaption?: boolean }) {
-  const points = usePortfolioHistory(accountId);
+  const { points, hasChainHistory, isLoading } = usePortfolioHistoryDetails(accountId);
   const gradient = useId().replace(/:/g, "");
   const visible = rangePoints(points, range, Date.now());
   const change = balanceChange(visible);
@@ -23,16 +34,16 @@ export function PortfolioPerformance({ accountId, hidden, range, onRangeChange, 
           <YAxis hide domain={[(minimum: number) => Math.max(0, minimum - Math.max(1, minimum * 0.015)), (maximum: number) => maximum + Math.max(1, maximum * 0.015)]} />
           <Tooltip cursor={{ stroke: "var(--glass-edge)", strokeDasharray: "3 5" }} content={({ active, payload }) => {
             const point = payload?.[0]?.payload as PortfolioPoint | undefined;
-            return active && point ? <div className="performance-tooltip"><p className="font-medium tnum">{fmtUsd(point.value)}</p><p className="text-[11px] text-muted-foreground">{new Date(point.at).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</p></div> : null;
+            return active && point ? <div className="performance-tooltip"><p className="font-medium tnum">{fmtUsd(point.value)}</p><p className="text-[11px] text-muted-foreground">{formatPointTime(point.at)}</p></div> : null;
           }} />
           <Area type="monotone" dataKey="value" stroke="var(--chart-line)" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" fill={`url(#${gradient})`} activeDot={{ r: 3, fill: "var(--chart-line)", stroke: "var(--background)", strokeWidth: 2 }} isAnimationActive={false} />
         </AreaChart>
       </ResponsiveContainer> : <>
         <svg className="performance-empty-line" viewBox="0 0 600 200" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id={`${gradient}-empty`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--chart-line)" stopOpacity={0.2} /><stop offset="100%" stopColor="var(--chart-line)" stopOpacity={0} /></linearGradient></defs><path d="M0 115H600V200H0Z" fill={`url(#${gradient}-empty)`} /><path d="M0 115H600" stroke="var(--chart-line)" strokeWidth="1.5" strokeOpacity={0.45} /></svg>
-        <div className="performance-empty">{hidden ? "Balance hidden" : "Awaiting performance history"}</div>
+        <div className="performance-empty">{hidden ? "Balance hidden" : isLoading ? "Loading portfolio history…" : "Awaiting performance history"}</div>
       </>}
     </div>
     <div className="performance-ranges" role="group" aria-label="Portfolio timeframe">{PORTFOLIO_RANGES.map((r) => <Button key={r} size="sm" variant="ghost" aria-pressed={range === r} onClick={() => onRangeChange(r)} className={range === r ? "performance-range is-selected" : "performance-range"}>{r}</Button>)}</div>
-    {!hidden && <p className="performance-note text-[10px] text-muted-foreground">Since tracking on this device · Includes deposits and withdrawals</p>}
+    {!hidden && <p className="performance-note text-[10px] text-muted-foreground">{hasChainHistory ? "On-chain HBAR history & live updates · Includes deposits and withdrawals" : "Since tracking on this device · Includes deposits and withdrawals"}</p>}
   </section>;
 }
